@@ -33,7 +33,7 @@ class SalinggaHandler(tornado.web.RequestHandler):
     def get(self):
         x = 5
         y = 5
-        self.write("I don't know what this is %f" % (x*y))
+        self.write("I don't know what this is %f" % x*y)
 
     # tornado.options.parse_command_line()
 application = tornado.web.Application([
