@@ -28,16 +28,9 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("80% for Machine Learning")
 
+    # tornado.options.parse_command_line()
+application = tornado.web.Application([
+    (r"/", MainHandler),
+])
 
-def main():
-    tornado.options.parse_command_line()
-    application = tornado.web.Application([
-        (r"/", MainHandler),
-    ])
-    http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(options.port)
-    tornado.ioloop.IOLoop.current().start()
-
-
-if __name__ == "__main__":
-    main()
+application = tornado.wsgi.WSGIAdapter(application)
