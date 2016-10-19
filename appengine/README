@@ -46,3 +46,5 @@ If you want to deploy the blog in production:
    After that, visit application_id.appspot.com, where application_id
    is the application you registered.
 
+
+This line was added by Ronald
