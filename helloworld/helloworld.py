@@ -37,9 +37,23 @@ class SalinggaHandler(tornado.web.RequestHandler):
         self.write("I don't know what this is %f" % (x*y))
 
     # tornado.options.parse_command_line()
+class JingHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render(
+            "index.html",
+             title="processes",
+             header="PROCESS",
+             steps=[
+                 "DATA MINING",
+                 "DATA CLEANING",
+                 "ANALYSIS",
+                 "DATA VISUALIZATION"
+             ]
+        )
 application = tornado.web.Application([
     (r"/", MainHandler),
     (r"/salingga", SalinggaHandler),
+    (r"/jing", JingHandler),
 ])
 
 application = tornado.wsgi.WSGIAdapter(application)
