@@ -19,6 +19,7 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 import tornado.wsgi
+import os.path
 
 import wsgiref.simple_server
 from tornado.options import define, options
@@ -51,10 +52,15 @@ class JingHandler(tornado.web.RequestHandler):
                  "DATA VISUALIZATION"
              ]
         )
+        
+settings = {
+    "title": u"TEAM-M Project",
+    "template_path": os.path.join(os.path.dirname(__file__), "client/templates"),
+}
+
 application = tornado.web.Application([
     (r"/", MainHandler),
     (r"/salingga", SalinggaHandler),
-    (r"/jing", JingHandler),
-])
+    (r"/jing", JingHandler),], **settings)
 
 application = tornado.wsgi.WSGIAdapter(application)
