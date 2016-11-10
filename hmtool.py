@@ -21,7 +21,7 @@ from google.appengine.api import users
 from google.appengine.ext import ndb
 import jinja2
 import webapp2
-from model import testdata
+from server.model import testdata
 from datetime import datetime
 import json
 
@@ -65,17 +65,27 @@ class Greeting(ndb.Model):
 # [START timeserie]
 class Station(ndb.Model):
     """Sub model for representing a HM station."""
-    identity = ndb.StringProperty(indexed=False)
-    name = ndb.StringProperty(indexed=False)
+    identity = ndb.StringProperty(indexed=True)
+    description = ndb.StringProperty(indexed=False)
+    lat = ndb.FloatProperty(indexed=False)
+    lon = ndb.FloatProperty(indexed=False)
 
 class Hmrecord(ndb.Model):
     """A main model for representing an individual Meteorological record."""
     # station = ndb.StructuredProperty(Station)
+    station_name = ndb.StringProperty(indexed=True)
+    latitude = ndb.FloatProperty(indexed=False)
+    longitude = ndb.FloatProperty(indexed=False)
     date = ndb.DateTimeProperty(indexed=True)
-    value = ndb.FloatProperty(indexed=False)
-    
-# [END greeting]
-
+    rec_number = ndb.IntegerProperty(indexed=False)
+    temperature = ndb.FloatProperty(indexed=False)
+    air_humidity = ndb.FloatProperty(indexed=False)
+    pressure = ndb.FloatProperty(indexed=False)
+    solar_radiation = ndb.FloatProperty(indexed=False)
+    soil_temperature = ndb.FloatProperty(indexed=False)
+    wind_speed = ndb.FloatProperty(indexed=False)
+    wind_direction = ndb.FloatProperty(indexed=False)
+# [END timeserie]
 
 # [START main_page]
 class MainPageGuestbook(webapp2.RequestHandler):
@@ -120,21 +130,30 @@ class MainPage(webapp2.RequestHandler):
             url = users.create_login_url(self.request.uri)
             url_linktext = 'Login'
 
-
+        # if the entity is empty, then populate the table with test data
         q = Hmrecord.query()
         if q.count() == 0:
-            print 'Creating test data...'
+            print 'Inserting test data...'
             data = testdata.get_test_data()
             records = []
             for r in data:
-                rdate = datetime.strptime(r[0], '%Y-%m-%d %H:%M:%S')
-                record = Hmrecord(date=rdate, value=r[1])
+                # print r
+                rdate = datetime.strptime(r[3], '%Y-%m-%d %H:%M:%S')
+                record = Hmrecord(station_name=r[0], latitude=float(r[1]), longitude=float(r[2]),
+                                  date=rdate,
+                                  rec_number=int(r[4]),
+                                  temperature=float(r[5]), air_humidity=float(r[6]),
+                                  pressure=float(r[7]), solar_radiation=float(r[8]),
+                                  soil_temperature=float(r[9]), wind_speed=float(r[10]),
+                                  wind_direction=float(r[11]))
                 records.append(record)
+            # print records[0]
             ndb.put_multi(records)
         else:
             q = Hmrecord.query()
             q.order(+Hmrecord.date)
             records = q.fetch(10)
+            print "Available data (sample):"
             for r in records:
                 print r
 
@@ -180,18 +199,25 @@ class Hmtools(webapp2.RequestHandler):
     def get(self):
         q = Hmrecord.query()
         q.order(+Hmrecord.date)
-        records = q.fetch(100)
-        # return json.dumps([{"date": r.date.strftime('%Y-%m-%d %H:%M:%S'), "temperature": r.value} for r in records])
-        # for r in records:
-        #    print r.date, r.value, r.date.strftime('%Y-%m-%d %H:%M:%S')
-        # return json.dumps([{"date": "test", "temperature": "10"}])
-        # return "Hello world"
-        # self.response.write('Hello, world!')
+        # records = q.fetch(100)
+        records = q.fetch()
         self.response.write(
-            json.dumps([{"date": r.date.strftime('%Y-%m-%d %H:%M:%S'), "temperature": r.value} for r in records])
+            json.dumps(
+                [{
+                    "station_name" : r.station_name,
+                    "latitude" : r.latitude,
+                    "longitude" : r.longitude,
+                    "date": r.date.strftime('%Y-%m-%d %H:%M:%S'),
+                    "rec_number": r.rec_number,
+                    "temperature": r.temperature,
+                    "air_humidity": r.air_humidity,
+                    "pressure": r.pressure,
+                    "solar_radiation": r.solar_radiation,
+                    "soil_temperature": r.soil_temperature,
+                    "wind_speed": r.wind_speed,
+                    "wind_direction": r.wind_direction
+                    } for r in records])
             )
-
-        
 # [END hmtools]
 
 

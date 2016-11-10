@@ -36,7 +36,7 @@ A Makefile is provided to deploy and run the e2e test.
 
 To run:
 
-     export GAE_PROJECT=hmtool
+     export GAE_PROJECT=your-project-id
      make
 
 To manually run, install the requirements
@@ -45,7 +45,7 @@ To manually run, install the requirements
 
 Set the environment variable to point to your deployed app:
 
-    export HMTOOL_URL="http://hmtool.appspot.com/"
+    export HMTOOL_URL="http://guestbook-test-dot-useful-temple-118922.appspot.com/"
 
 Finally, run the test
 

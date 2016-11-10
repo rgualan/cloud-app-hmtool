@@ -54,17 +54,29 @@ form {
 				//console.log(data_json);
 				var items = [];
 				$.each(data_json, function(key, row) {
-					items.push([ row["date"], row["temperature"] ]);
+					items.push([ row["station_name"],row["latitude"],row["longitude"],row["date"],
+						row["rec_number"],row["temperature"],row["air_humidity"],
+						row["pressure"],row["solar_radiation"],row["soil_temperature"],
+						row["wind_speed"],row["wind_direction"] ]);
 				});
 				//console.log(items);
 
 				$('#data_table').DataTable({
 					data : items,
-					columns : [ {
-						title : "Date"
-					}, {
-						title : "Temperature"
-					} ]
+					columns : [ 
+						{title : "Station name"}, 
+						{title : "Latitude"},
+						{title : "Longitude"},
+						{title : "Date"},
+						{title : "Record number"},
+						{title : "Temperature"},
+						{title : "Air humidity"},
+						{title : "Pressure"},
+						{title : "Solar radiation"},
+						{title : "Soil temperature"},
+						{title : "Wind speed"},
+						{title : "Wind direction"}
+						]
 				});
 
 			});
@@ -87,7 +99,7 @@ form {
 			</div>
 		</div>
 		<div>
-			<table id="data_table" class="display" width="100%"></table>
+			<table id="data_table" class="display"></table>
 		</div>
 	</div>
 	<div class="container">
