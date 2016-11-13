@@ -1,6 +1,10 @@
 #temp_files
 *~
 
+#IDE
+#pycharm
+.idea/*
+
 #GAE
 app.yaml
 
