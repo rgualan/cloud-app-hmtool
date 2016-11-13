@@ -21,7 +21,7 @@ from google.appengine.api import users
 from google.appengine.ext import ndb
 import jinja2
 import webapp2
-from server.model import testdata
+from server.model import guestbook, testdata, weatherapi
 from datetime import datetime
 import json
 
@@ -31,70 +31,19 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 # [END imports]
 
-DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
-
 
 # We set a parent key on the 'Greetings' to ensure that they are all
 # in the same entity group. Queries across the single entity group
 # will be consistent. However, the write rate should be limited to
 # ~1/second.
 
-def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
-    """Constructs a Datastore key for a Guestbook entity.
-
-    We use guestbook_name as the key.
-    """
-    return ndb.Key('Guestbook', guestbook_name)
-
-
-# [START greeting]
-class Author(ndb.Model):
-    """Sub model for representing an author."""
-    identity = ndb.StringProperty(indexed=False)
-    email = ndb.StringProperty(indexed=False)
-
-
-class Greeting(ndb.Model):
-    """A main model for representing an individual Guestbook entry."""
-    author = ndb.StructuredProperty(Author)
-    content = ndb.StringProperty(indexed=False)
-    date = ndb.DateTimeProperty(auto_now_add=True)
-# [END greeting]
-
-
-# [START timeserie]
-class Station(ndb.Model):
-    """Sub model for representing a HM station."""
-    identity = ndb.StringProperty(indexed=True)
-    description = ndb.StringProperty(indexed=False)
-    lat = ndb.FloatProperty(indexed=False)
-    lon = ndb.FloatProperty(indexed=False)
-
-class Hmrecord(ndb.Model):
-    """A main model for representing an individual Meteorological record."""
-    # station = ndb.StructuredProperty(Station)
-    station_name = ndb.StringProperty(indexed=True)
-    latitude = ndb.FloatProperty(indexed=False)
-    longitude = ndb.FloatProperty(indexed=False)
-    date = ndb.DateTimeProperty(indexed=True)
-    rec_number = ndb.IntegerProperty(indexed=False)
-    temperature = ndb.FloatProperty(indexed=False)
-    air_humidity = ndb.FloatProperty(indexed=False)
-    pressure = ndb.FloatProperty(indexed=False)
-    solar_radiation = ndb.FloatProperty(indexed=False)
-    soil_temperature = ndb.FloatProperty(indexed=False)
-    wind_speed = ndb.FloatProperty(indexed=False)
-    wind_direction = ndb.FloatProperty(indexed=False)
-# [END timeserie]
-
 # [START main_page]
 class MainPageGuestbook(webapp2.RequestHandler):
 
     def get(self):
-        guestbook_name = self.request.get('guestbook_name',
-                                          DEFAULT_GUESTBOOK_NAME)
-        greetings_query = Greeting.query(
-            ancestor=guestbook_key(guestbook_name)).order(-Greeting.date)
+        guestbook_name = self.request.get('guestbook_name', guestbook.DEFAULT_GUESTBOOK_NAME)
+        greetings_query = guestbook.Greeting.query(
+            ancestor = guestbook.guestbook_key(guestbook_name)).order(-guestbook.Greeting.date)
         greetings = greetings_query.fetch(10)
 
         user = users.get_current_user()
@@ -120,7 +69,6 @@ class MainPageGuestbook(webapp2.RequestHandler):
 # [START main_page]
 class MainPage(webapp2.RequestHandler):
 
-
     def get(self):
         user = users.get_current_user()
         if user:
@@ -131,7 +79,7 @@ class MainPage(webapp2.RequestHandler):
             url_linktext = 'Login'
 
         # if the entity is empty, then populate the table with test data
-        q = Hmrecord.query()
+        q = testdata.Hmrecord.query()
         if q.count() == 0:
             print 'Inserting test data...'
             data = testdata.get_test_data()
@@ -139,7 +87,7 @@ class MainPage(webapp2.RequestHandler):
             for r in data:
                 # print r
                 rdate = datetime.strptime(r[3], '%Y-%m-%d %H:%M:%S')
-                record = Hmrecord(station_name=r[0], latitude=float(r[1]), longitude=float(r[2]),
+                record = testdata.Hmrecord(station_name=r[0], latitude=float(r[1]), longitude=float(r[2]),
                                   date=rdate,
                                   rec_number=int(r[4]),
                                   temperature=float(r[5]), air_humidity=float(r[6]),
@@ -150,8 +98,8 @@ class MainPage(webapp2.RequestHandler):
             # print records[0]
             ndb.put_multi(records)
         else:
-            q = Hmrecord.query()
-            q.order(+Hmrecord.date)
+            q = testdata.Hmrecord.query()
+            q.order(+testdata.Hmrecord.date)
             records = q.fetch(10)
             print "Available data (sample):"
             for r in records:
@@ -177,12 +125,11 @@ class Guestbook(webapp2.RequestHandler):
         # single entity group will be consistent. However, the write
         # rate to a single entity group should be limited to
         # ~1/second.
-        guestbook_name = self.request.get('guestbook_name',
-                                          DEFAULT_GUESTBOOK_NAME)
-        greeting = Greeting(parent=guestbook_key(guestbook_name))
+        guestbook_name = self.request.get('guestbook_name', guestbook.DEFAULT_GUESTBOOK_NAME)
+        greeting = guestbook.Greeting(parent = guestbook.guestbook_key(guestbook_name))
 
         if users.get_current_user():
-            greeting.author = Author(
+            greeting.author = guestbook.Author(
                     identity=users.get_current_user().user_id(),
                     email=users.get_current_user().email())
 
@@ -197,8 +144,8 @@ class Guestbook(webapp2.RequestHandler):
 class Hmtools(webapp2.RequestHandler):
 
     def get(self):
-        q = Hmrecord.query()
-        q.order(+Hmrecord.date)
+        q = testdata.Hmrecord.query()
+        q.order(+testdata.Hmrecord.date)
         # records = q.fetch(100)
         records = q.fetch()
         self.response.write(
@@ -220,11 +167,23 @@ class Hmtools(webapp2.RequestHandler):
             )
 # [END hmtools]
 
+# [START weatherApi]
+class WeatherApi(webapp2.RequestHandler):
+
+    def get(self):
+        city_name = 'Southampton'
+        q = [
+            weatherapi.get_currentweather_bycity(city_name).content,
+            weatherapi.get_historicalweather_bycity(city_name).content]
+        self.response.write(q)
+# [END weatherApi]
+
 
 # [START app]
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/data', Hmtools),
+    ('/weatherapi', WeatherApi),
     ('/guestbook', MainPageGuestbook),
     ('/guestbook/sign', Guestbook),
 ], debug=True)
