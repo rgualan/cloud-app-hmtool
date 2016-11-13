@@ -9,11 +9,10 @@ def get_currentweather_bycity(city_name):
     r = urlfetch.fetch(baseUrl + path + app_id)
     return r
 
-def get_historicalweather_bycity(city_name):
-    key = 'e167861a60e6d23a436f1216e6b92474'
-    baseUrl = 'http://api.openweathermap.org'
-    path = '/data/2.5/history/city?q=%s' %city_name
-    app_id = '&APPID=%s' %key
+def get_historicalweather_bycoordinate(coordinate):
+    baseUrl = 'https://api.darksky.net/forecast'
+    key = '/fcd21d318645bb0fb584ac98dd6a6836'
+    path = '/%s,2016-01-01T00:00:00Z?exclude=currently,flags' %coordinate
 
-    r = urlfetch.fetch(baseUrl + path + app_id)
+    r = urlfetch.fetch(baseUrl + key + path)
     return r

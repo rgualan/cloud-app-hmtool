@@ -172,9 +172,10 @@ class WeatherApi(webapp2.RequestHandler):
 
     def get(self):
         city_name = 'Southampton'
+        coordinate = '42.3601,-71.0589'
         q = [
             weatherapi.get_currentweather_bycity(city_name).content,
-            weatherapi.get_historicalweather_bycity(city_name).content]
+            weatherapi.get_historicalweather_bycoordinate(coordinate).content]
         self.response.write(q)
 # [END weatherApi]
 
