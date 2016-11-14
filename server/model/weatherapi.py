@@ -16,3 +16,12 @@ def get_historicalweather_bycoordinate(coordinate):
 
     r = urlfetch.fetch(baseUrl + key + path)
     return r
+
+def get_current_conditions_bycity(location, condition1):
+    baseUrl = 'http://api.wunderground.com'
+    key = '/c97f94f569e3a8d4'
+    path = '/api%s/%s/q/%s' %(key, condition1, location)
+    format = ".json"
+    r = urlfetch.fetch(baseUrl + path + format)
+    return r
+

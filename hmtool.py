@@ -173,9 +173,12 @@ class WeatherApi(webapp2.RequestHandler):
     def get(self):
         city_name = 'Southampton'
         coordinate = '42.3601,-71.0589'
+        location = 'Allentown'
+        feature1 = 'geolookup'
         q = [
             weatherapi.get_currentweather_bycity(city_name).content,
-            weatherapi.get_historicalweather_bycoordinate(coordinate).content]
+            weatherapi.get_historicalweather_bycoordinate(coordinate).content,
+            weatherapi.get_current_conditions_bycity(location, feature1).content]
         self.response.write(q)
 # [END weatherApi]
 
