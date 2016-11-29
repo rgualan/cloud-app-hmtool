@@ -57,38 +57,39 @@
             fill: none;
             stroke: black;
             stroke-width: 1.5px;
-}
+        }
     </style>
 </head>
 <body>
-<div>
+    <div>
 
+        </div>
+        <div id="chart">
+
+
+            <table id="data_table" class="display"></table>
+
+        </div>
     </div>
-    <div id="chart">
+    <div class="container">
+        <!-- [START greetings] -->
+        <!-- [END greetings] -->
 
-
-        <table id="data_table" class="display"></table>
-
+    <!--
+        <a href="{{ url|safe }}">{{ url_linktext }}</a>
+    -->
     </div>
-</div>
-<div class="container">
-    <!-- [START greetings] -->
-    <!-- [END greetings] -->
-
-<!--
-    <a href="{{ url|safe }}">{{ url_linktext }}</a>
--->
-</div>
-<select id="select"><option value="empty">select</option>
-    <option value="5">Temperature</option>
-    <option value="6">Air humidity</option>
-    <option value="7">Pressure</option>
-    <option value="8">Solar radiation</option>
-    <option value="9">Soil temperature</option>
-    <option value="10">Wind speed</option>
-    <option value="11">Wind direction</option></select><br>
-
-<svg></svg>
+    <select id="select"><option value="empty">select</option>
+        <option value="5">Temperature</option>
+        <option value="6">Air humidity</option>
+        <option value="7">Pressure</option>
+        <option value="8">Solar radiation</option>
+        <option value="9">Soil temperature</option>
+        <option value="10">Wind speed</option>
+        <option value="11">Wind direction</option></select><br>
+    <div id = "station">
+    </div>
+    <svg></svg>
 </body>
 </html>
 <!--
