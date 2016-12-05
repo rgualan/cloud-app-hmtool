@@ -106,27 +106,26 @@ class Login(webapp2.RequestHandler):
 class Hmtools(webapp2.RequestHandler):
 
     def get(self):
-        q = testdata.Hmrecord.query()
-        q.order(+testdata.Hmrecord.date)
-        # records = q.fetch(100)
-        records = q.fetch()
-        self.response.write(
-            json.dumps(
-                [{
-                    "station_name" : r.station_name,
-                    "latitude" : r.latitude,
-                    "longitude" : r.longitude,
-                    "date": r.date.strftime('%Y-%m-%d %H:%M:%S'),
-                    "rec_number": r.rec_number,
-                    "temperature": r.temperature,
-                    "air_humidity": r.air_humidity,
-                    "pressure": r.pressure,
-                    "solar_radiation": r.solar_radiation,
-                    "soil_temperature": r.soil_temperature,
-                    "wind_speed": r.wind_speed,
-                    "wind_direction": r.wind_direction
-                    } for r in records])
-            )
+        q = testdata.Hmrecord.query().order(+testdata.Hmrecord.date) 
+        records = q.fetch() 
+
+        self.response.write( 
+            json.dumps( 
+                [{ 
+                    "station_name" : r.station_name, 
+                    "latitude" : r.latitude, 
+                    "longitude" : r.longitude, 
+                    "date": r.date.strftime('%Y-%m-%d %H:%M:%S'), 
+                    "rec_number": r.rec_number, 
+                    "temperature": r.temperature, 
+                    "air_humidity": r.air_humidity, 
+                    "pressure": r.pressure, 
+                    "solar_radiation": r.solar_radiation, 
+                    "soil_temperature": r.soil_temperature, 
+                    "wind_speed": r.wind_speed, 
+                    "wind_direction": r.wind_direction 
+                    } for r in records]) 
+            ) 
 # [END hmtools]
 
 
