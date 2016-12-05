@@ -11,8 +11,15 @@ handlers:
 - url: /bootstrap
   static_dir: client/bootstrap
 
+- url: /js
+  static_dir: client/js
+
+- url: /data
+  static_dir: data
+
 - url: /.*
   script: hmtool.app
+
 # [END handlers]
 
 # [START libraries]
