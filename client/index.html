@@ -48,6 +48,7 @@ form {
 </style>
 </head>
 <body>
+
 	<script>
 		$(document).ready(function() {
 			$.getJSON('/data', function(data_json) {
@@ -93,8 +94,12 @@ form {
 						class="icon-bar"></span>
 				</button>
 				<a class="brand" href="#">HMTOOL - TEAM M</a>
+
 				<div class="nav-collapse collapse pull-right">
 					<a href="{{ url|safe }}" class="btn">{{ url_linktext }}</a>
+					<a href="/" class="btn">Home</a>
+					<a href="/chart" class="btn">Chart</a>
+					<a href="/weatherapi" class="btn">API</a>
 				</div>
 			</div>
 		</div>
