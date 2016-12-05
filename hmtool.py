@@ -129,6 +129,23 @@ class Hmtools(webapp2.RequestHandler):
             )
 # [END hmtools]
 
+
+# [START hmtools]
+class Chart(webapp2.RequestHandler):
+
+    def get(self):
+        user = users.get_current_user()
+        url = users.create_login_url(self.request.uri)
+        url_linktext = 'Login'
+        template_values = {
+            'user': user,
+            'url': url,
+            'url_linktext': url_linktext,
+        }
+        template = JINJA_ENVIRONMENT.get_template('/client/line_chart.html')
+        self.response.write(template.render(template_values))
+# [END hmtools]
+
 # [START weatherApi]
 class WeatherApi(webapp2.RequestHandler):
 
@@ -141,7 +158,19 @@ class WeatherApi(webapp2.RequestHandler):
             weatherapi.get_currentweather_bycity(city_name).content,
             weatherapi.get_historicalweather_bycoordinate(coordinate).content,
             weatherapi.get_current_conditions_bycity(location, feature1).content]
-        self.response.write(q)
+
+        user = users.get_current_user()
+        url = users.create_login_url(self.request.uri)
+        url_linktext = 'Login'
+        template_values = {
+            'user': user,
+            'url': url,
+            'url_linktext': url_linktext,
+            'query': q
+        }
+
+        template = JINJA_ENVIRONMENT.get_template('/client/weatherapi.html')
+        self.response.write(template.render(template_values))
 # [END weatherApi]
 
 
@@ -151,5 +180,6 @@ app = webapp2.WSGIApplication([
     ('/data', Hmtools),
     ('/weatherapi', WeatherApi),
     ('/login', Login),
+    ('/chart', Chart),
 ], debug=True)
 # [END app]
