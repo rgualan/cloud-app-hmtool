@@ -13,7 +13,7 @@
 
 
     <script
-            src="js/chart.js"></script>
+            src="js/line_chart.js"></script>
     <!-- [END js-libs] -->
     <!-- [START css] -->
     <link type="text/css" rel="stylesheet"
@@ -90,6 +90,28 @@
     <div id = "station">
     </div>
     <svg></svg>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<button type="button" class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="brand" href="#">HMTOOL - TEAM M</a>
+
+				<div class="nav-collapse collapse pull-right">
+					<a href="{{ url|safe }}" class="btn">{{ url_linktext }}</a>
+					<a href="/" class="btn">Home</a>
+					<a href="/chart" class="btn">Chart</a>
+					<a href="/weatherapi" class="btn">API</a>
+				</div>
+			</div>
+		</div>
+		<div>
+			<table id="data_table" class="display"></table>
+		</div>
+	</div>
 </body>
 </html>
 <!--
