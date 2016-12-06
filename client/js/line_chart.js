@@ -136,16 +136,14 @@ $(document).ready(function () {
     var dataset = [];
 
     //document.getElementById("station").innerHTML("ssss");
-    d3.csv("../data/data2.csv", function (error, csv) {
-        //var dataset = [];
-        var xMark = [];
-        csv.forEach(function (d) {
-            dataset.push([d["#station_name"], d["latitude"], d["longitude"], d["timestamp"],
-                d["record"], d["temperature"], d["air_humidity"],
-                d["pressure"], d["solar_radiation"], d["soil_temperature"],
-                d["wind_velocity"], d["wind_direction"]]);
-        })
-        items = dataset;
+    $.getJSON('/data', function(data_json) {
+        var items = [];
+   $.each(data_json, function(key, row) {
+     items.push([ row["station_name"],row["latitude"],row["longitude"],row["date"],
+       row["rec_number"],row["temperature"],row["air_humidity"],
+       row["pressure"],row["solar_radiation"],row["soil_temperature"],
+       row["wind_speed"],row["wind_direction"] ]);
+   });
 
         var station_name = [];
         for (var i = 1; i < items.length; i++) {
