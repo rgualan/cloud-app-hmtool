@@ -42,12 +42,6 @@ class MainPage(webapp2.RequestHandler):
 
     def get(self):
         user = users.get_current_user()
-        if user:
-            url = users.create_logout_url(self.request.uri)
-            url_linktext = 'Logout'
-        else:
-            url = users.create_login_url(self.request.uri)
-            url_linktext = 'Login'
 
         # if the entity is empty, then populate the table with test data
         q = testdata.Hmrecord.query()
@@ -76,11 +70,7 @@ class MainPage(webapp2.RequestHandler):
             for r in records:
                 print r
 
-        template_values = {
-            'user': user,
-            'url': url,
-            'url_linktext': url_linktext,
-        }
+        template_values = check_login(user, self)
 
         template = JINJA_ENVIRONMENT.get_template('/client/index.html')
         self.response.write(template.render(template_values))
@@ -134,13 +124,7 @@ class Chart(webapp2.RequestHandler):
 
     def get(self):
         user = users.get_current_user()
-        url = users.create_login_url(self.request.uri)
-        url_linktext = 'Login'
-        template_values = {
-            'user': user,
-            'url': url,
-            'url_linktext': url_linktext,
-        }
+        template_values = check_login(user, self)
         template = JINJA_ENVIRONMENT.get_template('/client/line_chart.html')
         self.response.write(template.render(template_values))
 # [END hmtools]
@@ -149,6 +133,7 @@ class Chart(webapp2.RequestHandler):
 class WeatherApi(webapp2.RequestHandler):
 
     def get(self):
+        user = users.get_current_user()
         city_name = 'Southampton'
         coordinate = '42.3601,-71.0589'
         location = 'Allentown'
@@ -158,15 +143,8 @@ class WeatherApi(webapp2.RequestHandler):
             weatherapi.get_historicalweather_bycoordinate(coordinate).content,
             weatherapi.get_current_conditions_bycity(location, feature1).content]
 
-        user = users.get_current_user()
-        url = users.create_login_url(self.request.uri)
-        url_linktext = 'Login'
-        template_values = {
-            'user': user,
-            'url': url,
-            'url_linktext': url_linktext,
-            'query': q
-        }
+        template_values = check_login(user, self)
+        template_values['query'] = q
 
         template = JINJA_ENVIRONMENT.get_template('/client/weatherapi.html')
         self.response.write(template.render(template_values))
@@ -182,3 +160,22 @@ app = webapp2.WSGIApplication([
     ('/chart', Chart),
 ], debug=True)
 # [END app]
+
+def check_login(user, self):
+    template_values = {}
+    url = None
+    url_linktext = None
+    if user:
+        url = users.create_logout_url(self.request.uri)
+        url_linktext = 'Logout'
+    else:
+        url = users.create_login_url(self.request.uri)
+        url_linktext = 'Login'
+
+    template_values = {
+        'user': user,
+        'url': url,
+        'url_linktext': url_linktext
+    }
+
+    return template_values
