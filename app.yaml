@@ -14,9 +14,6 @@ handlers:
 - url: /js
   static_dir: client/js
 
-#- url: /data
-#  static_dir: data
-
 - url: /.*
   script: hmtool.app
 
