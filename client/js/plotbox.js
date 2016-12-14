@@ -1,7 +1,11 @@
 /**
  * Created by junewang on 03/12/2016.
  */
+
+
  function boxplot(item, type, station) {
+    
+
     var sta_value = statistic(item, type,station);
 
     var div = d3.select("body").append("div")
@@ -18,6 +22,7 @@
             data[i] = [];
             data[i][0] = station[i];
             data[i][1] = [];
+            data[i][2] = []; //datw
             for (var j = 0; j < item.length; j++) {
                 if (item[j][0] == station[i]) {
                     var rowMax = parseFloat(items[j][parseInt(type)]);
@@ -25,9 +30,13 @@
                     data[i][1].push(parseFloat(items[j][parseInt(type)]));
                     if (rowMax > max) max = rowMax;
                     if (rowMin < min) min = rowMin;
+
+                    date = new Date(items[j][3].replace(/-/g, "/"));
+                    data[i][2].push(date);
                 }
             }
         }
+        
         var chart = d3.box()
                 .whiskers(iqr(1.5))
                 .height(height)
@@ -41,7 +50,13 @@
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                 ;
-
+        var svg1 = d3.select("#svg1")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .attr("class", "box")
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                ;
     function mouseover(d) {
         mstat=d[0];
         mstat_data=d[1];
@@ -67,6 +82,18 @@
         var yAxis = d3.svg.axis()
                 .scale(y)
                 .orient("left")
+        // line
+        var xLine = d3.time.scale().range([0, width]);
+        var yLine = d3.scale.linear().range([height, 0]);
+        var xLineAxis = d3.svg.axis().scale(x)
+            .orient("bottom")
+        var yLineAxis = d3.svg.axis().scale(yLine)
+            .orient("left").ticks(5);
+        var valueline = d3.svg.line()
+            .x(function(d) { return x(d.date); })
+            .y(function(d) { return y0(d.rating); })
+            .defined(function(d) { return d.rating; });
+
         // draw the boxplots
         svg.selectAll(".box")
                 .data(data)
@@ -88,11 +115,14 @@
                     }
 
                  })
-            .on("mouseout", function(d) {
-                div.transition()
-                    .duration(500)
-                    .style("opacity", 0);
-        });
+                .on("mouseout", function(d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+                .on("click", function(d){ 
+                    
+                });
 
 
 

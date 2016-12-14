@@ -5,119 +5,191 @@ var color = d3.scale.ordinal().range(["#48A36D", "#7FB1CF", "#C280B7",
  "#E26962", "#E29D58", "#E0B15B", "#DFB95C", "#DDC05E", "#F2DE8A"]);  
 var maxSelect = 3;
 
-function line(data, time,color) {
-    var time_all = [];
-    var data_all = [];
-    for (var i = 0; i < time.length; i++)
-    {
-        time_all=time_all.concat(time[i]);
-        data_all=data_all.concat(data[i]);
-    }
-        //a[i] = {date: time[i], data: data[i]}
-    var margin = {top: 20, right: 20, bottom: 30, left: 50};
-    var w = 1000;
-    var h = 300;
-    var padding = 20;
-    var xScale = d3.time.scale()
-            .domain([d3.min(time_all), d3.max(time_all)])
-            .range([padding + 30, w - padding * 2])
-        ;
-    var yScale = d3.scale.linear()
-        .domain([d3.min(data_all), d3.max(data_all)])
-        .range([h - padding, padding]);
+var margin = {top: 20, right: 20, bottom: 30, left: 50};
+var margin2 = {top: 5, right: 100, bottom: 30, left: 50};
+var padding = 20;
+var w = 800;
+var h = 300 - margin.top - margin.bottom, height2 = 50 - margin2.top - margin2.bottom;
 
+// Parse the date / time
+var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+    bisectDate = d3.bisector(function(d) { return d.date; }).left;
+var xScale = d3.time.scale()
+            // .domain([d3.min(time_all), d3.max(time_all)])//d3.min(time_all)
+            .range([padding + 30, w - padding * 2]),
+    xScale2 = d3.time.scale()
+        .range([padding + 30, w - padding * 2]); 
 
-    /*    var zoomArea = {
-     x1: 0,
-     y1: 0,
-     x2: xdomain,
-     y2: ydomain
-     };*/
+var yScale = d3.scale.linear()
+    .range([h - padding, padding]);
 
-    var svg = d3.select("svg")
-        .attr("width", w)
-        .attr("height", h);
+var xAxis2 = d3.svg.axis() // xAxis for brush slider
+    .scale(xScale2)
+    .orient("bottom"); 
 
-
-    var xAxis = d3.svg.axis()
+var xAxis = d3.svg.axis()
         .scale(xScale)
-        .orient("bottom");
-    var yAxis = d3.svg.axis()
+        .orient("bottom").ticks(5);;
+var yAxis = d3.svg.axis()
         .scale(yScale)
-        .orient("left");
+        .orient("left")
+        .ticks(5);
 
+var context = d3.select("body")
+    .append("g") // Brushing context box container
+    .attr("transform", "translate(" + 0 + "," + 410 + ")")
+    .attr("class", "context");
 
-    svg.append("g")
-        .attr("class", "axis")
-        .attr("transform", "translate(0," + (h - padding) + ")")
-        .call(xAxis)
-    ;
+// var brush = d3.svg.brush()//for slider bar at the bottom
+//     .x(xScale2) 
+//     .on("brush", brushed);
 
-    svg.append("g")
-        .attr("class", "axis")
-        .attr("transform", "translate(" + (padding + 30) + ",0)")
-        .call(yAxis)
+//     context.append("g") // Create brushing xAxis
+//       .attr("class", "x axis1")
+//       .attr("transform", "translate(0," + height2 + ")")
+//       .call(xAxis2);
 
-    ;
-    for(var j=0;j<data.length;j++){
-        var line;
-        line = d3.svg.line()
-        // .interpolate("basis")
-        .x(function (d, i) {
-            return xScale(time[j][i]);
-        })
-        .y(function (d,i) {
-            return yScale(d);
-        });
+// function line(data, time,color) {
+//     var time_all = [];
+//     var data_all = [];
+//     for (var i = 0; i < time.length; i++)
+//     {
+//         time_all=time_all.concat(time[i]);
+//         data_all=data_all.concat(data[i]);
+//     }
+//         //a[i] = {date: time[i], data: data[i]}
+//     var margin = {top: 20, right: 20, bottom: 30, left: 50};
+    
+//     var padding = 20;
+//     var xScale = d3.time.scale()
+//             .domain([d3.min(time_all), d3.max(time_all)])
+//             .range([padding + 30, w - padding * 2])
+//         ;
+//     var yScale = d3.scale.linear()
+//         .domain([d3.min(data_all), d3.max(data_all)])
+//         .range([h - padding, padding]);
+
+    
+//     /*    var zoomArea = {
+//      x1: 0,
+//      y1: 0,
+//      x2: xdomain,
+//      y2: ydomain
+//      };*/
+
+//     var svg = d3.select("svg")
+//         .attr("width", w)
+//         .attr("height", h)
+//         .append("g")
+
+//     var xAxis = d3.svg.axis()
+//         .scale(xScale)
+//         .orient("bottom");
+//     var yAxis = d3.svg.axis()
+//         .scale(yScale)
+//         .orient("left");
+//     svg.append("rect")
+//             .attr("width", w)
+//             .attr("height", h)                                    
+//             .attr("x", 0) 
+//             .attr("y", 0)
+//             .attr("id", "mouse-tracker")
+//             .style("fill", "white"); 
+
+//     svg.append("g")
+//         .attr("class", "x-axis")
+//         .attr("transform", "translate(0," + (h - padding) + ")")
+//         .call(xAxis)
+//     ;
+
+//     svg.append("g")
+//         .attr("class", "y-axis")
+//         .attr("transform", "translate(" + (padding + 30) + ",0)")
+//         .call(yAxis);
+
+//     var focus = svg.append("g")                               
+//         .style("display", "none"); 
+
+//     for(var j=0;j<data.length;j++){
+//         var line;
+//         line = d3.svg.line()
+//         // .interpolate("basis")
+//         .x(function (d, i) {
+//             return xScale(time[j][i]);
+//         })
+//         .y(function (d,i) {
+//             return yScale(d);
+//         });
         
 
 
-        //for (var i = 0; i < data.length; i++) {
-        var path = svg.append("path")
-            .attr("d", line(data[j]))
-            .style("fill", "#0000")
-            .style("fill", "none")
-            .style("stroke-width", 2)
-            .style("stroke", color[j])
-            .style("stroke-opacity", 0.9);
+//         //for (var i = 0; i < data.length; i++) {
+//         var path = svg.append("g")
+//             .append("path")
+//             .attr("class","graph")
+//             .attr("d", line(data[j]))
+//             .style("fill", "#0000")
+//             .style("fill", "none")
+//             .style("stroke-width", 2)
+//             .style("stroke", color[j])
+//             .style("stroke-opacity", 0.9);
+//     }
+// }
+function line2(d, type_data,color) {
+    var data_all = [];
+    for (var i = d.length - 1; i >= 0; i--) {
+        data_all=data_all.concat(d[i][type_data]);
+        
+    };
 
-        svg.append("text")
-            // .datum(function(data){ return {id: data[j], value: [data[j].length - 1]}; })
-            .attr("x", w - 3)
-            .attr("dy", "0.35em")
-            .style("font", "10px sans-serif")
-            .style("text-anchor","end")
-            .text(function(d){return d.key;});
-        // svg.selectAll("circle" + j)
-        //     .data(data[j])
-        //     .enter()
-        //     .append("circle")
-        //     .attr("cx", function (d, i) {
-        //         return xScale(time[j][i]);
-        //     })
-        //     .attr("cy", function (d) {
-        //         return yScale(d);
-        //     })
-        //     .attr("r", 3.5)
-        //     .attr("fill", function (d) {
-        //         return color[j];
-        //     })
-        //     .on('mouseover', function () {
+    // xScale.domain(d3.extent(d, function(d) { return parseDate(d.date); }));
+    // yScale.domain([0, d3.max(data_all)])
+    // xScale2.domain(xScale.domain());
 
-        //         d3.select(this).transition().duration(500).attr('r', 5);
+    
+    var svg = d3.select("svg")
 
-        //     })
+    svg.append("g")
+        .attr("class", "x-axis")
+        .attr("transform", "translate(0," + (h - padding) + ")")
+        .call(xAxis)
+        .style("stroke-width", "0.5px");
 
-        //     .on('mouseout', function () {
-
-        //         d3.select(this).transition().duration(500).attr('r', 3.5);
-
-        //     });
-    }
+    svg.append("g")
+        .attr("class", "y-axis")
+        .attr("transform", "translate(" + (padding + 30) + ",0)")
+        .call(yAxis)
+        .style("stroke-width", 1);
 
 
+    //append clip path for lines plotted, hiding those part out of bounds
+    svg.append("defs")
+      .append("clipPath") 
+        .attr("id", "clip")
+        .append("rect")
+        .attr("width", w)
+        .attr("height", h); 
+
+    var focus = svg.append("g")                               
+        .style("display", "none"); 
+
+    
+    var valueline = d3.svg.line()
+    .x(function(d) { return xScale(parseDate(d.date)); })
+    .y(function(d) { return yScale(d[type_data]); })
+    .defined(function(d) { return d[type_data]; });
+        
+    var path = svg.append("g")
+        .append("path")
+        .attr("class","graph")
+        .attr("d", valueline(d))
+        .style("stroke-width", 1.5)
+        .style("stroke", color[0])
+        .style("stroke-opacity", 0.9)
+        .style("fill", "#0000")
+        .style("fill", "none");
+    
 }
-
 function jqchk() {
     var colour = ['red', 'blue', 'green', 'black', 'pink','orange'];
     var chk_value = [];
@@ -134,36 +206,52 @@ function jqchk() {
 
 $(document).ready(function () {
     var dataset = [];
-
+    var dataGroup;
     //document.getElementById("station").innerHTML("ssss");
     $.getJSON('/data', function(data_json) {
+        console.log(data_json)
         var items = [];
-   $.each(data_json, function(key, row) {
-     items.push([ row["station_name"],row["latitude"],row["longitude"],row["date"],
-       row["rec_number"],row["temperature"],row["air_humidity"],
-       row["pressure"],row["solar_radiation"],row["soil_temperature"],
-       row["wind_speed"],row["wind_direction"] ]);
-   });
+        dataGroup = d3.nest()
+            .key(function(d) {
+                return d.station_name;
+            }).sortKeys(d3.ascending)
+            .entries(data_json);
+        console.log(JSON.stringify(dataGroup));
+        var strG = ""
 
-        var station_name = [];
-        for (var i = 1; i < items.length; i++) {
-            var m = 1;
-            for (var j = 0; j < station_name.length; j++) {
-                if (station_name[j] == items[i][0])
-                    m = 0;
-            }
-            if (m == 1) {
-                station_name.push(items[i][0]);
-            }
-        }
-        var str = "";
-        for (var i = 0; i < station_name.length; i++) {
-            str += "<div class='checkbox'><label><input type='checkbox' id='"+i+"'class='check_box' value='" + station_name[i] + "'>" + station_name[i] + "</label></div>";
-        }
+        var svg = d3.select("svg")
+        .attr("width", w)
+        .attr("height", h)
+        .append("g")
 
+        dataGroup.forEach(function(d,i) {
 
-        document.getElementById("station").innerHTML = str;
-        console.log(dataset);
+            // var issue = svg.selectAll(".issue")
+            //     .data(dataGroup) 
+            //     .enter().append("g")
+            //     .attr("class", "issue");
+
+            // issue.append("path")
+            //     .attr("class", "line")
+            //     .style("pointer-events", "none") // Stop line interferring with cursor
+            //     .attr("id", function(d) {
+            //         return "line-" + d.key.replace(" ", "").replace("/", ""); // Give line id of line-(insert issue name, with any spaces replaced with no spaces)
+            //     })
+            //     .attr("clip-path", "url(#clip)")//use clip path to make irrelevant part invisible
+            //     .style("stroke", color);
+
+            strG += "<div class='checkbox'><label><input type='checkbox' id='"+i+"'class='check_box' value='" + d.key + "'>" + d.key + "</label> </div>";
+        });
+        document.getElementById("station").innerHTML = strG;
+        console.log(strG);
+
+        // $.each(data_json, function(key, row) {
+        //     items.push([ row["station_name"],row["latitude"],row["longitude"],row["date"],
+        //     row["rec_number"],row["temperature"],row["air_humidity"],
+        //     row["pressure"],row["solar_radiation"],row["soil_temperature"],
+        //     row["wind_speed"],row["wind_direction"] ]);
+        // });
+
         // $('#data_table').DataTable({
         //     data: items,
         //     columns: [
@@ -181,7 +269,7 @@ $(document).ready(function () {
         //         {title: "Wind direction"}
         //     ]
         // });
-        function line_chart(a,chk_station,color) {
+        function line_chart(type,chk_station,color) {
             document.querySelector('svg').innerHTML = '';
             var data = new Array();
             var time = new Array();
@@ -190,27 +278,36 @@ $(document).ready(function () {
                 }else{
                     for(j=0;j<chk_station.length;j++)
                     {
-                        data[j]=new Array();
-                        time[j]=new Array();
-                        for (i = 1; i < items.length; i++) {
-                            if(items[i][0]==chk_station[j])
-                            {
-                              data[j].push( parseFloat(items[i][parseInt(a)]));
-                              date = new Date(items[i][3].replace(/-/g, "/"));
-                              time[j].push(date);
-                            }
-                        }
+                        // data[j]=new Array();
+                        // time[j]=new Array();
+                        dataGroup.forEach(function(d,i) {
+                            if (d.key === chk_station[j]) {
+                                xScale.domain(d3.extent(d.values, function(d) { return parseDate(d.date); }));
+                                yScale.domain([0, d3.max(d.values, function(d){ return d[type];})])
+                                xScale2.domain(xScale.domain());
+                                line2(d.values,type,color);
+                            };
+                        });
+                        
+                        // for (i = 1; i < items.length; i++) {
+                        //     if(items[i][0]==chk_station[j])
+                        //     {
+                        //       data[j].push( parseFloat(items[i][parseInt(type)]));
+                        //       date = new Date(items[i][3].replace(/-/g, "/"));
+                        //       time[j].push(date);
+                        //     }
+                        // }
                     }
-                    line(data, time,color);
+                    // line(data, time,color);
                 };
         }
 
         $("#select").change(function () {
 
-            var a = $("#select").find("option:selected").val();
-            if (a != "0") {
+            var type = $("#select").find("option:selected").val();
+            if (type != "0") {
                 var chk_station=jqchk();
-                line_chart(a,chk_station[0],chk_station[1]);
+                line_chart(type,chk_station[0],chk_station[1]);
             };
 
         });
@@ -220,19 +317,25 @@ $(document).ready(function () {
             var current = checkboxes.filter(':checked').length;
             checkboxes.filter(':not(:checked)').prop('disabled', current >= maxSelect);
             if ($("#select").find("option:selected").val() != "0") {
-                var a = $("#select").find("option:selected").val();
+                var type = $("#select").find("option:selected").val();
                 var chk_station=jqchk();
                 
-                line_chart(a,chk_station[0],chk_station[1]);
-            };
-            
-            
+                line_chart(type,chk_station[0],chk_station[1]);
+            };   
         })
 
+        
     });
 })
 
-
+function findMaxY(data){  // Define function "findMaxY"
+    var maxYValues = data.map(function(d) { 
+      
+        return d3.max(d.values, function(value) { // Return max rating value
+          return value.rating; })
+    });
+    return d3.max(maxYValues);
+}
 
 
 

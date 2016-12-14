@@ -53,11 +53,11 @@
         }
 
 
-        .axis path {
+        /*.axis path {
             fill: none;
             stroke: black;
-            stroke-width: 1.5px;
-        }
+            stroke-width: 0.5px;
+        }*/
     </style>
 </head>
 <body>
@@ -80,13 +80,20 @@
     -->
     </div>
     <select id="select"><option value="0">select</option>
-        <option value="5">Temperature</option>
+        <!-- <option value="5">Temperature</option>
         <option value="6">Air humidity</option>
         <option value="7">Pressure</option>
         <option value="8">Solar radiation</option>
         <option value="9">Soil temperature</option>
         <option value="10">Wind speed</option>
-        <option value="11">Wind direction</option></select><br>
+        <option value="11">Wind direction</option></select><br> -->
+        <option value="temperature">Temperature</option>
+        <option value="air_humidity">Air humidity</option>
+        <option value="pressure">Pressure</option>
+        <option value="solar_radiation">Solar radiation</option>
+        <option value="soil_temperature">Soil temperature</option>
+        <option value="wind_speed">Wind speed</option>
+        <option value="wind_direction">Wind direction</option></select><br>
     <div id = "station">
     </div>
     <svg></svg>
