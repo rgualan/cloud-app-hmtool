@@ -16,9 +16,13 @@ def get_test_data():
     for tweet in reader:
         sentence = tweet['tweetext'].split()
         for word in sentence:
+
+            #check if it is url, ignore if yes.
             h = re.match('(.*)http.*$', word)
             u = re.match('(.*)\.com.*$', word)
+
             if h is None and u is None:
+                #remove specified characters
                 chars_to_remove = ['"', '!', '#', '.', '?', '@', ':', '\'s', '~']
                 subj = word
                 word = subj.translate(None, ''.join(chars_to_remove))
