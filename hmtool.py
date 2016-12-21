@@ -21,7 +21,7 @@ from google.appengine.api import users
 from google.appengine.ext import ndb
 import jinja2
 import webapp2
-from server.model import user, testdata, weatherapi
+from server.model import user, testdata, weatherapi, sentiment
 from datetime import datetime
 import json
 
@@ -30,12 +30,6 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 # [END imports]
-
-
-# We set a parent key on the 'Greetings' to ensure that they are all
-# in the same entity group. Queries across the single entity group
-# will be consistent. However, the write rate should be limited to
-# ~1/second.
 
 # [START main_page]
 class MainPage(webapp2.RequestHandler):
@@ -150,12 +144,26 @@ class WeatherApi(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END weatherApi]
 
+# [START weatherApi]
+class Sentiment(webapp2.RequestHandler):
+
+    def get(self):
+        user = users.get_current_user()
+        q = sentiment.get_test_data()
+
+        template_values = check_login(user, self)
+        template_values['query'] = q
+
+        template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
+        self.response.write(template.render(template_values))
+# [END weatherApi]
 
 # [START app]
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/data', Hmtools),
     ('/weatherapi', WeatherApi),
+    ('/sentiment', Sentiment),
     ('/login', Login),
     ('/chart', Chart),
 ], debug=True)
