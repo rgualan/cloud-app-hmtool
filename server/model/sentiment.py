@@ -12,11 +12,12 @@ def get_test_data():
         delimiter = delimiter,)
     reader = csv.DictReader(csvfile, dialect='dataset')
 
-    results = []
+    users = []
     for tweet in reader:
+        user = {}
         sentence = tweet['tweetext'].split()
+        tweets = []
         for word in sentence:
-
             #check if it is url, ignore if yes.
             h = re.match('(.*)http.*$', word)
             u = re.match('(.*)\.com.*$', word)
@@ -26,8 +27,10 @@ def get_test_data():
                 chars_to_remove = ['"', '!', '#', '.', '?', '@', ':', '\'s', '~']
                 subj = word
                 word = subj.translate(None, ''.join(chars_to_remove))
-                results.append(word)
+                tweets.append(word)
             else:
                 pass
+        user = {'user': tweet['userid'], 'tweet': tweets}
+        users.append(user)
 
-    return results
+    return users
