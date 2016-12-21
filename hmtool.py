@@ -156,7 +156,6 @@ class Sentiment(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END Sentiment]
 
-
 # [START Tweets]
 class Tweets(webapp2.RequestHandler):
 
@@ -168,7 +167,8 @@ class Tweets(webapp2.RequestHandler):
             json.dumps(
                 [{
                     "user": r['user'],
-                    "tweet": r['tweet']
+                    "tweet": r['tweet'],
+                    "weight": r['weight']
                     } for r in records])
             )
 # [END Tweets]
