@@ -73,20 +73,22 @@
 
 				<div class="nav-collapse collapse pull-right">
 					<a href="{{ url|safe }}" class="btn">{{ url_linktext }}</a>
-					<a href="/" class="userbtn">Home</a>
+					<a href="/" class="btn">Home</a>
 					<a href="/chart" class="btn">Chart</a>
 					<a href="/weatherapi" class="btn">API</a>
 					<a href="/sentiment" class="btn">Senti</a>
 				</div>
 			</div>
 		</div>
-		<table>
-			{% for item in query %}
-			  <tr><td>{{ item['user'] }}</td><td>{{ item['tweet'] }}</td></tr>
-			{% else %}
-			  <tr><em>Unbelievable.  No entries here so far</em></tr>
-			{% endfor %}
-		</table>
+		<div>
+			<table>
+				{% for item in query %}
+				  <tr><td>{{ item['user'] }}</td><td>{{ item['tweet'] }}</td></tr>
+				{% else %}
+				  <tr><td><em>Unbelievable.  No entries here so far</em></td></tr>
+				{% endfor %}
+			</table>
+		</div>
 </body>
 </html>
 {% endautoescape %}
