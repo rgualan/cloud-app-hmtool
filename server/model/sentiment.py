@@ -14,10 +14,9 @@ def get_test_data():
 
     users = []
     for tweet in reader:
-        tweets = []
-        h = None
-        u = None
+        user = {}
         sentence = tweet['tweetext'].split()
+        tweets = []
         for word in sentence:
             #check if it is url, ignore if yes.
             h = re.match('(.*)http.*$', word)
@@ -31,8 +30,7 @@ def get_test_data():
                 tweets.append(word)
             else:
                 pass
-        if h is None and u is None:
-            user = {'user': tweet['userid'], 'tweet': tweets}
-            users.append(user)
+        user = {'user': tweet['userid'], 'tweet': tweets}
+        users.append(user)
 
     return users
