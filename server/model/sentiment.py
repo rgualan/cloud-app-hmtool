@@ -24,7 +24,7 @@ def get_test_data():
 
             if h is None and u is None:
                 #remove specified characters
-                chars_to_remove = ['"', '!', '#', '.', '?', '@', ':', '\'s', '~']
+                chars_to_remove = ['"', '!', '#', '.', '?', '@', ':', '~', '*', '\'', '(' ,')']
                 subj = word
                 word = subj.translate(None, ''.join(chars_to_remove))
                 tweets.append(word)
