@@ -65,7 +65,7 @@
 				//console.log(data_json);
 				var items = [];
 				$.each(data_json, function(key, row) {
-					items.push([ row["user"], row["tweet"] ]);
+					items.push([ row["user"], row["tweet"],  row["weight"] ]);
 				});
 				//console.log(items);
 
@@ -73,7 +73,8 @@
 					data : items,
 					columns : [
 						{title : "User"},
-						{title : "Tweet"}
+						{title : "Tweet"},
+						{title : "Weight"}
 						]
 				});
 
