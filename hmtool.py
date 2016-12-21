@@ -144,19 +144,34 @@ class WeatherApi(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END weatherApi]
 
-# [START weatherApi]
+# [START Sentiment]
 class Sentiment(webapp2.RequestHandler):
 
     def get(self):
         user = users.get_current_user()
-        q = sentiment.get_test_data()
 
         template_values = check_login(user, self)
-        template_values['query'] = q
 
         template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
         self.response.write(template.render(template_values))
-# [END weatherApi]
+# [END Sentiment]
+
+
+# [START Tweets]
+class Tweets(webapp2.RequestHandler):
+
+    def get(self):
+        q = sentiment.get_test_data()
+        records = q
+
+        self.response.write(
+            json.dumps(
+                [{
+                    "user": r['user'],
+                    "tweet": r['tweet']
+                    } for r in records])
+            )
+# [END Tweets]
 
 # [START app]
 app = webapp2.WSGIApplication([
@@ -164,6 +179,7 @@ app = webapp2.WSGIApplication([
     ('/data', Hmtools),
     ('/weatherapi', WeatherApi),
     ('/sentiment', Sentiment),
+    ('/tweets', Tweets),
     ('/login', Login),
     ('/chart', Chart),
 ], debug=True)
