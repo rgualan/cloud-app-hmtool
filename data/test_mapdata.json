@@ -1,0 +1,37 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.09,
+                    37.64
+                ]
+            },
+            "point":6,
+            "user_id":"002",
+            "properties": {
+                "tweet_body": "I freaking love maps!",
+                "handle": "BrianLehman"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    101.6,
+                    3.18
+                ]
+            },
+            "point":3,
+            "user_id":"001",
+            "properties": {
+                "tweet_body": "I love you @grandma_smarmy",
+                "handle": "uncle_smarmy"
+            }
+        }
+    ]
+}
