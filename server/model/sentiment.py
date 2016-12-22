@@ -1,6 +1,6 @@
 import csv
 import re
-import random
+import string
 from server.settings import *
 
 def get_test_data():
@@ -22,30 +22,29 @@ def get_test_data():
         weights.append(weight)
 
     users = []
+    counter = 0
     for tweet in reader:
-        sentence = tweet['tweetext'].split()
-        tweets = []
-        sum_weight = 0
-        for word in sentence:
-            #check if it is url, ignore if yes.
-            h = re.match('(.*)http.*$', word)
-            u = re.match('(.*)\.com.*$', word)
+        counter = counter + 1
+        if counter > 99: break
+        if counter < 90: pass
+        else:
+            sentence = tweet['tweetext']
+            sum_weight = 0
+            words = []
 
-            if h is None and u is None:
-                word_weight = 0
-                #remove specified characters
-                chars_to_remove = ['"', '!', '#', '.', '?', '@', ':', '~', '*', '\'', '(' ,')']
-                subj = word
-                word = subj.translate(None, ''.join(chars_to_remove))
-                for weight in weights:
-                    if re.match('.*('+ str(weight['word']) +').*', str(word).lower()):
-                        word_weight = int(weight['weight'])
-                sum_weight = sum_weight + word_weight
-                tweets.append(word)
+            #this part is to remove all symbols and turn them into whitespace
+            chars_to_remove = ['"', '!', '#', '.', ',', '?', '@', ':', '~', '*', "'", '\/', '(' ,')', '-', '=']
+            specials = ''.join(chars_to_remove)
+            trans = string.maketrans(specials, ' '*len(specials))
+            sentence = sentence.translate(trans)
 
-            else:
-                pass
-        user = {'user': tweet['userid'], 'tweet': tweets, 'weight': sum_weight}
-        users.append(user)
+            for weight in weights:
+                if re.match('.*( '+ str(weight['word']) +' ).*', str(sentence).lower()):
+                    word_weight = int(weight['weight'])
+                    words.append(weight['word'] + ':' + weight['weight'])
+                    sum_weight = sum_weight + word_weight
+
+            user = {'user': tweet['userid'], 'tweet': sentence, 'words': words, 'weight': sum_weight}
+            users.append(user)
 
     return users
