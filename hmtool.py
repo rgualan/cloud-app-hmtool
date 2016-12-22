@@ -168,6 +168,7 @@ class Tweets(webapp2.RequestHandler):
                 [{
                     "user": r['user'],
                     "tweet": r['tweet'],
+                    "words": r['words'],
                     "weight": r['weight']
                     } for r in records])
             )
