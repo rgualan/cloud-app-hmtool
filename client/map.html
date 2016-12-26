@@ -4,6 +4,9 @@
 <head>
   <meta charset="utf-8">
   <style>
+      path:hover {
+	fill-opacity: .7;
+}
 
     body {
       background-color: white;
@@ -11,20 +14,20 @@
 
 
 	.land {
-	  fill: rgb(204, 204, 204);
+	  fill:rgb(229, 228, 226);
 	}
 
 	.boundary {
 	  fill: none;
-	  stroke: grey;
+	  stroke:  rgb(204, 204, 204);
 	}
-	  circle.outer {
+
+    circle.outer {
   fill: none;
   stroke: #000;
   stroke-width: 2px;
 }
 circle.points{
-  stroke: red;
 }
 
 circle.bigPoints{
@@ -55,7 +58,18 @@ circle.bigPoints{
         color: white;
         opacity: 0;
     }
-
+      text {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  pointer-events: none;
+}
+#happy:checked + .demo--radioInput:after{background-color:blue;}
+#bad:checked + .demo--radioInput:after{background-color:red;}
+.sentiment_label{margin:20px 20px 0 0;display:inline-block}
+.sentiment_checkbox{display:none}
+.demo--radioInput{background-color:#fff;border:1px solid rgba(0,0,0,0.15);border-radius:100%;display:inline-block;height:16px;margin-right:10px;margin-top:-1px;vertical-align:middle;width:16px;line-height:1}
+.sentiment_checkbox:checked + .demo--radioInput:after{border-radius:100%;content:"";display:inline-block;height:12px;margin:2px;width:12px}
+.demo--checkbox.demo--radioInput,.sentiment_checkbox:checked + .demo--checkbox.demo--radioInput:after{border-radius:0}
 
   </style>
 
@@ -63,12 +77,46 @@ circle.bigPoints{
 
 <body>
 <div id="tooltip"></div>
+<div id="canvas-svg"></div>
+
 	<script src="http://d3js.org/d3.v3.min.js"></script>
-	<script src="http://d3js.org/topojson.v0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.3.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
+
 	<script src="js/map.js"></script>
 	<script>
+</script>
+
+	<div class="checkbox">
+        <label class="sentiment_label">
+            <input class="sentiment_checkbox" type="checkbox" name="sen" id="happy" value="happy" checked="true">
+            <span class="demo--checkbox demo--radioInput"></span>happy
+    </label>
+    <label class="sentiment_label">
+        <input class="sentiment_checkbox" type="checkbox"  name="sen" id="bad" value="bad" checked="true">
+        <span class="demo--checkbox demo--radioInput"></span>bad
+    </label>
+
+</div>
 
 
+<script>
+	$(document).ready(function() {
+           $("input[name='sen']").click(function () {
+            $("input[name='sen']").each(function () {
+
+                if ($(this).prop("checked")) {
+                    val="circle_"+$(this).val();
+                    d3.select("body").selectAll('#'+val).transition().duration(200).attr("opacity",1);
+                }
+                else
+                {
+                    val="circle_"+$(this).val();
+                    d3.select("body").selectAll('#'+val).transition().duration(200).attr("opacity",0);
+             }
+            });
+        })
+    })
 	</script>
 </body>
 </html>
