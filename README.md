@@ -10,6 +10,14 @@ This "Demo Prototype" aims to support a framework for managing an environmental 
 
 Users can access the application using their Google account. Data are stored in Google Datastore (NoSQL).
 
+## Motivation
+- Real time data processing
+- Open standardization such as [OGC][8] 
+- Visualization intensive
+- Variety of analisys that can be applied
+- IoT trend 
+- Popular field for applying Machine Learning techniques
+
 ## Cloud Environment
 - [App Engine][2]
 - [Google Datastore][3]
@@ -29,12 +37,14 @@ Users can access the application using their Google account. Data are stored in 
 [5]: https://python.org
 [6]: http://webapp-improved.appspot.com/
 [7]: http://jinja.pocoo.org/docs/
+[8]: http://www.opengeospatial.org/
 
 ## Locally run
 
 To locally run the project for development purposes
-    dev_appserver.py .
+    ```dev_appserver.py .```
+
 
 To locally run the project and clean the datastore
-    dev_appserver.py . dev_appserver.py . --clear_datastore
+    ```dev_appserver.py . dev_appserver.py . --clear_datastore```
 
