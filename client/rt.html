@@ -1,0 +1,23 @@
+{% extends "/client/layout/base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <script type="text/javascript" src="/js/rt.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/rt.css">
+{% endblock %}
+
+{% block content %}
+
+<div>
+    <div> Last date: <input type="input" id="txt_last_date" value=""> </div>
+    <!--<button id="button1">Update 1</button>
+    <br/>-->
+    <svg id="linechart_svg"/>
+</div>
+<div>
+    <svg id="linechart2_svg"/>
+</div>
+<div>
+    <svg id="linechart3_svg"/>
+</div>
+{% endblock %}

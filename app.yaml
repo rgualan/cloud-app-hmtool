@@ -14,6 +14,9 @@ handlers:
 - url: /js
   static_dir: client/js
 
+- url: /css
+  static_dir: client/css
+
 - url: /.*
   script: hmtool.app
 

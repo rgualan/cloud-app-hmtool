@@ -19,6 +19,7 @@ import os
 import urllib
 from google.appengine.api import users
 from google.appengine.ext import ndb
+from google.appengine.ext import db
 import jinja2
 import webapp2
 from server.model import user, testdata, weatherapi, sentiment
@@ -70,6 +71,89 @@ class MainPage(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END main_page]
 
+# [START]
+class RealTimeHandler(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        template_values = check_login(user, self)
+        template = JINJA_ENVIRONMENT.get_template('/client/rt.html')
+        self.response.write(template.render(template_values))
+# [END]
+# [START]
+class RealTimeLoader(webapp2.RequestHandler):
+
+    def options(self):
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
+        self.response.headers['Access-Control-Allow-Headers'] = '*'
+        self.response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+
+    def get(self):
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
+        self.response.headers['Access-Control-Allow-Headers'] = '*'
+        self.response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+
+        last_date_str = self.request.get('lastDate', None);
+
+        print 'Parameter: ',last_date_str
+        if not(last_date_str is None or last_date_str == "" ):
+            # The client has some data already
+            # So, it is asking for new data 
+            # This code returns the following data window, starting from the 
+            # last_date parameter
+            last_date = datetime.strptime(last_date_str, '%Y-%m-%d %H:%M:%S')
+            print 'Parameter: ',last_date
+            q = testdata.Hmrecord.query(testdata.Hmrecord.date > last_date).order(+testdata.Hmrecord.date)
+            records = q.fetch(2)
+            print("Queried data ((new)):")
+            for r in records: print r
+
+            self.response.write(
+                json.dumps(
+                    [{
+                        "station_name" : r.station_name,
+                        "latitude" : r.latitude,
+                        "longitude" : r.longitude,
+                        "date": r.date.strftime('%Y-%m-%d %H:%M:%S'),
+                        "rec_number": r.rec_number,
+                        "temperature": r.temperature,
+                        "air_humidity": r.air_humidity,
+                        "pressure": r.pressure,
+                        "solar_radiation": r.solar_radiation,
+                        "soil_temperature": r.soil_temperature,
+                        "wind_speed": r.wind_speed,
+                        "wind_direction": r.wind_direction
+                        } for r in records])
+                )
+        else:
+            # For the first query (not last_date parameter)
+            # return a small amomunt of the data
+            # the erliest data
+            #q = testdata.Hmrecord.query().order(-testdata.Hmrecord.date)
+            q = testdata.Hmrecord.query().order(+testdata.Hmrecord.date)
+            records = q.fetch(50)
+            #records = q.fetch()
+            #records = list(reversed(records));
+            print("Queried data ((first time)):")
+            for r in records: print r;
+  
+            self.response.write(
+                json.dumps(
+                    [{
+                        "station_name" : r.station_name,
+                        "latitude" : r.latitude,
+                        "longitude" : r.longitude,
+                        "date": r.date.strftime('%Y-%m-%d %H:%M:%S'),
+                        "rec_number": r.rec_number,
+                        "temperature": r.temperature,
+                        "air_humidity": r.air_humidity,
+                        "pressure": r.pressure,
+                        "solar_radiation": r.solar_radiation,
+                        "soil_temperature": r.soil_temperature,
+                        "wind_speed": r.wind_speed,
+                        "wind_direction": r.wind_direction
+                        } for r in records])
+                )
+# [END]
 
 # [START guestbook]
 class Login(webapp2.RequestHandler):
@@ -183,6 +267,8 @@ app = webapp2.WSGIApplication([
     ('/tweets', Tweets),
     ('/login', Login),
     ('/chart', Chart),
+    ('/realtime', RealTimeHandler),
+    ('/rtdata', RealTimeLoader),
 ], debug=True)
 # [END app]
 
