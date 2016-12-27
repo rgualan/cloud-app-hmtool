@@ -1,52 +1,40 @@
-# Guestbook
+# HMTOOL: Hydro-Meteorological Tool
 
-Guestbook is an example application showing basic usage of Google App
-Engine. Users can read & write text messages and optionaly log-in with
-their Google account. Messages are stored in App Engine (NoSQL)
-High Replication Datastore (HRD) and retrieved using a strongly consistent
-(ancestor) query.
+This web application demonstrates the power of Javascript and Python as client-side and server-side programming languages, respectively.
 
-## Products
-- [App Engine][1]
+This "Demo Prototype" aims to support a framework for managing an environmental observatory information system [1]. The ideas behind this prototype are as follows:
+
+- Data Collection: Data input from several data sources like data from on-field stations, web services, APIs, files, etc. Thus, nature of the input data is very varied.
+- Data Processing: Some cleaning and standardization analysis, ...
+- Data Presentation: The final user can perform several operations, such as reading plots from real time data, etc.  
+
+Users can access the application using their Google account. Data are stored in Google Datastore (NoSQL).
+
+## Cloud Environment
+- [App Engine][2]
+- [Google Datastore][3]
 
 ## Language
-- [Python][2]
-
-## APIs
-- [NDB Datastore API][3]
-- [Users API][4]
+- [Javascript][4]
+- [Python][5]
 
 ## Dependencies
-- [webapp2][5]
-- [jinja2][6]
-- [Twitter Bootstrap][7]
+- [webapp2][6]
+- [jinja2][7]
 
-[1]: https://developers.google.com/appengine
-[2]: https://python.org
-[3]: https://developers.google.com/appengine/docs/python/ndb/
-[4]: https://developers.google.com/appengine/docs/python/users/
-[5]: http://webapp-improved.appspot.com/
-[6]: http://jinja.pocoo.org/docs/
-[7]: http://twitter.github.com/bootstrap/
+[1]: http://www.sciencedirect.com/science/article/pii/S009830041000275X
+[2]: https://developers.google.com/appengine
+[3]: https://cloud.google.com/datastore/docs/concepts/overview
+[4]: https://www.javascript.com/
+[5]: https://python.org
+[6]: http://webapp-improved.appspot.com/
+[7]: http://jinja.pocoo.org/docs/
 
+## Locally run
 
-## E2E Test for this sample app
+To locally run the project for development purposes
+    dev_appserver.py .
 
-A Makefile is provided to deploy and run the e2e test.
+To locally run the project and clean the datastore
+    dev_appserver.py . dev_appserver.py . --clear_datastore
 
-To run:
-
-     export GAE_PROJECT=your-project-id
-     make
-
-To manually run, install the requirements
-
-    pip install -r e2e/requirements-dev.txt
-
-Set the environment variable to point to your deployed app:
-
-    export HMTOOL_URL="http://guestbook-test-dot-useful-temple-118922.appspot.com/"
-
-Finally, run the test
-
-    python e2e/test_e2e.py
