@@ -2,121 +2,72 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <style>
-      path:hover {
-	fill-opacity: .7;
-}
-
-    body {
-      background-color: white;
-    }
-
-
-	.land {
-	  fill:rgb(229, 228, 226);
-	}
-
-	.boundary {
-	  fill: none;
-	  stroke:  rgb(204, 204, 204);
-	}
-
-    circle.outer {
-  fill: none;
-  stroke: #000;
-  stroke-width: 2px;
-}
-circle.points{
-}
-
-circle.bigPoints{
-  fill: none;
-}
-#tooltip {
-		position: absolute;
-		text-align: center;
-		padding: 20px;
-		margin: 10px;
-		font: 12px sans-serif;
-		background: lightsteelblue;
-		border: 1px;
-		border-radius: 2px;
-		pointer-events: none;
-	}
-    #tooltip h4{
-		margin:0;
-		font-size:14px;
-	}
-    #tooltip {
-        background: rgba(0, 0, 0, 0.9);
-        border: 1px solid grey;
-        border-radius: 5px;
-        font-size: 12px;
-        width: auto;
-        padding: 4px;
-        color: white;
-        opacity: 0;
-    }
-      text {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 10px;
-  pointer-events: none;
-}
-#happy:checked + .demo--radioInput:after{background-color:blue;}
-#bad:checked + .demo--radioInput:after{background-color:red;}
-.sentiment_label{margin:20px 20px 0 0;display:inline-block}
-.sentiment_checkbox{display:none}
-.demo--radioInput{background-color:#fff;border:1px solid rgba(0,0,0,0.15);border-radius:100%;display:inline-block;height:16px;margin-right:10px;margin-top:-1px;vertical-align:middle;width:16px;line-height:1}
-.sentiment_checkbox:checked + .demo--radioInput:after{border-radius:100%;content:"";display:inline-block;height:12px;margin:2px;width:12px}
-.demo--checkbox.demo--radioInput,.sentiment_checkbox:checked + .demo--checkbox.demo--radioInput:after{border-radius:0}
-
-  </style>
-
+    <meta charset="utf-8">
 </head>
 
 <body>
-<div id="tooltip"></div>
-<div id="canvas-svg"></div>
 
-	<script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.3.js"></script>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.3.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="style.css">
 
-	<script src="js/map.js"></script>
-	<script>
-</script>
 
-	<div class="checkbox">
+<div>
+    <h1>World Map</h1>
+</div>
+<div class="col-md-5">
+    <div class="checkbox">
         <label class="sentiment_label">
             <input class="sentiment_checkbox" type="checkbox" name="sen" id="happy" value="happy" checked="true">
             <span class="demo--checkbox demo--radioInput"></span>happy
-    </label>
-    <label class="sentiment_label">
-        <input class="sentiment_checkbox" type="checkbox"  name="sen" id="bad" value="bad" checked="true">
-        <span class="demo--checkbox demo--radioInput"></span>bad
-    </label>
+        </label>
+        <label class="sentiment_label">
+            <input class="sentiment_checkbox" type="checkbox" name="sen" id="bad" value="bad" checked="true">
+            <span class="demo--checkbox demo--radioInput"></span>bad
+        </label>
+    </div>
+</div>
 
+<div class="col-md-4" style="width:300px;background-color: #777777; opacity: .5">
+    <text><h4> Country: </h4></text>
+    <text id="country"><h4> world </h4></text>
 </div>
 
 
+<div class="col-md-8">
+    <div id="canvas-svg"></div>
+</div>
+<div class="col-md-2">
+    <h4 id="bar_country_name" style="width:300px">World</h4>
+    <input type="button" class="btn btn-primary" id="back" value="world" onclick="">
+
+    <svg id="svg_bar"></svg>
+</div>
+
+<div id="tooltip"></div>
+
+<script src="js/map.js"></script>
+<script src="js/map_to_bar.js"></script>
 <script>
-	$(document).ready(function() {
-           $("input[name='sen']").click(function () {
+    $(document).ready(function () {
+        $("input[name='sen']").click(function () {
             $("input[name='sen']").each(function () {
 
                 if ($(this).prop("checked")) {
-                    val="circle_"+$(this).val();
-                    d3.select("body").selectAll('#'+val).transition().duration(200).attr("opacity",1);
+                    val = "circle_" + $(this).val();
+                    d3.select("body").selectAll('#' + val).transition().duration(200).attr("opacity", 1);
                 }
-                else
-                {
-                    val="circle_"+$(this).val();
-                    d3.select("body").selectAll('#'+val).transition().duration(200).attr("opacity",0);
-             }
+                else {
+                    val = "circle_" + $(this).val();
+                    d3.select("body").selectAll('#' + val).transition().duration(200).attr("opacity", 0);
+                }
             });
         })
     })
-	</script>
+</script>
 </body>
 </html>

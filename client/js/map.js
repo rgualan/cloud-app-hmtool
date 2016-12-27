@@ -1,5 +1,5 @@
-var width = 960,
-    height = 960,
+var width = 700,
+    height = 700,
     active = d3.select(null);
 
 
@@ -39,87 +39,56 @@ d3.json("../data/world-topo-min.json", function (error, world) {
         .attr("d", path);
 
 
-    var country = g.selectAll(".country").data(countries);
-
-    country.enter().insert("path")
-        .attr("class", "land")
-        .attr("d", path)
-        .attr("id", function (d, i) {
-            return d.id;
-        })
-        .attr("title", function (d) {
-            return d.properties.name;
-        })
-
-
-        /*.on('mouseover', function (d) {
-            d3.select(this)
-                     .enter().append("text")
-      .attr("class", function(d) { return "subunit-label " + d.id; })
-      .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
-      .attr("dy", ".35em")
-      .text(function(d) { return d.properties.name; });
-
-                })
-                .on("mouseout", function (d) {
-
-                    d3.select("#tooltip_country").style("opacity", 0);
-                });
-*/
-/*
-    function clicked(d) {
-
-        if (active.node() === this) return reset();
-        active.classed("active", false);
-        active = d3.select(this).classed("active", true);
-
-
-        var bounds = path.bounds(d),
-            dx = bounds[1][0] - bounds[0][0],
-            dy = bounds[1][1] - bounds[0][1],
-            x = (bounds[0][0] + bounds[1][0]) / 2,
-            y = (bounds[0][1] + bounds[1][1]) / 2,
-            scale = .7 / Math.max(dx / width, dy / height),
-            translate = [width / 2 - scale * x, height / 2 - scale * y-150];
-
-        g.transition()
-            .duration(750)
-            .style("stroke-width", 1.5 / scale + "px")
-            .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
-    }
-
-    function reset() {
-        active.classed("active", false);
-        active = d3.select(null);
-
-        g.transition()
-            .duration(750)
-            .style("stroke-width", "1.5px")
-            .attr("transform", "");
-
-    }
-*/
-
-
-    g.append("path")
-        .datum(topojson.mesh(world, world.objects.countries, function (a, b) {
-            return a !== b;
-        }))
-        .attr("class", "boundary")
-        .attr("d", path);
-
-    svg.attr("height", height * 2.2 / 3);
-
-
-
     d3.json("../data/test_mapdata.json", function (error, data) {
-        var sen = getseperate(data);
+
+        var country = g.selectAll(".country").data(countries);
+
+        country.enter().insert("path")
+            .attr("class", "land")
+            .attr("d", path)
+            .attr("id", function (d, i) {
+                return d.id;
+            })
+            .attr("title", function (d) {
+                return d.properties.name;
+            })
+
+
+            .on('mouseover', function (d) {
+                d3.select("#country").html("<h4>" + d.properties.name + "</h4>");
+            })
+            .on('click', function (d) {
+
+                d3.select("#bar_country_name").html(d.properties.name);
+                draw(data, d.properties.name);
+
+            })
+
+            .on("mouseout", function (d) {
+                d3.select("#country").html("<h4>World</h4>");
+            });
+
+        g.append("path")
+            .datum(topojson.mesh(world, world.objects.countries, function (a, b) {
+                console.log(a);
+                console.log(b);
+
+                return a !== b;
+            }))
+            .attr("class", "boundary")
+            .attr("d", path);
+
+        svg.attr("height", height * 2.2 / 3);
+
+
+        var sen = getseperate(data.features);
+        console.log(sen);
         var word = ["bad", "happy"];
-        var col = ["red", "blue"];
+        var col = ["#F084B3", "#91E4D5"];
+
+
 
         for (var i = 0; i < word.length; i++) {
-            console.log(sen[word[i]]);
             g.selectAll(".circle_" + word[i])
                 .data(sen[word[i]])
                 .enter()
@@ -152,33 +121,42 @@ d3.json("../data/world-topo-min.json", function (error, world) {
                 });
         }
         // zoom and pan
-var zoom = d3.behavior.zoom()
-    .on("zoom",function() {
-        g.attr("transform","translate("+
-            d3.event.translate.join(",")+")scale("+d3.event.scale+")");
-          for (var i = 0; i < word.length; i++) {
-              var a=g.selectAll("#circle_" + word[i]) .attr("d", path.projection(projection));
-          }
+        var zoom = d3.behavior.zoom()
+            .on("zoom", function () {
+                g.attr("transform", "translate(" +
+                    d3.event.translate.join(",") + ")scale(" + d3.event.scale + ")");
+                for (var i = 0; i < word.length; i++) {
+                    var a = g.selectAll("#circle_" + word[i]).attr("d", path.projection(projection));
+                }
 
-        g.selectAll("path")
-            .attr("d", path.projection(projection));
+                g.selectAll("path")
+                    .attr("d", path.projection(projection));
 
-  });
+            });
 
-svg.call(zoom);
+        function button1() {
+
+        }
+ d3.select("#back").on("click", function () {
+            map_to_bar(sen);
+            d3.select("#bar_country_name").html("World");
+        })
+        svg.call(zoom);
+        map_to_bar(sen);
+
+
 
 
     });
 });
 function getseperate(data) {
     sen = {bad: [], happy: []};
-    var feature = data.features;
-    for (d in feature) {
-        if (Number(feature[d].point) < 0) {
-            sen.bad.push(feature[d]);
+    for (d in data) {
+        if (Number(data[d].point) < 0) {
+            sen.bad.push(data[d]);
         }
         else {
-            sen.happy.push(feature[d]);
+            sen.happy.push(data[d]);
         }
     }
     return sen;
@@ -186,3 +164,15 @@ function getseperate(data) {
 }
 
 
+function draw(data, country) {
+    var data_get = data.features;
+    var country_data = [];
+    for (var i = 0; i < data_get.length; i++) {
+        if (data_get[i].geometry.country === country) {
+            country_data.push(data_get[i]);
+        }
+    }
+    var sen = getseperate(country_data);
+    map_to_bar(sen);
+
+}
