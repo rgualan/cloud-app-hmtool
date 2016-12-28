@@ -8,14 +8,20 @@ handlers:
   static_files: client/favicon.ico
   upload: favicon\.ico
 
-- url: /bootstrap
-  static_dir: client/bootstrap
+- url: /bootstrap 
+  static_dir: client/bootstrap 
+  
+- url: /lib
+  static_dir: client/lib
 
 - url: /js
   static_dir: client/js
 
 - url: /css
   static_dir: client/css
+
+- url: /json
+  static_dir: client/json
 
 - url: /.*
   script: hmtool.app

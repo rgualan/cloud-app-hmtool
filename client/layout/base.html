@@ -3,44 +3,40 @@
 <head>
     {% block head %}
 	<!-- [START js-libs] -->
-	<script src="/js/lib/jquery-3.1.1.js"></script>
-    <script src="/js/lib/d3.min.js"></script>
-	<script src="/js/lib/jquery.dataTables.min.js"></script>
+	<script src="/lib/jquery/js/jquery-3.1.1.js"></script>
+    <script src="/lib/d3/js/d3.min.js"></script>
+	<script src="/lib/DataTables-1.10.13/js/jquery.dataTables.min.js"></script>
 	<!-- [END js-libs] -->
 	<!-- [START css] -->
-	<link type="text/css" rel="stylesheet" href="/bootstrap/css/bootstrap.css">
-	<link type="text/css" rel="stylesheet" href="/bootstrap/css/bootstrap-responsive.css">
-	<link type="text/css" rel="stylesheet" href="/css/lib/jquery.dataTables.min.css">
-	<link type="text/css" rel="stylesheet" href="/css/hmtool.css">
+	<link type="text/css" rel="stylesheet" href="/lib/bootstrap-3.3.7/css/bootstrap.css">
+	<link type="text/css" rel="stylesheet" href="/lib/DataTables-1.10.13/css/jquery.dataTables.min.css">
+	<link type="text/css" rel="stylesheet" href="/css/dashboard.css">
+	<!--<link type="text/css" rel="stylesheet" href="/css/hmtool.css">-->
 	<!-- [END css] -->
 	<title>HMTOOL</title>
     {% endblock %}	
 </head>
 <body>
 	{# THIS IS THE HEADER #}
-	<div id="hmtool-navbar" class="navbar navbar-inverse navbar-fixed-top">
-		<div class="navbar-inner">
-			<div class="container">
-				<button type="button" class="btn btn-navbar" data-toggle="collapse"
-					data-target=".nav-collapse">
-					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
-						class="icon-bar"></span>
-				</button>
-				<a class="brand" href="#">HMTOOL - TEAM M</a>
-
-				<div class="nav-collapse collapse pull-right">
-					<a href="{{ url|safe }}" class="btn">{{ url_linktext }}</a>
-					<a href="/" class="btn">Home</a>
-					<a href="/chart" class="btn">Chart</a>
-					<a href="/map" class="btn">Map</a>
-					<a href="/weatherapi" class="btn">API</a>
-					<a href="/sentiment" class="btn">Senti</a>
-					<a href="/realtime" class="btn">Real time</a>
-				</div>
-			</div>
-		</div>
-	</div>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">HMTOOL - TEAM M</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+			<li><a href="{{ url|safe }}">{{ url_linktext }}</a></li>
+			<li><a href="/">Home</a></li>
+			<li><a href="/chart">Chart</a></li>
+			<li><a href="/map">Map</a></li>
+			<li><a href="/weatherapi">API</a></li>
+			<li><a href="/sentiment">Sentiment Analysis</a></li>
+			<li><a href="/realtime">Real time</a></li>          
+          </ul>
+        </div>
+      </div>
+    </nav>
 	{# THIS IS THE CONTENT #}
-	<div id="content">{% block content %}{% endblock %}</div>
+	<div id="content" class="container-fluid">{% block content %}{% endblock %}</div>
 </body>
 </html>
