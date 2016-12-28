@@ -1,6 +1,3 @@
-console.log('Begin...');
-
-
 function initLineChart(properties){
 	data = properties.data;
 
@@ -72,6 +69,8 @@ function initLineChart(properties){
 	    .attr("transform", null);
 }
 
+var PLOT_WINDOW_SIZE = 50;
+
 function updateLineChart(properties) {
 	data = properties.data;
 	newData = properties.newData;
@@ -128,9 +127,14 @@ function updateLineChart(properties) {
         .call(yAxis);
 
     // Update the x axis to the new data
-	for (var i = 0; i < newData.length; i++) {
-		data.shift();
-	};
+    if (data.length > PLOT_WINDOW_SIZE){
+		/*for (var i = 0; i < newData.length; i++) {
+			data.shift();
+		};*/
+		for (var i = 0; i < data.length-PLOT_WINDOW_SIZE; i++) {
+			data.shift();
+		};
+	}
 
 	x.domain(d3.extent(data, function(d) { return d.date; }));
 
@@ -163,6 +167,27 @@ function queryInitialData(cb) {
 		if (data.length == 0){ console.log("No items returned!"); return; } 
 	 	
 		$('#txt_last_date').val( dateFormat( data[data.length-1].date ) );		
+		cb(data);		
+	}); 
+}
+
+function querySyntheticData(cb) { 
+	var strLastDate = $('#txt_last_date_2').val(); 
+	var req_url = "http://localhost:8080/srtconsumer?lastDate={1}".replace("{1}", strLastDate); 
+   
+	$.getJSON(req_url, function(dataJson) { 
+
+		// Parse data   
+		var data = []; 
+		$.each(dataJson, function(key, row) { 
+			data.push( { date: dateFormat.parse(row["date"]), 
+				value:+row["value"]
+			} ); 
+		}); 
+
+		if (data.length == 0){ console.log("No items returned!"); return; } 
+	 	
+		$('#txt_last_date_2').val( dateFormat( data[data.length-1].date ) );		
 		cb(data);		
 	}); 
 }
@@ -244,9 +269,17 @@ $(document).ready(function() {
 		})();
 	});
 
+	querySyntheticData(function (data){
+		// Create plots
+		syntheticProp = {svgName: "linechart_synthetic_svg", data: data};
+		initLineChart(syntheticProp);
 
-	/*d3.select("#button1")
-		.on("click", function(d,i) {
-			updateLineChart(temperatureProp);
-		});*/
+		(function(){
+			querySyntheticData(function(newData){
+				syntheticProp.newData = newData;
+				updateLineChart(syntheticProp);
+			});
+		    setTimeout(arguments.callee, 2000);
+		})();
+	});
 });

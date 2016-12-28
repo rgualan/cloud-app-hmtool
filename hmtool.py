@@ -157,7 +157,7 @@ class RealTimeLoader(webapp2.RequestHandler):
 # [END]
 
 # [START]
-class RealTimeConsumer(webapp2.RequestHandler):
+class SyntheticRealTimeProducer(webapp2.RequestHandler):
 
     def post(self):
         # get the data
@@ -172,7 +172,54 @@ class RealTimeConsumer(webapp2.RequestHandler):
         #self.response.write(template.render(template_values))
 # [END]
 
-# [START guestbook]
+# [START]
+class SyntheticRealTimeConsumer(webapp2.RequestHandler):
+
+    def get(self):
+        last_date_str = self.request.get('lastDate', None);
+
+        print 'Parameter: ',last_date_str
+        if not(last_date_str is None or last_date_str == "" ):
+            # The client has some data already
+            # So, it is asking for new data 
+            # This code returns the following data window, starting from the 
+            # last_date parameter
+            last_date = datetime.strptime(last_date_str, '%Y-%m-%d %H:%M:%S')
+            q = model2.Hmrecord2.query(model2.Hmrecord2.date > last_date).order(-model2.Hmrecord2.date)
+            records = q.fetch(50)
+            records = list(reversed(records));
+            #print("Queried data ((new)): ")
+            #for r in records: print r
+
+            self.response.write(
+                json.dumps(
+                    [{
+                        "station_name" : r.station_name,
+                        "date": r.date.strftime('%Y-%m-%d %H:%M:%S'),
+                        "value": r.value
+                        } for r in records])
+                )
+        else:
+            # For the first query (not last_date parameter)
+            # return the most recent data (last window)
+            q = model2.Hmrecord2.query().order(-model2.Hmrecord2.date)
+            records = q.fetch(50)
+            #records = q.fetch()
+            records = list(reversed(records));
+            #print("Queried data ((first time)):")
+            #for r in records: print r;
+  
+            self.response.write(
+                json.dumps(
+                    [{
+                        "station_name" : r.station_name,
+                        "date": r.date.strftime('%Y-%m-%d %H:%M:%S'),
+                        "value": r.value
+                        } for r in records])
+                )
+# [END]
+
+# [START Login]
 class Login(webapp2.RequestHandler):
 
     def post(self):
@@ -180,7 +227,7 @@ class Login(webapp2.RequestHandler):
 
         query_params = {'username': username}
         self.redirect('/login?' + urllib.urlencode(query_params))
-# [END hmtools]
+# [END Login]
 
 # [START hmtools]
 class Hmtools(webapp2.RequestHandler):
@@ -292,7 +339,8 @@ app = webapp2.WSGIApplication([
     ('/map', Map),
     ('/realtime', RealTimeHandler),
     ('/rtdata', RealTimeLoader),
-    ('/rtconsumer', RealTimeConsumer),
+    ('/srtproducer', SyntheticRealTimeProducer),
+    ('/srtconsumer', SyntheticRealTimeConsumer),
 ], debug=True)
 # [END app]
 
