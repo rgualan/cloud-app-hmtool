@@ -22,7 +22,7 @@ from google.appengine.ext import ndb
 from google.appengine.ext import db
 import jinja2
 import webapp2
-from server.model import user, testdata, weatherapi, sentiment
+from server.model import user, testdata, weatherapi, sentiment, model2
 from datetime import datetime
 import json
 
@@ -79,6 +79,7 @@ class RealTimeHandler(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('/client/rt.html')
         self.response.write(template.render(template_values))
 # [END]
+
 # [START]
 class RealTimeLoader(webapp2.RequestHandler):
 
@@ -155,7 +156,23 @@ class RealTimeLoader(webapp2.RequestHandler):
                 )
 # [END]
 
-# [START hmtools]
+# [START]
+class RealTimeConsumer(webapp2.RequestHandler):
+
+    def post(self):
+        # get the data
+        station = self.request.get('station')
+        date = datetime.strptime(self.request.get('date'), '%Y-%m-%d %H:%M:%S')
+        value = float(self.request.get('value'))
+
+        # save the data
+        record = model2.Hmrecord2(station_name=station, date=date, value=value)
+        record.put()
+
+        #self.response.write(template.render(template_values))
+# [END]
+
+# [START guestbook]
 class Login(webapp2.RequestHandler):
 
     def post(self):
@@ -275,6 +292,7 @@ app = webapp2.WSGIApplication([
     ('/map', Map),
     ('/realtime', RealTimeHandler),
     ('/rtdata', RealTimeLoader),
+    ('/rtconsumer', RealTimeConsumer),
 ], debug=True)
 # [END app]
 

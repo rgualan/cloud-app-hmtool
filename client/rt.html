@@ -3,21 +3,60 @@
 {% block head %}
     {{ super() }}
     <script type="text/javascript" src="/js/rt.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/lib/keen-dashboards.css">
     <link rel="stylesheet" type="text/css" href="/css/rt.css">
 {% endblock %}
 
 {% block content %}
 
-<div>
-    <div> Last date: <input type="input" id="txt_last_date" value=""> </div>
-    <!--<button id="button1">Update 1</button>
-    <br/>-->
-    <svg id="linechart_svg"/>
+<h3>Test Station</h3>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="row">
+
+      <div class="col-sm-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Temperature
+          </div>
+          <div class="chart-stage">
+            <div>
+              <svg id="linechart_svg"/> 
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Pressure
+          </div>
+          <div class="chart-stage">
+            <div id="time-chart">
+              <svg id="linechart2_svg"/>  
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Solar radiation
+          </div>
+          <div class="chart-stage">
+            <div id="time-chart">
+              <svg id="linechart3_svg"/>  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
 <div>
-    <svg id="linechart2_svg"/>
-</div>
-<div>
-    <svg id="linechart3_svg"/>
+    <div> Last date: <input type="input" id="txt_last_date" value="" readonly> </div>    
 </div>
 {% endblock %}
