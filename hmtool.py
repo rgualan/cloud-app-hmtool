@@ -155,20 +155,15 @@ class RealTimeLoader(webapp2.RequestHandler):
                 )
 # [END]
 
-# [START guestbook]
+# [START hmtools]
 class Login(webapp2.RequestHandler):
 
     def post(self):
-        # We set the same parent key on the 'Greeting' to ensure each
-        # Greeting is in the same entity group. Queries across the
-        # single entity group will be consistent. However, the write
-        # rate to a single entity group should be limited to
-        # ~1/second.
         username = self.request.get('username', user.DEFAULT_USERNAME)
 
         query_params = {'username': username}
         self.redirect('/login?' + urllib.urlencode(query_params))
-# [END guestbook]
+# [END hmtools]
 
 # [START hmtools]
 class Hmtools(webapp2.RequestHandler):
@@ -197,7 +192,7 @@ class Hmtools(webapp2.RequestHandler):
 # [END hmtools]
 
 
-# [START hmtools]
+# [START chart]
 class Chart(webapp2.RequestHandler):
 
     def get(self):
@@ -205,7 +200,17 @@ class Chart(webapp2.RequestHandler):
         template_values = check_login(user, self)
         template = JINJA_ENVIRONMENT.get_template('/client/line_chart.html')
         self.response.write(template.render(template_values))
-# [END hmtools]
+# [END chart]
+
+# [START map]
+class Map(webapp2.RequestHandler):
+
+    def get(self):
+        user = users.get_current_user()
+        template_values = check_login(user, self)
+        template = JINJA_ENVIRONMENT.get_template('/client/map.html')
+        self.response.write(template.render(template_values))
+# [END map]
 
 # [START weatherApi]
 class WeatherApi(webapp2.RequestHandler):
@@ -267,6 +272,7 @@ app = webapp2.WSGIApplication([
     ('/tweets', Tweets),
     ('/login', Login),
     ('/chart', Chart),
+    ('/map', Map),
     ('/realtime', RealTimeHandler),
     ('/rtdata', RealTimeLoader),
 ], debug=True)
