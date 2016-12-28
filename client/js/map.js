@@ -23,7 +23,7 @@ svg.append("path")
     .attr("d", path);
 
 
-d3.json("../data/world-topo-min.json", function (error, world) {
+d3.json("/json/world-topo-min.json", function (error, world) {
     var countries = topojson.feature(world, world.objects.countries).features;
 
     svg.append("path")
