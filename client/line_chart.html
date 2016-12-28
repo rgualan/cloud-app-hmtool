@@ -1,129 +1,36 @@
-<!DOCTYPE html>
-<!--{% autoescape true %}-->
-<html>
-<head>
-    <!-- [START js-libs] -->
-    <script src="https://code.jquery.com/jquery-1.12.3.js"></script>
-    <script
-            src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-    <script
-            src="https://raw.github.com/douglascrockford/JSON-js/master/json2.js"></script>
-        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-        <script src="https://github.com/d3/d3" charset="utf-8"></script>
+{% extends "/client/layout/base.html" %}
 
+{% block head %}
+    {{ super() }}
+    <script type="text/javascript" src="/js/line_chart.js"></script>
+{% endblock %}
 
-    <script
-            src="js/line_chart.js"></script>
-    <!-- [END js-libs] -->
-    <!-- [START css] -->
-    <link type="text/css" rel="stylesheet"
-          href="bootstrap/css/bootstrap.css">
-    <link type="text/css" rel="stylesheet"
-          href="bootstrap/css/bootstrap-responsive.css">
-    <link rel="stylesheet" type="text/css"
-          href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
-    <!-- [END css] -->
-    <style type="text/css">
-        body {
-            padding-top: 40px;
-            padding-bottom: 40px;
-            background-color: #f5f5f5;
-        }
+{% block content %}
 
-        blockquote {
-            margin-bottom: 10px;
-            border-left-color: #bbb;
-        }
-
-        form {
-            margin-top: 10px;
-        }
-
-        .form-signin input[type="text"] {
-            font-size: 16px;
-            height: auto;
-            margin-bottom: 15px;
-            padding: 7px 9px;
-        }
-
-        .row {
-            margin-left: 0px;
-            margin-top: 10px;
-            overflow: scroll;
-        }
-
-
-        /*.axis path {
-            fill: none;
-            stroke: black;
-            stroke-width: 0.5px;
-        }*/
-    </style>
-</head>
-<body>
-    <div>
-
-        </div>
-        <div id="chart">
-
-
-            <table id="data_table" class="display"></table>
-
-        </div>
+<div>
     </div>
-    <div class="container">
-        <!-- [START greetings] -->
-        <!-- [END greetings] -->
-
-    <!--
-        <a href="{{ url|safe }}">{{ url_linktext }}</a>
-    -->
+    <div id="chart">
+        <table id="data_table" class="display"></table>
     </div>
-    <select id="select"><option value="0">select</option>
-        <!-- <option value="5">Temperature</option>
-        <option value="6">Air humidity</option>
-        <option value="7">Pressure</option>
-        <option value="8">Solar radiation</option>
-        <option value="9">Soil temperature</option>
-        <option value="10">Wind speed</option>
-        <option value="11">Wind direction</option></select><br> -->
-        <option value="temperature">Temperature</option>
-        <option value="air_humidity">Air humidity</option>
-        <option value="pressure">Pressure</option>
-        <option value="solar_radiation">Solar radiation</option>
-        <option value="soil_temperature">Soil temperature</option>
-        <option value="wind_speed">Wind speed</option>
-        <option value="wind_direction">Wind direction</option></select><br>
-    <div id = "station">
-    </div>
-    <svg></svg>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-		<div class="navbar-inner">
-			<div class="container">
-				<button type="button" class="btn btn-navbar" data-toggle="collapse"
-					data-target=".nav-collapse">
-					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
-						class="icon-bar"></span>
-				</button>
-				<a class="brand" href="#">HMTOOL - TEAM M</a>
+</div>
 
-				<div class="nav-collapse collapse pull-right">
-					<a href="{{ url|safe }}" class="btn">{{ url_linktext }}</a>
-					<a href="/" class="btn">Home</a>
-					<a href="/chart" class="btn">Chart</a>
-                    <a href="/map" class="btn">Map</a>
-					<a href="/weatherapi" class="btn">API</a>
-					<a href="/sentiment" class="btn">Senti</a>
-                    <a href="/realtime" class="btn">Realtime</a>
-				</div>
-			</div>
-		</div>
-		<div>
-			<table id="data_table" class="display"></table>
-		</div>
-	</div>
-</body>
-</html>
-<!--
-{% endautoescape %}
--->
+<select id="select"><option value="0">select</option>
+    <!-- <option value="5">Temperature</option>
+    <option value="6">Air humidity</option>
+    <option value="7">Pressure</option>
+    <option value="8">Solar radiation</option>
+    <option value="9">Soil temperature</option>
+    <option value="10">Wind speed</option>
+    <option value="11">Wind direction</option></select><br> -->
+    <option value="temperature">Temperature</option>
+    <option value="air_humidity">Air humidity</option>
+    <option value="pressure">Pressure</option>
+    <option value="solar_radiation">Solar radiation</option>
+    <option value="soil_temperature">Soil temperature</option>
+    <option value="wind_speed">Wind speed</option>
+    <option value="wind_direction">Wind direction</option></select><br>
+<div id = "station">
+</div>
+<svg/>
+
+{% endblock %}
