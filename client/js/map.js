@@ -39,7 +39,7 @@ d3.json("/json/world-topo-min.json", function (error, world) {
         .attr("d", path);
 
 
-    d3.json("../data/test_mapdata.json", function (error, data) {
+    d3.json("json/test_mapdata.json", function (error, data) {
 
         var country = g.selectAll(".country").data(countries);
 
@@ -70,8 +70,8 @@ d3.json("/json/world-topo-min.json", function (error, world) {
 
         g.append("path")
             .datum(topojson.mesh(world, world.objects.countries, function (a, b) {
-                console.log(a);
-                console.log(b);
+                //console.log(a);
+                //console.log(b);
 
                 return a !== b;
             }))
