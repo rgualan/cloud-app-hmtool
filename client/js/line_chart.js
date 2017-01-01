@@ -29,7 +29,7 @@ var xAxis2 = d3.svg.axis() // xAxis for brush slider
 
 var xAxis = d3.svg.axis()
         .scale(xScale)
-        .orient("bottom").ticks(5);;
+        .orient("bottom").ticks(5);
 var yAxis = d3.svg.axis()
         .scale(yScale)
         .orient("left")
@@ -136,6 +136,8 @@ var context = d3.select("body")
 //     }
 // }
 function line2(d, type_data,color) {
+     var div = d3.select("#tooltip_line")
+    .style("opacity", 0).style("width", 120).style("height", 60);
     var data_all = [];
     for (var i = d.length - 1; i >= 0; i--) {
         data_all=data_all.concat(d[i][type_data]);
@@ -149,13 +151,13 @@ function line2(d, type_data,color) {
     
     var svg = d3.select("svg")
 
-    svg.append("g")
+    svg.select(".x-axis")
         .attr("class", "x-axis")
         .attr("transform", "translate(0," + (h - padding) + ")")
         .call(xAxis)
         .style("stroke-width", "0.5px");
 
-    svg.append("g")
+    svg.select(".y-axis")
         .attr("class", "y-axis")
         .attr("transform", "translate(" + (padding + 30) + ",0)")
         .call(yAxis)
@@ -178,17 +180,37 @@ function line2(d, type_data,color) {
     .x(function(d) { return xScale(parseDate(d.date)); })
     .y(function(d) { return yScale(d[type_data]); })
     .defined(function(d) { return d[type_data]; });
-        
     var path = svg.append("g")
         .append("path")
         .attr("class","graph")
         .attr("d", valueline(d))
         .style("stroke-width", 1.5)
-        .style("stroke", color[0])
+        .style("stroke", color)
         .style("stroke-opacity", 0.9)
         .style("fill", "#0000")
         .style("fill", "none");
-    
+
+       // Add the scatterplot
+   var circle = svg.selectAll("dot")
+        .data(d)
+        .enter()
+        .append("circle")
+        .attr("r", 1.5)
+        .attr("cx", function(d) { return xScale(parseDate(d.date)); })
+        .attr("cy", function(d) { return yScale(d[type_data]); })
+        .attr("fill", color)
+        .on("mouseover",function (d) {
+           d3.select(this).transition().duration(100).attr("r",2.5);
+            div.html(d.station_name + ":<br/>value:"  + d[type_data])
+             .style("x", xScale(parseDate(d.date)))
+                .style("y", (yScale(d[type_data]))).attr("opacity",1);
+
+        })
+        .on("mouseout",function () {
+            d3.select(this).transition().duration(100).attr("r",1.5);
+
+        });
+
 }
 function jqchk() {
     var colour = ['red', 'blue', 'green', 'black', 'pink','orange'];
@@ -240,7 +262,7 @@ $(document).ready(function () {
             //     .attr("clip-path", "url(#clip)")//use clip path to make irrelevant part invisible
             //     .style("stroke", color);
 
-            strG += "<div class='checkbox'><label><input type='checkbox' id='"+i+"'class='check_box' value='" + d.key + "'>" + d.key + "</label> </div>";
+            strG += "<div class='checkbox'><label class='checkbox-inline'><input type='checkbox' id='"+i+"'class='check_box' value='" + d.key + "'>" + d.key + "</label> </div>";
         });
         document.getElementById("station").innerHTML = strG;
         console.log(strG);
@@ -270,7 +292,7 @@ $(document).ready(function () {
         //     ]
         // });
         function line_chart(type,chk_station,color) {
-            document.querySelector('svg').innerHTML = '';
+            document.querySelector('svg').innerHTML = '<g class="x-axis"></g><g class="y-axis"></g>';
             var data = new Array();
             var time = new Array();
                 if (chk_station.length == 0) {
@@ -285,7 +307,8 @@ $(document).ready(function () {
                                 xScale.domain(d3.extent(d.values, function(d) { return parseDate(d.date); }));
                                 yScale.domain([0, d3.max(d.values, function(d){ return d[type];})])
                                 xScale2.domain(xScale.domain());
-                                line2(d.values,type,color);
+                                console.log(d.values);
+                                line2(d.values,type,color[i]);
                             };
                         });
                         
@@ -319,8 +342,9 @@ $(document).ready(function () {
             if ($("#select").find("option:selected").val() != "0") {
                 var type = $("#select").find("option:selected").val();
                 var chk_station=jqchk();
-                
+
                 line_chart(type,chk_station[0],chk_station[1]);
+                boxplot(data_json,type,chk_station[0])
             };   
         })
 

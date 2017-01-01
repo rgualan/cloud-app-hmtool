@@ -3,6 +3,8 @@
 {% block head %}
     {{ super() }}
     <script type="text/javascript" src="/js/line_chart.js"></script>
+<script type="text/javascript" src="/js/box.js"></script>
+<script type="text/javascript" src="/js/plotbox.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -13,7 +15,6 @@
         <table id="data_table" class="display"></table>
     </div>
 </div>
-
 <select id="select"><option value="0">select</option>
     <!-- <option value="5">Temperature</option>
     <option value="6">Air humidity</option>
@@ -31,6 +32,13 @@
     <option value="wind_direction">Wind direction</option></select><br>
 <div id = "station">
 </div>
-<svg/>
+<div class="row">
+  <div class="col-md-5"><svg/></div></div>
+<div id="row">
+  <div class="col-md-5"><svg id="svg"></svg></div>
+<div class="tooltip_line" id="tooltip_line" style="opacity: 1"></div>
+</div>
 
+<svg id="svg1"></svg>
+<div class="tooltip" id="tooltip" style="opacity: 0"></div>
 {% endblock %}

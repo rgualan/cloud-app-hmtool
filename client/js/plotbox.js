@@ -4,15 +4,19 @@
 
 
  function boxplot(item, type, station) {
-    
+      var labels = true; // show the text labels beside individual boxplots?
+
+    var margin = {top: 30, right: 50, bottom: 80, left: 50};
+    var width = 800 - margin.left - margin.right;
+    var height = 400 - margin.top - margin.bottom;
+
+console.log(item);
 
     var sta_value = statistic(item, type,station);
 
-    var div = d3.select("body").append("div")
-    .attr("class", "tooltip")
+    var div = d3.select(".tooltip")
     .style("opacity", 0).style("width", 120).style("height", 60);
 
-    console.log(item);
        type_name=$("#select").find("option:selected").text();
         var min = Infinity,
             max = -Infinity;
@@ -24,19 +28,19 @@
             data[i][1] = [];
             data[i][2] = []; //datw
             for (var j = 0; j < item.length; j++) {
-                if (item[j][0] == station[i]) {
-                    var rowMax = parseFloat(items[j][parseInt(type)]);
-                    var rowMin = parseFloat(items[j][parseInt(type)]);
-                    data[i][1].push(parseFloat(items[j][parseInt(type)]));
+                if (item[j].station_name == station[i]) {
+                    var rowMax = parseFloat(item[j][type]);
+                    var rowMin = parseFloat(item[j][type]);
+                    data[i][1].push(parseFloat(item[j][type]));
                     if (rowMax > max) max = rowMax;
                     if (rowMin < min) min = rowMin;
 
-                    date = new Date(items[j][3].replace(/-/g, "/"));
-                    data[i][2].push(date);
+                   /* date = new Date(items[j][3].replace(/-/g, "/"));
+                    data[i][2].push(date);*/
                 }
             }
         }
-        
+
         var chart = d3.box()
                 .whiskers(iqr(1.5))
                 .height(height)
@@ -50,13 +54,13 @@
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                 ;
-        var svg1 = d3.select("#svg1")
+   /*     var svg1 = d3.select("#svg1")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
                 .attr("class", "box")
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-                ;
+                ;*/
     function mouseover(d) {
         mstat=d[0];
         mstat_data=d[1];
@@ -82,7 +86,7 @@
         var yAxis = d3.svg.axis()
                 .scale(y)
                 .orient("left")
-        // line
+       /* // line
         var xLine = d3.time.scale().range([0, width]);
         var yLine = d3.scale.linear().range([height, 0]);
         var xLineAxis = d3.svg.axis().scale(x)
@@ -93,7 +97,7 @@
             .x(function(d) { return x(d.date); })
             .y(function(d) { return y0(d.rating); })
             .defined(function(d) { return d.rating; });
-
+*/
         // draw the boxplots
         svg.selectAll(".box")
                 .data(data)
@@ -120,9 +124,9 @@
                         .duration(500)
                         .style("opacity", 0);
                 })
-                .on("click", function(d){ 
-                    
-                });
+                /*.on("click", function(d){
+
+                })*/;
 
 
 
@@ -189,10 +193,10 @@ function statistic(item, type,station_name) {
         sta_value[i][1] = [];
         var sum = 0, n = 0.0;
         for (var j = 0; j < item.length; j++) {
-                if (item[j][0] == station_name[i]) {
-                    var rowMax = parseFloat(items[j][parseInt(type)]);
-                    var rowMin = parseFloat(items[j][parseInt(type)]);
-                    sum +=parseFloat(item[j][parseInt(type)]);
+                if (item[j].station_name == station_name[i]) {
+                    var rowMax = parseFloat(item[j][type]);
+                    var rowMin = parseFloat(item[j][type]);
+                    sum +=parseFloat(item[j][type]);
                     if (rowMax > max) max = rowMax;
                     if (rowMin < min) min = rowMin;
                     n++;
