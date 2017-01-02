@@ -1,19 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-	<title>D3 CSV</title>
+{% extends "/client/layout/base.html" %}
 
-</head>
-<body>
-<div id ="word_cloud"></div>
+{% block head %}
+    {{ super() }}
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="lib/d3/js/d3.layout.cloud.js"></script>
-<script type="text/javascript">
 
+{% endblock %}
+
+{% block content %}
+<script type="text/javascript">
 var fill = d3.scale.category20();
 
-var margin = {top: 20, right: 20, bottom: 40, left: 20},
+var margin = {top: 80, right: 20, bottom: 40, left: 80},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -27,7 +25,7 @@ d3.csv("../data/weather_tweets.csv", function(data) {
         }
     });
 
-    d3.layout.cloud().size([500, 500])
+    d3.layout.cloud().size([width, height])
         .words(hashtagData.map(function(d) {
             return {text: d, size: 10 + Math.random() * 90};
         }))
@@ -41,8 +39,8 @@ d3.csv("../data/weather_tweets.csv", function(data) {
 
 function draw(words) {
 d3.select("body").append("svg")
-    .attr("width", 500)
-    .attr("height", 500)
+    .attr("width", width)
+    .attr("height", height)
     .append("g")
     .attr("transform", "translate(320,200)")
     .selectAll("text")
@@ -56,7 +54,7 @@ d3.select("body").append("svg")
         return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
     })
     .text(function(d) { return d.text; });
-}			
+}
+			
 </script>
-</body>
-</html>
+{% endblock %}
