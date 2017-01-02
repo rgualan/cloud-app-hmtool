@@ -14,9 +14,6 @@ handlers:
 - url: /lib
   static_dir: client/lib
 
-- url: /data
-  static_dir: data/
-
 - url: /js
   static_dir: client/js
 
