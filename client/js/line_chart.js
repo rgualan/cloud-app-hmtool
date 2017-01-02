@@ -30,10 +30,10 @@ var xAxis2 = d3.svg.axis() // xAxis for brush slider
 var xAxis = d3.svg.axis()
         .scale(xScale)
         .orient("bottom").ticks(5);
-var yAxis = d3.svg.axis()
+/*var yAxis = d3.svg.axis()
         .scale(yScale)
         .orient("left")
-        .ticks(5);
+        .ticks(5);*/
 
 var context = d3.select("body")
     .append("g") // Brushing context box container
@@ -136,19 +136,24 @@ var context = d3.select("body")
 //     }
 // }
 function line2(d, type_data,color) {
-     var div = d3.select("#tooltip_line")
-    .style("opacity", 0).style("width", 120).style("height", 60);
+
+     var div_1 = d3.select("#tooltip_line")
+    .style("opacity", 0).style("width", 230).style("height", 60);
     var data_all = [];
     for (var i = d.length - 1; i >= 0; i--) {
         data_all=data_all.concat(d[i][type_data]);
         
     };
 
+
     // xScale.domain(d3.extent(d, function(d) { return parseDate(d.date); }));
-    // yScale.domain([0, d3.max(data_all)])
+     yScale.domain([d3.min(data_all), d3.max(data_all)])
     // xScale2.domain(xScale.domain());
 
-    
+    var yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient("left")
+        .ticks(5);
     var svg = d3.select("svg")
 
     svg.select(".x-axis")
@@ -200,14 +205,16 @@ function line2(d, type_data,color) {
         .attr("cy", function(d) { return yScale(d[type_data]); })
         .attr("fill", color)
         .on("mouseover",function (d) {
-           d3.select(this).transition().duration(100).attr("r",2.5);
-            div.html(d.station_name + ":<br/>value:"  + d[type_data])
-             .style("x", xScale(parseDate(d.date)))
-                .style("y", (yScale(d[type_data]))).attr("opacity",1);
+           d3.select(this).transition().duration(100).attr("r",3);
+            div_1.html(d.station_name + ":<br/>date:"  + d.date+"<br/>"+type_data+":"+d[type_data].toFixed(2))
+             .style("left", xScale(parseDate(d.date))+20+"px").style("top", yScale(d[type_data])+70+"px").transition()
+                        .duration(500).style("opacity",1);
 
         })
         .on("mouseout",function () {
             d3.select(this).transition().duration(100).attr("r",1.5);
+            div_1.transition()
+                        .duration(500).style("opacity",0);
 
         });
 
@@ -331,6 +338,8 @@ $(document).ready(function () {
             if (type != "0") {
                 var chk_station=jqchk();
                 line_chart(type,chk_station[0],chk_station[1]);
+                boxplot(data_json,type,chk_station[0]);
+
             };
 
         });

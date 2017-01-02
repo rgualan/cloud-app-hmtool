@@ -12,35 +12,15 @@
 
 console.log(item);
 
-    var sta_value = statistic(item, type,station);
+    var sta_result = statistic(item, type,station);
+    var sta_value = sta_result[0];
 
     var div = d3.select(".tooltip")
     .style("opacity", 0).style("width", 120).style("height", 60);
 
-       type_name=$("#select").find("option:selected").text();
-        var min = Infinity,
-            max = -Infinity;
+        var min = sta_result[2],
+            max = sta_result[1];
         document.querySelector('#svg').innerHTML = '';
-        var data = [];
-        for (var i = 0; i < station.length; i++) {
-            data[i] = [];
-            data[i][0] = station[i];
-            data[i][1] = [];
-            data[i][2] = []; //datw
-            for (var j = 0; j < item.length; j++) {
-                if (item[j].station_name == station[i]) {
-                    var rowMax = parseFloat(item[j][type]);
-                    var rowMin = parseFloat(item[j][type]);
-                    data[i][1].push(parseFloat(item[j][type]));
-                    if (rowMax > max) max = rowMax;
-                    if (rowMin < min) min = rowMin;
-
-                   /* date = new Date(items[j][3].replace(/-/g, "/"));
-                    data[i][2].push(date);*/
-                }
-            }
-        }
-
         var chart = d3.box()
                 .whiskers(iqr(1.5))
                 .height(height)
@@ -70,7 +50,7 @@ console.log(item);
     }
         // the x-axis
         var x = d3.scale.ordinal()
-                .domain(data.map(function (d) {
+                .domain(sta_value.map(function (d) {
                     return d[0]
                 }))
                 .rangeRoundBands([0, width], 0.7, 0.3);
@@ -100,23 +80,20 @@ console.log(item);
 */
         // draw the boxplots
         svg.selectAll(".box")
-                .data(data)
+                .data(sta_value)
                 .enter().append("g")
                 .attr("transform", function (d) {
                     return "translate(" + x(d[0]) + "," + margin.top + ")";
                 })
                 .call(chart.width(x.rangeBand()))
                 .on("mouseover", function(d) {
-                    div.transition()
+                    div.html(d[0] + ":<br/> average value:"  + d[2][0]+"<br/> highest value:"+ d[2][1]+"<br/> lowest value:"+d[2][2])
+                        .style("left", x(d[0])+x.rangeBand()+70 + "px")
+                        .style("top", (d3.event.pageY - 28) + "px")
+                        .transition()
                         .duration(200)
                         .style("opacity", .9);
-                    for(var i=0;i<sta_value.length;i++)
-                    {
-                        if(sta_value[i][0]==d[0])
-                        div	.html(sta_value[i][0] + ":<br/> average value:"  + sta_value[i][1][0]+"<br/> highest value:"+ sta_value[i][1][1]+"<br/> lowest value:"+sta_value[i][1][2])
-                         .style("left", x(d[0])+x.rangeBand()+70 + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-                    }
+
 
                  })
                 .on("mouseout", function(d) {
@@ -127,8 +104,6 @@ console.log(item);
                 /*.on("click", function(d){
 
                 })*/;
-
-
 
         // add a title
         svg.append("text")
@@ -149,7 +124,7 @@ console.log(item);
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
                 .style("font-size", "16px")
-                .text(type_name);
+                .text(type);
 
         // draw x axis
         svg.append("g")
@@ -184,16 +159,19 @@ console.log(item);
 
 function statistic(item, type,station_name) {
     var sta_value=[];
-     var min = Infinity,
-         max = -Infinity;
+    var  min_all = Infinity,
+         max_all = -Infinity;
     for(var i=0;i<station_name.length;i++)
     {
+        var min = Infinity, max = -Infinity;
         sta_value[i] = [];
         sta_value[i][0] = station_name[i];
+        sta_value[i][2] = [];
         sta_value[i][1] = [];
         var sum = 0, n = 0.0;
         for (var j = 0; j < item.length; j++) {
-                if (item[j].station_name == station_name[i]) {
+            sta_value[i][1].push(parseFloat(item[j][type]));
+                if (item[j].station_name === station_name[i]) {
                     var rowMax = parseFloat(item[j][type]);
                     var rowMin = parseFloat(item[j][type]);
                     sum +=parseFloat(item[j][type]);
@@ -203,10 +181,12 @@ function statistic(item, type,station_name) {
 
                 }
             }
-            sta_value[i][1][0]=(sum/n).toFixed(2);
-            sta_value[i][1][1]=max.toFixed(2);
-            sta_value[i][1][2]=min.toFixed(2);
+            if (max > max_all) max_all = max;
+            if (min < min_all) min_all = min;
+            sta_value[i][2][0]=(sum/n).toFixed(2);
+            sta_value[i][2][1]=max.toFixed(2);
+            sta_value[i][2][2]=min.toFixed(2);
     }
-    return sta_value;
+    return [sta_value,max_all,min_all];
 
 }
