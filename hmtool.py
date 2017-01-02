@@ -286,6 +286,16 @@ class Boxplot(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END boxplot]
 
+# [START wordcloud]
+class WordCloud(webapp2.RequestHandler):
+
+    def get(self):
+        user = users.get_current_user()
+        template_values = check_login(user, self)
+        template = JINJA_ENVIRONMENT.get_template('/client/cloud.html')
+        self.response.write(template.render(template_values))
+# [END wordcloud]
+
 # [START weatherApi]
 class WeatherApi(webapp2.RequestHandler):
 
