@@ -276,6 +276,16 @@ class Map(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END map]
 
+# [START boxplot]
+class Boxplot(webapp2.RequestHandler):
+
+    def get(self):
+        user = users.get_current_user()
+        template_values = check_login(user, self)
+        template = JINJA_ENVIRONMENT.get_template('/client/boxplot.html')
+        self.response.write(template.render(template_values))
+# [END boxplot]
+
 # [START weatherApi]
 class WeatherApi(webapp2.RequestHandler):
 
@@ -336,6 +346,8 @@ app = webapp2.WSGIApplication([
     ('/tweets', Tweets),
     ('/login', Login),
     ('/chart', Chart),
+    ('/boxplot', Boxplot),
+    ('/cloud', WordCloud),
     ('/map', Map),
     ('/realtime', RealTimeHandler),
     ('/rtdata', RealTimeLoader),
