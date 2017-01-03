@@ -1,44 +1,56 @@
 {% extends "/client/layout/base.html" %}
 
+{% block head %}
+    {{ super() }}
+    <script type="text/javascript" src="/lib/nvd3/nv.d3.js"></script>
+    <link rel="stylesheet" type="text/css" href="/lib/nvd3/nv.d3.css">
+    <link rel="stylesheet" type="text/css" href="/css/keen-dashboards.css">
+    <link rel="stylesheet" type="text/css" href="/css/historical.css">
+    <script type="text/javascript" src="/js/historical.js"></script>
+{% endblock %}
+
 {% block content %}
-	<script>
-		$(document).ready(function() {
-			$.getJSON('/data', function(data_json) {
-				//console.log(data_json);
-				var items = [];
-				$.each(data_json, function(key, row) {
-					items.push([ row["station_name"],row["latitude"],row["longitude"],row["date"],
-						row["rec_number"],row["temperature"],row["air_humidity"],
-						row["pressure"],row["solar_radiation"],row["soil_temperature"],
-						row["wind_speed"],row["wind_direction"] ]);
-				});
-				//console.log(items);
-
-				$('#data_table').DataTable({
-					data : items,
-					columns : [ 
-						{title : "Station name"}, 
-						{title : "Latitude"},
-						{title : "Longitude"},
-						{title : "Date"},
-						{title : "Record number"},
-						{title : "Temperature"},
-						{title : "Air humidity"},
-						{title : "Pressure"},
-						{title : "Solar radiation"},
-						{title : "Soil temperature"},
-						{title : "Wind speed"},
-						{title : "Wind direction"}
-						]
-				});
-
-			});
-			return false;
-		});
-	</script>
-
-	<div>
-		<table id="data_table" class="display"></table>
+<h3>Test Station</h3>
+<div class="row">
+	<div class="col-sm-6">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Station: Test Station. 
+            Variable: <select id="variableSelect"></select>
+          </div>
+          <div class="chart-stage">
+            <div id="chart" >
+              <svg height="450"></svg> 
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Statistics
+          </div>
+          <div class="chart-stage">
+            <div >
+            	Mean: NA<br/>
+            	Min: NA<br/>   
+            	Max: NA<br/>
+            </div>
+          </div>
+        </div>
+	 </div </div>
+	<div class="col-sm-6">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Station: Test Station
+          </div>
+          <div class="chart-stage">
+            <table id="data_table" class="display"></table>
+          </div>
+        </div>
 	</div>
+
+
+<!--<div>
+	<table id="data_table" class="display"></table>
+</div>-->
 
 {% endblock %}
