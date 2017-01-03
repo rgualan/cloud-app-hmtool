@@ -147,7 +147,7 @@ dateFormat = d3.time.format("%Y-%m-%d %H:%M:%S");
 function queryInitialData(cb) { 
    
 	var strLastDate = $('#txt_last_date').val(); 
-	var req_url = "http://localhost:8080/rtdata?lastDate={1}".replace("{1}", strLastDate); 
+	var req_url = "/rtdata?lastDate={1}".replace("{1}", strLastDate); 
    
 	$.getJSON(req_url, function(dataJson) { 
 
@@ -173,7 +173,7 @@ function queryInitialData(cb) {
 
 function querySyntheticData(cb) { 
 	var strLastDate = $('#txt_last_date_2').val(); 
-	var req_url = "http://localhost:8080/srtconsumer?lastDate={1}".replace("{1}", strLastDate); 
+	var req_url = "/srtconsumer?lastDate={1}".replace("{1}", strLastDate); 
    
 	$.getJSON(req_url, function(dataJson) { 
 
@@ -201,7 +201,7 @@ function queryNewData(cb) {
 		return;
 	}
 
-	var req_url = "http://localhost:8080/rtdata?lastDate={1}".replace("{1}", strLastDate); 
+	var req_url = "/rtdata?lastDate={1}".replace("{1}", strLastDate); 
    
 	$.getJSON(req_url, function(dataJson) { 
 

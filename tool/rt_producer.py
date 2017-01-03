@@ -6,6 +6,8 @@ from datetime import datetime
 from time import sleep
 
 HMTOOL = "http://localhost:8080/srtproducer"
+#HMTOOL = "https://ronaldmgsapp.appspot.com/srtproducer"
+
 
 def pushSyntheticData(method, station):
 	i = 0
