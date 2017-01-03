@@ -2,10 +2,11 @@
 
 {% block head %}
     {{ super() }}
-    <script type="text/javascript" src="/lib/nvd3/nv.d3.js"></script>
     <link rel="stylesheet" type="text/css" href="/lib/nvd3/nv.d3.css">
     <link rel="stylesheet" type="text/css" href="/css/keen-dashboards.css">
     <link rel="stylesheet" type="text/css" href="/css/historical.css">
+
+	<script type="text/javascript" src="/lib/nvd3/nv.d3.js"></script>
     <script type="text/javascript" src="/js/historical.js"></script>
 {% endblock %}
 
@@ -19,7 +20,7 @@
             Variable: <select id="variableSelect"></select>
           </div>
           <div class="chart-stage">
-            <div id="chart" >
+            <div id="chart" class='with-3d-shadow with-transitions'>
               <svg height="450"></svg> 
             </div>
           </div>

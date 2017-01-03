@@ -12,7 +12,7 @@ function createXYWrapper(data, variable){
         values: xyData,
         key: variable
         //color: "#ff7f0e",
-        //strokeWidth: 4,
+        //strokeWidth: 4
         //classed: 'dashed'
     }];
 
@@ -124,8 +124,7 @@ $(document).ready(function() {
 			dataWrapper =  createXYWrapper(data_json, variable);
 			//console.log(dataWrapper);
 
-			d3.select('#chart svg')
-	            .datum(dataWrapper);
+			d3.select('#chart svg').datum(dataWrapper);
 	        chart.update();
         });
 
