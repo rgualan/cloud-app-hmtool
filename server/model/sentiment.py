@@ -70,11 +70,11 @@ def calculate_sentiment():
     return users
 
 class Weight(ndb.Model):
-    word = ndb.StringProperty(indexed=True)
+    word = ndb.StringProperty(indexed=False)
     weight = ndb.FloatProperty(indexed=False)
 
 class Sentiment(ndb.Model):
-    date = ndb.DateTimeProperty(indexed=True)
+    date = ndb.DateTimeProperty(indexed=False)
     tweetid = ndb.StringProperty(indexed=False)
-    text = ndb.StringProperty(indexed=True)
+    text = ndb.StringProperty(indexed=False)
     sum_weight = ndb.IntegerProperty(indexed=False)
