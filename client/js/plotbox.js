@@ -170,8 +170,8 @@ function statistic(item, type,station_name) {
         sta_value[i][1] = [];
         var sum = 0, n = 0.0;
         for (var j = 0; j < item.length; j++) {
-            sta_value[i][1].push(parseFloat(item[j][type]));
                 if (item[j].station_name === station_name[i]) {
+                                sta_value[i][1].push(parseFloat(item[j][type]));
                     var rowMax = parseFloat(item[j][type]);
                     var rowMin = parseFloat(item[j][type]);
                     sum +=parseFloat(item[j][type]);
