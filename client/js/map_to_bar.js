@@ -10,7 +10,8 @@ function map_to_bar(data) {
 
     var type = ["bad", "happy"];
     var color = ["#F084B3", "#91E4D5"];
-    var num = [data.bad.length, data.happy.length];
+
+    var num = [data[0], data[1]];
 
     var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
 
@@ -25,6 +26,12 @@ function map_to_bar(data) {
         .orient("left")
         .ticks(10);
 
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function (d) {
+            return "<strong>value:</strong> <span style='color:lightgoldenrodyellow'>" + d + "</span>";
+        })
     var svg = d3.select("#svg_bar")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -33,7 +40,7 @@ function map_to_bar(data) {
             "translate(" + margin.left + "," + margin.top + ")");
     x.domain(type);
     y.domain([0, d3.max(num)]);
-
+    svg.call(tip);
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
@@ -70,7 +77,9 @@ function map_to_bar(data) {
         })
         .attr("height", function (d) {
             return height - y(d);
-        });
+        })
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
 
 
 }

@@ -40,7 +40,17 @@ d3.json("/json/world-topo-min.json", function (error, world) {
 
 
     d3.json("json/test_mapdata.json", function (error, data) {
-
+        var data_get = data.features;
+        var lat_lng = [];
+        lat_lng[0] = [];
+        lat_lng[1] = [];
+        for (var i = 0; i < data_get.length; i++) {
+            if (data_get[i].point < 0)
+                lat_lng[0].push([data_get[i].geometry.coordinates[1], data_get[i].geometry.coordinates[0]]);
+            else
+                lat_lng[1].push([data_get[i].geometry.coordinates[1], data_get[i].geometry.coordinates[0]]);
+        }
+        console.log(lat_lng);
         var country = g.selectAll(".country").data(countries);
 
         country.enter().insert("path")
@@ -56,11 +66,12 @@ d3.json("/json/world-topo-min.json", function (error, world) {
 
             .on('mouseover', function (d) {
                 d3.select("#country").html("<h4>" + d.properties.name + "</h4>");
+
             })
             .on('click', function (d) {
 
                 d3.select("#bar_country_name").html(d.properties.name);
-                draw(data, d.properties.name);
+                draw(lat_lng, d.properties.name);
 
             })
 
@@ -87,7 +98,6 @@ d3.json("/json/world-topo-min.json", function (error, world) {
         var col = ["#F084B3", "#91E4D5"];
 
 
-
         for (var i = 0; i < word.length; i++) {
             g.selectAll(".circle_" + word[i])
                 .data(sen[word[i]])
@@ -101,11 +111,11 @@ d3.json("/json/world-topo-min.json", function (error, world) {
                     return projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])[1];
                 })
                 .style("fill", col[i])
-                .attr("r", 2) // sets the radius
+                .attr("r", 1.5) // sets the radius
                 .on('mouseover', function (d) {
                     d3.select(this).attr({
-                        fill: "orange",
-                        r: 2 * 2
+                        fill: col[i],
+                        r: 1.5 * 2
                     });
                     d3.select("#tooltip").transition().duration(200).style("opacity", .9);
                     d3.select("#tooltip").html("user_id:" + d.user_id + "<br>point:" + d.point)
@@ -115,7 +125,7 @@ d3.json("/json/world-topo-min.json", function (error, world) {
                 .on("mouseout", function (d) {
                     d3.select(this).attr({
                         fill: col[i],
-                        r: 2
+                        r: 1.5
                     });
                     d3.select("#tooltip").style("opacity", 0);
                 });
@@ -137,14 +147,13 @@ d3.json("/json/world-topo-min.json", function (error, world) {
         function button1() {
 
         }
- d3.select("#back").on("click", function () {
-            map_to_bar(sen);
+
+        d3.select("#back").on("click", function () {
+            map_to_bar([sen.bad.length, sen.happy.length]);
             d3.select("#bar_country_name").html("World");
         })
         svg.call(zoom);
-        map_to_bar(sen);
-
-
+        map_to_bar([sen.bad.length, sen.happy.length]);
 
 
     });
@@ -163,16 +172,39 @@ function getseperate(data) {
 
 }
 
+//caculate bad and happy amount of one country
 
-function draw(data, country) {
-    var data_get = data.features;
-    var country_data = [];
-    for (var i = 0; i < data_get.length; i++) {
-        if (data_get[i].geometry.country === country) {
-            country_data.push(data_get[i]);
+function draw(lat_lng, country) {
+    d3.csv('js/codegrid/country_code.csv', function (data) {
+        var country_name_code = [];
+        var code_select;
+        var n = 0;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].Name === country) {
+                code_select = data[i].Code.toLowerCase();
+                break;
+            }
         }
-    }
-    var sen = getseperate(country_data);
-    map_to_bar(sen);
-
+        var grid = codegrid.CodeGrid();
+        var count_bad = 0;
+        var count_happy = 0;
+        grid.getCode(lat_lng[0], function (err, code0) {
+            grid.getCode(lat_lng[1], function (err, code1) {
+                for (var i = 0; i < code0.length; i++) {
+                    if (code0[i] === code_select) {
+                        count_bad++;
+                    }
+                }
+                for (var i = 0; i < code1.length; i++) {
+                    if (code1[i] === code_select) {
+                        count_happy++;
+                    }
+                }
+                map_to_bar([count_bad, count_happy]);
+            });
+        })
+    })
 }
+
+
+

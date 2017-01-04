@@ -23,7 +23,7 @@
 
 
 // Configuration. Should match generator settings
-    var gridPath = '/lib/codegrid/json/tiles/',
+    var gridPath = '/js/codegrid/json/tiles/',
         worldFile = 'worldgrid.json',
         cellzoom = 5,
         zList = [9, 13];
