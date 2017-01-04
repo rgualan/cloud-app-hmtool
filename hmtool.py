@@ -25,6 +25,8 @@ import webapp2
 from server.model import user, testdata, weatherapi, sentiment, model2
 from datetime import datetime
 import json
+import re
+import string
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -317,12 +319,94 @@ class WeatherApi(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END weatherApi]
 
+# [START Insert Sentiment]
+class Insert_Sentiment_Data(webapp2.RequestHandler):
+
+    def get(self):
+        user = users.get_current_user()
+
+        q = sentiment.Sentiment.query().fetch(1)
+        weights = sentiment.Weight.query()
+        test_counter = 0
+        if q == None or len(q) == 0:
+            print 'Inserting sentiment data...'
+            data = sentiment.get_csv_data('brexit')
+            records = []
+            for r in data:
+                #print r
+                total_weight = 0
+                if len(r) >= 7 and test_counter < 10:
+                    sentence = r[7]
+
+                    #this part is to remove all symbols and turn them into whitespace
+                    chars_to_remove = ['"', '!', '#', '.', ',', '?', '@', ':', '~', '*', "'", '\/', '(' ,')', '-', '=']
+                    specials = ''.join(chars_to_remove)
+                    trans = string.maketrans(specials, ' '*len(specials))
+                    sentence = sentence.translate(trans)
+
+                    for weight in weights:
+                        if re.match('.*( '+ weight.word +' ).*', str(sentence).lower()):
+                            total_weight = total_weight + int(weight.weight)
+
+                    rdate = datetime.strptime(r[12], '%d.%m.%y %H:%M')
+                    record = sentiment.Sentiment(date=rdate, tweetid=r[6], text=r[7], sum_weight=total_weight)
+                    records.append(record)
+                    test_counter = test_counter + 1
+                else:
+                    pass
+            ndb.put_multi(records)
+        else:
+            q = sentiment.Sentiment.query().fetch(10)
+            #q.order(+sentiment.Sentiment.date)wei
+            records = q
+            ndb.delete_multi(sentiment.Sentiment.query().fetch(keys_only=True))
+            print "Available sentiment data (sample):"
+            print len(records)
+            #for r in records:
+            #    print r
+
+        template_values = check_login(user, self)
+
+        template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
+        self.response.write(template.render(template_values))
+# [END Insert Sentiment]
+
+# [START Insert Weight]
+class Insert_Weight_Data(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+
+        q = sentiment.Weight.query().fetch(1)
+        if q == None or len(q) == 0:
+            print 'Inserting weight data...'
+            data = sentiment.get_csv_data('dictionary')
+            records = []
+            for r in data:
+                #print r[1]
+                record = sentiment.Weight(word=r[0], weight=float(r[1]))
+                records.append(record)
+            ndb.put_multi(records)
+        else:
+            q = sentiment.Weight.query().fetch(10)
+            #q.order(+sentiment.Weight.word)
+            records = q
+            #ndb.delete_multi(sentiment.Weight.query().fetch(keys_only=True))
+            print "Available weight data (sample):"
+            print len(records)
+            #for r in records:
+            #    print r
+
+        template_values = check_login(user, self)
+
+        template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
+        self.response.write(template.render(template_values))
+# [END Insert Weight]
+
 # [START Sentiment]
 class Sentiment(webapp2.RequestHandler):
 
     def get(self):
         user = users.get_current_user()
-
         template_values = check_login(user, self)
 
         template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
@@ -333,16 +417,20 @@ class Sentiment(webapp2.RequestHandler):
 class Tweets(webapp2.RequestHandler):
 
     def get(self):
-        q = sentiment.get_test_data()
-        records = q
+        q = sentiment.Sentiment.query()
+        print q.count()
+        records = q.fetch(50)
+        for r in records:
+            print r
+            break
 
         self.response.write(
             json.dumps(
                 [{
-                    "user": r['user'],
-                    "tweet": r['tweet'],
-                    "words": r['words'],
-                    "weight": r['weight']
+                    "date": str(r.date),
+                    "tweet": r.tweetid,
+                    "words": r.text,
+                    "weight": r.sum_weight
                     } for r in records])
             )
 # [END Tweets]
@@ -352,6 +440,8 @@ app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/data', Hmtools),
     ('/weatherapi', WeatherApi),
+    ('/insert_weight_data', Insert_Weight_Data),
+    ('/insert_sentiment_data', Insert_Sentiment_Data),
     ('/sentiment', Sentiment),
     ('/tweets', Tweets),
     ('/login', Login),
