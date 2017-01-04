@@ -2,8 +2,28 @@ import csv
 import re
 import string
 from server.settings import *
+from google.appengine.ext import ndb
 
-def get_test_data():
+def get_csv_data(file_name):
+    csv_file = PROJECT_DIR+'/../data/'+ file_name +'.csv'
+
+    with open(csv_file, 'rb') as csvfile:
+        cursor = csv.reader(csvfile, delimiter=';')
+        next(cursor, None)
+        #limit = 100
+        i = 0
+        data = []
+        for row in cursor:
+            #print row
+            data.append(row)
+            i = i + 1
+
+            #if limit and i == limit:
+            #    break
+    return data
+
+
+def calculate_sentiment():
     file_path = PROJECT_DIR+'/../data/brexit.csv'
     file_weight = PROJECT_DIR+'/../data/dictionary.csv'
     delimiter = str(';')
@@ -44,7 +64,17 @@ def get_test_data():
                     words.append(weight['word'] + ':' + weight['weight'])
                     sum_weight = sum_weight + word_weight
 
-            user = {'user': tweet['userid'], 'tweet': sentence, 'words': words, 'weight': sum_weight}
+            user = {'user': tweet['tweetid'], 'tweet': sentence, 'words': words, 'weight': sum_weight}
             users.append(user)
 
     return users
+
+class Weight(ndb.Model):
+    word = ndb.StringProperty(indexed=True)
+    weight = ndb.FloatProperty(indexed=False)
+
+class Sentiment(ndb.Model):
+    date = ndb.DateTimeProperty(indexed=True)
+    tweetid = ndb.StringProperty(indexed=False)
+    text = ndb.StringProperty(indexed=True)
+    sum_weight = ndb.IntegerProperty(indexed=False)
