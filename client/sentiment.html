@@ -7,14 +7,14 @@
 			//console.log(data_json);
 			var items = [];
 			$.each(data_json, function(key, row) {
-				items.push([ row["user"], row["tweet"],  row["words"], row["weight"] ]);
+				items.push([ row["date"], row["tweet"],  row["words"], row["weight"] ]);
 			});
 			//console.log(items);
 
 			$('#data_table').DataTable({
 				data : items,
 				columns : [
-					{title : "User"},
+					{title : "Date"},
 					{title : "Tweet"},
 					{title : "Words"},
 					{title : "Weight"}
