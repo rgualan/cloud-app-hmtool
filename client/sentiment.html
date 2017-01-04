@@ -3,11 +3,32 @@
 {% block content %}
 <script>
 	$(document).ready(function() {
+
+		$.getJSON('/words', function(data_json) {
+			//console.log(data_json);
+			var items = [];
+			$.each(data_json, function(key, row) {
+				items.push([ row["word_date"], row["word_text"],  row["word_sum_weight"]]);
+			});
+			//console.log(items);
+
+			$('#data_table_2').DataTable({
+				data : items,
+				columns : [
+					{title : "Date"},
+					{title : "Word"},
+					{title : "Count"}
+					]
+			});
+
+		});
+
 		$.getJSON('/tweets', function(data_json) {
 			//console.log(data_json);
 			var items = [];
 			$.each(data_json, function(key, row) {
-				items.push([ row["date"], row["tweet"],  row["words"], row["weight"] ]);
+				//items.push([ row["date"], row["tweet"],  row["words"], row["weight"] ]);
+				items.push([ row["date"], row["words"], row["weight"] ]);
 			});
 			//console.log(items);
 
@@ -15,7 +36,7 @@
 				data : items,
 				columns : [
 					{title : "Date"},
-					{title : "Tweet"},
+					//{title : "Tweet"},
 					{title : "Words"},
 					{title : "Weight"}
 					]
@@ -38,7 +59,7 @@
 		margin: 5px;
 	}
 
-	a {
+	a, a:visited {
 		color: #9d9d9d;
 		text-decoration: none;
 	}
@@ -57,6 +78,10 @@
 
 <div>
 	<table id="data_table" class="display"></table>
+</div>
+
+<div>
+	<table id="data_table_2" class="display"></table>
 </div>
 
 {% endblock %}
