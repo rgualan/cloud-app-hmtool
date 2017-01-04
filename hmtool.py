@@ -326,7 +326,6 @@ class Insert_Sentiment_Data(webapp2.RequestHandler):
         user = users.get_current_user()
 
         q = sentiment.Sentiment.query().fetch(1)
-        weights = sentiment.Weight.query()
         test_counter = 0
         if q == None or len(q) == 0:
             print 'Inserting sentiment data...'
@@ -335,18 +334,26 @@ class Insert_Sentiment_Data(webapp2.RequestHandler):
             for r in data:
                 #print r
                 total_weight = 0
-                if len(r) >= 7 and test_counter < 10:
-                    sentence = r[7]
+                if len(r) >= 7 and test_counter < 100:
+                    sentence = r[7].split()
+                    for word in sentence:
+                        #check if it is url, ignore if yes.
+                        h = re.match('(.*)http.*$', word)
+                        u = re.match('(.*)\.com.*$', word)
 
-                    #this part is to remove all symbols and turn them into whitespace
-                    chars_to_remove = ['"', '!', '#', '.', ',', '?', '@', ':', '~', '*', "'", '\/', '(' ,')', '-', '=']
-                    specials = ''.join(chars_to_remove)
-                    trans = string.maketrans(specials, ' '*len(specials))
-                    sentence = sentence.translate(trans)
+                        if h is None and u is None:
+                            #this part is to remove all symbols and turn them into whitespace
+                            chars_to_remove = ['"', '!', '#', '.', ',', '?', '@', ':', '~', '*', "'", '\/', '(' ,')', '-', '=']
+                            specials = ''.join(chars_to_remove)
+                            trans = string.maketrans(specials, ' '*len(specials))
+                            word = word.translate(trans)
 
-                    for weight in weights:
-                        if re.match('.*( '+ weight.word +' ).*', str(sentence).lower()):
-                            total_weight = total_weight + int(weight.weight)
+                            dict = sentiment.Weight.query().filter(ndb.GenericProperty('word') == word)
+                            one = dict.fetch(1)
+                            if one:
+                                total_weight = total_weight + int(one[0].weight)
+                        else:
+                            pass
 
                     rdate = datetime.strptime(r[12], '%d.%m.%y %H:%M')
                     record = sentiment.Sentiment(date=rdate, tweetid=r[6], text=r[7], sum_weight=total_weight)
@@ -359,7 +366,10 @@ class Insert_Sentiment_Data(webapp2.RequestHandler):
             q = sentiment.Sentiment.query().fetch(10)
             #q.order(+sentiment.Sentiment.date)wei
             records = q
+
+            #---DELETE THIS WHEN LIVE--
             ndb.delete_multi(sentiment.Sentiment.query().fetch(keys_only=True))
+
             print "Available sentiment data (sample):"
             print len(records)
             #for r in records:
@@ -390,7 +400,10 @@ class Insert_Weight_Data(webapp2.RequestHandler):
             q = sentiment.Weight.query().fetch(10)
             #q.order(+sentiment.Weight.word)
             records = q
+
+            #---DELETE THIS WHEN LIVE--
             #ndb.delete_multi(sentiment.Weight.query().fetch(keys_only=True))
+
             print "Available weight data (sample):"
             print len(records)
             #for r in records:
@@ -420,9 +433,6 @@ class Tweets(webapp2.RequestHandler):
         q = sentiment.Sentiment.query()
         print q.count()
         records = q.fetch(50)
-        for r in records:
-            print r
-            break
 
         self.response.write(
             json.dumps(
