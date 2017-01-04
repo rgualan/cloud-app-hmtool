@@ -25,8 +25,6 @@ import webapp2
 from server.model import user, testdata, weatherapi, sentiment, model2
 from datetime import datetime
 import json
-import re
-import string
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
@@ -383,8 +381,7 @@ class Tweets(webapp2.RequestHandler):
 
     def get(self):
         q = sentiment.Sentiment.query()
-        print q.count()
-        records = q.fetch(50)
+        records = q.fetch()
 
         self.response.write(
             json.dumps(
@@ -397,6 +394,24 @@ class Tweets(webapp2.RequestHandler):
             )
 # [END Tweets]
 
+# [START Words]
+class Words(webapp2.RequestHandler):
+
+    def get(self):
+        q = sentiment.Word.query()
+        records = q.fetch()
+
+        self.response.write(
+            json.dumps(
+                [{
+                    "word_date": str(r.word_date),
+                    "word_text": r.word_text,
+                    "word_sum_weight": r.word_sum_weight,
+                    } for r in records])
+            )
+# [END Words]
+
+
 # [START app]
 app = webapp2.WSGIApplication([
     ('/', MainPage),
@@ -406,6 +421,7 @@ app = webapp2.WSGIApplication([
     ('/insert_sentiment_data', Insert_Sentiment_Data),
     ('/sentiment', Sentiment),
     ('/tweets', Tweets),
+    ('/words', Words),
     ('/login', Login),
     ('/chart', Chart),
     ('/boxplot', Boxplot),
