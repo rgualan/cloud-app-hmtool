@@ -1,7 +1,7 @@
 import csv
 import re
 import string
-import datetime
+from datetime import datetime
 from server.settings import *
 from google.appengine.ext import ndb
 
@@ -26,15 +26,17 @@ def get_csv_data(file_name):
 
 def calculate_sentiment():
     q = Sentiment.query().fetch(1)
+    q_word = Word.query().fetch(1)
     test_counter = 0
-    if q == None or len(q) == 0:
+    if (q == None or len(q) == 0) and (q_word == None or len(q_word) == 0):
         print 'Inserting sentiment data...'
         data = get_csv_data('brexit')
         records = []
         for r in data:
             #print r
-            total_weight = 0
+            total_weight = 0.0
             if len(r) >= 7 and test_counter < 100:
+                rdate = datetime.strptime(r[12], '%d.%m.%y %H:%M')
                 sentence = r[7].split()
                 for word in sentence:
                     #check if it is url, ignore if yes.
@@ -51,12 +53,21 @@ def calculate_sentiment():
                         dict = Weight.query().filter(ndb.GenericProperty('word') == word)
                         one = dict.fetch(1)
                         if one:
-                            total_weight = total_weight + int(one[0].weight)
+                            total_weight = total_weight + one[0].weight
+                            #count_word = Word.query().filter(ndb.DateProperty('word_date') == rdate.date(), ndb.GenericProperty('word_text') == word)
+                            count_word = Word.query().filter(ndb.GenericProperty('word_text') == word.lower())
+                            #count_word = Word.query()
+                            cw_one = count_word.fetch(1)
+                            if cw_one:
+                                print str(count_word.fetch(1)[0].word) + ' - ' + word
+                                cw_record = Word(word_date=rdate.date(), word_text=word, word_sum_weight=cw_one[0].word_sum_weight + 1.0)
+                            else:
+                                cw_record = Word(word_date=rdate.date(), word_text=word, word_sum_weight=1.0)
+                            cw_record.put()
                     else:
                         pass
 
-                rdate = datetime.strptime(r[12], '%d.%m.%y %H:%M')
-                record = Sentiment(date=rdate, tweetid=r[6], text=r[7], sum_weight=total_weight)
+                record = Sentiment(date=rdate.date(), tweetid=r[6], text=r[7], sum_weight=total_weight)
                 records.append(record)
                 test_counter = test_counter + 1
             else:
@@ -68,7 +79,8 @@ def calculate_sentiment():
         records = q
 
         #---DELETE THIS WHEN LIVE--
-        #ndb.delete_multi(Sentiment.query().fetch(keys_only=True))
+        ndb.delete_multi(Sentiment.query().fetch(keys_only=True))
+        ndb.delete_multi(Word.query().fetch(keys_only=True))
 
         print "Available sentiment data (sample):"
         print len(records)
@@ -83,7 +95,12 @@ class Weight(ndb.Model):
     weight = ndb.FloatProperty(indexed=False)
 
 class Sentiment(ndb.Model):
-    date = ndb.DateTimeProperty(indexed=False)
+    date = ndb.DateProperty(indexed=False)
     tweetid = ndb.StringProperty(indexed=False)
     text = ndb.StringProperty(indexed=False)
     sum_weight = ndb.FloatProperty(indexed=False)
+
+class Word(ndb.Model):
+    word_date = ndb.DateProperty(indexed=False)
+    word_text = ndb.StringProperty(indexed=False)
+    word_sum_weight = ndb.FloatProperty(indexed=False)
