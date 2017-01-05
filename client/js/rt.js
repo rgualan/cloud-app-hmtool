@@ -1,3 +1,7 @@
+// Global variables
+var PLOT_WINDOW_SIZE = 50;
+
+// Methods
 function initLineChart(properties){
 	data = properties.data;
 
@@ -69,8 +73,6 @@ function initLineChart(properties){
 	    .attr("transform", null);
 }
 
-var PLOT_WINDOW_SIZE = 50;
-
 function updateLineChart(properties) {
 	data = properties.data;
 	newData = properties.newData;
@@ -90,9 +92,12 @@ function updateLineChart(properties) {
 	var yAxis = properties.yAxis;
 	var line = properties.line;
 
-	//Update ONLY the y axis to the new data
+	//Always update the y axis to the new data
 	y.domain(d3.extent(data, function(d) { return d.value; }));
-	//y.domain([0, d3.max(data, function(d) { return d.value; })]);
+	//Update the x axis ONLY if the size of the window is small and no transition will be executed
+	if(data.length <= PLOT_WINDOW_SIZE){
+		x.domain(d3.extent(data, function(d) { return d.date; }));
+	}
 
 	// Redraw the new line (using the old x axis)  
 	var svg = d3.select("#"+properties.svgName);
@@ -104,16 +109,18 @@ function updateLineChart(properties) {
 	    .attr("transform", null);
 
 	// Slide it to the left.
-	var minDate = new Date(d3.min(data, function(d) { return d.date; }));
-	//minDate.setDate(minDate.getDate()-10);
-	minDate.setTime(minDate.getTime()-(ld1-ld0));
+	if(data.length > PLOT_WINDOW_SIZE){
+		var minDate = new Date(d3.min(data, function(d) { return d.date; }));
+		//minDate.setDate(minDate.getDate()-10);
+		minDate.setTime(minDate.getTime()-(ld1-ld0));
 
-	chart.select("path.line")
-		.transition()
-	    .duration(750)
-	    .ease("linear")
-	    .attr("transform", "translate(" + x(minDate) + ",0)")
-	    ;
+		chart.select("path.line")
+			.transition()
+		    .duration(750)
+		    .ease("linear")
+		    .attr("transform", "translate(" + x(minDate) + ",0)")
+		    ;
+    }
 
     // Update X and Y Axises
     var chart = chart.transition();
@@ -128,16 +135,12 @@ function updateLineChart(properties) {
 
     // Update the x axis to the new data
     if (data.length > PLOT_WINDOW_SIZE){
-		/*for (var i = 0; i < newData.length; i++) {
-			data.shift();
-		};*/
 		for (var i = 0; i < data.length-PLOT_WINDOW_SIZE; i++) {
 			data.shift();
 		};
+
+		x.domain(d3.extent(data, function(d) { return d.date; }));
 	}
-
-	x.domain(d3.extent(data, function(d) { return d.date; }));
-
 }
 
 
@@ -146,7 +149,8 @@ dateFormat = d3.time.format("%Y-%m-%d %H:%M:%S");
 
 function queryInitialData(cb) { 
    
-	var strLastDate = $('#txt_last_date').val(); 
+	//var strLastDate = $('#txt_last_date').val(); 
+	var strLastDate = ""; 
 	var req_url = "/rtdata?lastDate={1}".replace("{1}", strLastDate); 
    
 	$.getJSON(req_url, function(dataJson) { 
@@ -171,8 +175,9 @@ function queryInitialData(cb) {
 	}); 
 }
 
-function querySyntheticData(cb) { 
+function querySyntheticData(cb, error) { 
 	var strLastDate = $('#txt_last_date_2').val(); 
+	//var strLastDate = ""; 
 	var req_url = "/srtconsumer?lastDate={1}".replace("{1}", strLastDate); 
    
 	$.getJSON(req_url, function(dataJson) { 
@@ -185,10 +190,13 @@ function querySyntheticData(cb) {
 			} ); 
 		}); 
 
-		if (data.length == 0){ console.log("No items returned!"); return; } 
-	 	
-		$('#txt_last_date_2').val( dateFormat( data[data.length-1].date ) );		
-		cb(data);		
+		if (data.length == 0){ 
+			//console.log("No items returned!"); 
+			error(); 
+		}else{
+			$('#txt_last_date_2').val( dateFormat( data[data.length-1].date ) );		
+			cb(data);		
+		}  	
 	}); 
 }
 
@@ -235,6 +243,24 @@ function getVariable(cdata, variableName){
 	return data;
 }
 
+function updatePlots(temperatureProp,pressureProp,solarRadProp){
+			queryNewData(function(newData){
+				temperatureData = getVariable(newData, "temperature");
+				pressureData = getVariable(newData, "pressure");
+				solarRadData = getVariable(newData, "solar_radiation");
+
+				temperatureProp.newData = temperatureData;
+				pressureProp.newData = pressureData;
+				solarRadProp.newData = solarRadData;
+				updateLineChart(temperatureProp);
+				updateLineChart(pressureProp);
+				updateLineChart(solarRadProp);
+
+				// Recursive execution:
+				setTimeout(updatePlots(temperatureProp,pressureProp,solarRadProp), 5000);
+			});
+}
+
 $(document).ready(function() {
 
 	queryInitialData(function (cdata){
@@ -252,34 +278,54 @@ $(document).ready(function() {
 		initLineChart(pressureProp);
 		initLineChart(solarRadProp);
 
-		(function(){
-			queryNewData(function(newData){
-				temperatureData = getVariable(newData, "temperature");
-				pressureData = getVariable(newData, "pressure");
-				solarRadData = getVariable(newData, "solar_radiation");
+		(function poll(){
+		   setTimeout(function(){
+			   	queryNewData(function(newData){
+					temperatureData = getVariable(newData, "temperature");
+					pressureData = getVariable(newData, "pressure");
+					solarRadData = getVariable(newData, "solar_radiation");
 
-				temperatureProp.newData = temperatureData;
-				pressureProp.newData = pressureData;
-				solarRadProp.newData = solarRadData;
-				updateLineChart(temperatureProp);
-				updateLineChart(pressureProp);
-				updateLineChart(solarRadProp);
-			});
-		    setTimeout(arguments.callee, 2000);
+					temperatureProp.newData = temperatureData;
+					pressureProp.newData = pressureData;
+					solarRadProp.newData = solarRadData;
+					updateLineChart(temperatureProp);
+					updateLineChart(pressureProp);
+					updateLineChart(solarRadProp);
+
+					poll();
+				});
+		  }, 10);
 		})();
 	});
 
-	querySyntheticData(function (data){
-		// Create plots
-		syntheticProp = {svgName: "linechart_synthetic_svg", data: data};
-		initLineChart(syntheticProp);
 
-		(function(){
-			querySyntheticData(function(newData){
-				syntheticProp.newData = newData;
-				updateLineChart(syntheticProp);
+	var initialized = false;
+	var syntheticProp = {svgName: "linechart_synthetic_svg"};
+	(function poll2(){
+		//console.log("Polling...");
+		setTimeout(function(){
+			var temp = d3.select("#linechart_synthetic_svgtsChart"); 
+			if (temp && temp[0] && temp[0][0]){
+				initialized = true;
+			}
+
+			querySyntheticData(function (data){				
+				if (!initialized){
+					// Initialize plot
+					syntheticProp.data= data;
+					initLineChart(syntheticProp);
+					initialized = true;	
+				}else{
+					syntheticProp.newData = data;
+					updateLineChart(syntheticProp);
+				}
+
+				poll2();
+			}, function(){
+				poll2();
 			});
-		    setTimeout(arguments.callee, 2000);
-		})();
-	});
+
+		}, 1000);
+	})();
+
 });
