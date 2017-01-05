@@ -73,7 +73,9 @@ function getStatistics(array, variable){
     	}]
 }
 
-$(document).ready(function() {	
+$(document).ready(function() {
+	var spinner = new Spinner();
+	spinner.spin(document.getElementById('chart'));
 
 	$.getJSON('/data', function(data_json) {
 		// CREATE THE TABLE
@@ -166,6 +168,7 @@ $(document).ready(function() {
 	            .call(chart);
 
 			nv.utils.windowResize(chart.update);
+			spinner.stop();
 	        return chart;
 	    });
 
