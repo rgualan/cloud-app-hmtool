@@ -123,7 +123,7 @@ function updateLineChart(properties) {
     }
 
     // Update X and Y Axises
-    var chart = chart.transition();
+    chart = chart.transition();
     chart.select(".x.axis") // change the x axis
         .duration(750)
         .ease("linear")
@@ -135,9 +135,9 @@ function updateLineChart(properties) {
 
     // Update the x axis to the new data
     if (data.length > PLOT_WINDOW_SIZE){
-		for (var i = 0; i < data.length-PLOT_WINDOW_SIZE; i++) {
+		for (i = 0; i < data.length-PLOT_WINDOW_SIZE; i++) {
 			data.shift();
-		};
+		}
 
 		x.domain(d3.extent(data, function(d) { return d.date; }));
 	}
@@ -158,17 +158,17 @@ function queryInitialData(cb) {
 		// Parse data   
 		var data = []; 
 		$.each(dataJson, function(key, row) { 
-			data.push( { date: dateFormat.parse(row["date"]), 
-				temperature:+row["temperature"],
-				wind_speed:+row["wind_speed"],
-				pressure:+row["pressure"],
-				solar_radiation:+row["solar_radiation"],
-				air_humidity:+row["air_humidity"],
-				soil_temperature:+row["soil_temperature"]
+			data.push( { date: dateFormat.parse(row.date), 
+				temperature:+row.temperature,
+				wind_speed:+row.wind_speed,
+				pressure:+row.pressure,
+				solar_radiation:+row.solar_radiation,
+				air_humidity:+row.air_humidity,
+				soil_temperature:+row.soil_temperature
 			} ); 
 		}); 
 
-		if (data.length == 0){ console.log("No items returned!"); return; } 
+		if (data.length === 0){ console.log("No items returned!"); return; } 
 	 	
 		$('#txt_last_date').val( dateFormat( data[data.length-1].date ) );		
 		cb(data);		
@@ -185,12 +185,12 @@ function querySyntheticData(cb, error) {
 		// Parse data   
 		var data = []; 
 		$.each(dataJson, function(key, row) { 
-			data.push( { date: dateFormat.parse(row["date"]), 
-				value:+row["value"]
+			data.push( { date: dateFormat.parse(row.date), 
+				value:+row.value
 			} ); 
 		}); 
 
-		if (data.length == 0){ 
+		if (data.length === 0){ 
 			//console.log("No items returned!"); 
 			error(); 
 		}else{
@@ -204,7 +204,7 @@ function queryNewData(cb) {
    
 	var strLastDate = $('#txt_last_date').val(); 
 
-	if(strLastDate.trim().length == 0){
+	if(strLastDate.trim().length === 0){
 		console.log("Error: Parameter lastDate was not found!");
 		return;
 	}
@@ -216,17 +216,17 @@ function queryNewData(cb) {
 		// Parse data   
 		var data = []; 
 		$.each(dataJson, function(key, row) { 
-			data.push( { date: dateFormat.parse(row["date"]), 
-				temperature:+row["temperature"],
-				wind_speed:+row["wind_speed"],
-				pressure:+row["pressure"],
-				solar_radiation:+row["solar_radiation"],
-				air_humidity:+row["air_humidity"],
-				soil_temperature:+row["soil_temperature"]
+			data.push( { date: dateFormat.parse(row.date), 
+				temperature:+row.temperature,
+				wind_speed:+row.wind_speed,
+				pressure:+row.pressure,
+				solar_radiation:+row.solar_radiation,
+				air_humidity:+row.air_humidity,
+				soil_temperature:+row.soil_temperature
 			} ); 
 		}); 
 
-		if (data.length == 0){ console.log("No items returned!"); return; } 
+		if (data.length === 0){ console.log("No items returned!"); return; } 
 
 		$('#txt_last_date').val( dateFormat( data[data.length-1].date ) );
 

@@ -70,7 +70,7 @@ function getStatistics(array, variable){
             whisker_low: minv,
             whisker_high: maxv
           },
-    	}]
+    	}];
 }
 
 $(document).ready(function() {
@@ -82,10 +82,10 @@ $(document).ready(function() {
 		//console.log(data_json);
 		var items = [];
 		$.each(data_json, function(key, row) {
-			items.push([ row["station_name"],row["latitude"],row["longitude"],row["date"],
-				row["rec_number"],row["temperature"],row["air_humidity"],
-				row["pressure"],row["solar_radiation"],row["soil_temperature"],
-				row["wind_speed"],row["wind_direction"] ]);
+			items.push([ row.station_name,row.latitude,row.longitude,row.date,
+				row.rec_number,row.temperature,row.air_humidity,
+				row.pressure,row.solar_radiation,row.soil_temperature,
+				row.wind_speed,row.wind_direction ]);
 		});
 		//console.log(items);
 
@@ -111,7 +111,7 @@ $(document).ready(function() {
 		var chart;
 
 		// CREATE THE SELECT
-		var defaultVariable = "temperature"
+		var defaultVariable = "temperature";
 		var variables = [];
 		$.each( data_json[0], function( key, value ) {
 			if ( ['station_name','date','rec_number','longitude','latitude'].indexOf(key) < 0 )
@@ -154,7 +154,7 @@ $(document).ready(function() {
 	        chart.yAxis
 	            .axisLabel(defaultVariable)
 	            .tickFormat(function(d) {
-	                if (d == null) {
+	                if (d === null) {
 	                    return 'N/A';
 	                }
 	                return d3.format(',.2f')(d);
@@ -225,11 +225,11 @@ $(document).ready(function() {
 
 			var datum = d3.select('#chart svg').datum();
 			var xyData = datum[0].values;
-        	var data = []
+        	var data = [];
         	xyData.forEach(function(d){
         		data.push(d.y);
-        	})
-        	var stats = getStatistics(data, variable)[0]["values"];
+        	});
+        	var stats = getStatistics(data, variable)[0].values;
 			var format = d3.format(",.2f");	
 			$('#txt_mean').val( format( stats.mean ) );
 			$('#txt_stdev').val( format( stats.stDev ) );
@@ -281,17 +281,17 @@ $(document).ready(function() {
         	var datum = d3.select('#chart svg').datum(); 
 
         	var xyData = datum[0].values;
-        	var data = []
+        	var data = [];
         	xyData.forEach(function(d){
         		data.push(d.y);
-        	})
+        	});
 
 			var boxplotChart; 
 			nv.addGraph(function() {
 			  var width = 250;
 			  var height = 400;
 		      boxplotChart = nv.models.boxPlotChart()
-		          .x(function(d) { return d.label })
+		          .x(function(d) { return d.label; })
 		          .staggerLabels(true)
 		          .maxBoxWidth(75) // prevent boxes from being incredibly wide
 		          .yDomain(d3.extent(data))
@@ -301,7 +301,7 @@ $(document).ready(function() {
 		      d3.select('#boxPlotChart svg')
 		          .datum(getStatistics(data, variable))
 		          .call(boxplotChart)
-		          .style({ 'width': width, 'height': height });;
+		          .style({ 'width': width, 'height': height });
 		      nv.utils.windowResize(boxplotChart.update);
 		      return boxplotChart;
 		    });
@@ -312,10 +312,10 @@ $(document).ready(function() {
         	var datum = d3.select('#chart svg').datum(); 
 
         	var xyData = datum[0].values;
-        	var data = []
+        	var data = [];
         	xyData.forEach(function(d){
         		data.push(d.y);
-        	})
+        	});
         	//console.log(data);
 
 			var dataWrapper = [
