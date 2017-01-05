@@ -61,9 +61,9 @@ class MainPage(webapp2.RequestHandler):
             q = testdata.Hmrecord.query()
             q.order(+testdata.Hmrecord.date)
             records = q.fetch(10)
-            print "Available data (sample):"
-            for r in records:
-                print r
+            #print "Available data (sample):"
+            #for r in records:
+            #    print r
 
         template_values = check_login(user, self)
 
@@ -95,18 +95,18 @@ class RealTimeLoader(webapp2.RequestHandler):
 
         last_date_str = self.request.get('lastDate', None);
 
-        print 'Parameter: ',last_date_str
+        #print 'Parameter: ',last_date_str
         if not(last_date_str is None or last_date_str == "" ):
             # The client has some data already
             # So, it is asking for new data 
             # This code returns the following data window, starting from the 
             # last_date parameter
             last_date = datetime.strptime(last_date_str, '%Y-%m-%d %H:%M:%S')
-            print 'Parameter: ',last_date
+            #print 'Parameter: ',last_date
             q = testdata.Hmrecord.query(testdata.Hmrecord.date > last_date).order(+testdata.Hmrecord.date)
-            records = q.fetch(2)
-            print("Queried data ((new)):")
-            for r in records: print r
+            records = q.fetch(1)
+            #print("Queried data ((new)):")
+            #for r in records: print r
 
             self.response.write(
                 json.dumps(
@@ -134,8 +134,8 @@ class RealTimeLoader(webapp2.RequestHandler):
             records = q.fetch(50)
             #records = q.fetch()
             #records = list(reversed(records));
-            print("Queried data ((first time)):")
-            for r in records: print r;
+            #print("Queried data ((first time)):")
+            #for r in records: print r;
   
             self.response.write(
                 json.dumps(
@@ -178,7 +178,7 @@ class SyntheticRealTimeConsumer(webapp2.RequestHandler):
     def get(self):
         last_date_str = self.request.get('lastDate', None);
 
-        print 'Parameter: ',last_date_str
+        #print 'Parameter: ',last_date_str
         if not(last_date_str is None or last_date_str == "" ):
             # The client has some data already
             # So, it is asking for new data 
@@ -255,6 +255,226 @@ class Hmtools(webapp2.RequestHandler):
             ) 
 # [END hmtools]
 
+# [START aggregator]
+class Aggregator(webapp2.RequestHandler):
+
+    def queryData(self, variable):
+        q = testdata.Hmrecord.query().order(+testdata.Hmrecord.date) 
+        records = q.fetch()
+
+        # Aggregate data
+        result = [];
+        for r in records:
+            value = 0
+            if (variable == "temperature"):
+                value = r.temperature
+            elif (variable == "air_humidity"):
+                value = r.air_humidity
+            elif (variable == "pressure"):
+                value = r.pressure
+            elif (variable == "soil_temperature"):
+                value = r.soil_temperature
+            elif (variable == "solar_radiation"):
+                value = r.solar_radiation
+            elif (variable == "wind_direction"):
+                value = r.wind_direction
+            elif (variable == "wind_speed"):
+                value = r.wind_speed
+
+            result.append({"date":r.date, variable:value})
+
+        return result
+
+    def formaterByLevel(self, level):
+        levels = {
+            "hour": '%Y-%m-%d %H',
+            "day": '%Y-%m-%d',
+            "month": '%Y-%m',
+            "year": '%Y'
+        }
+
+        return levels[level]
+    
+    def median(self, lst):
+        sortedLst = sorted(lst)
+        lstLen = len(lst)
+        index = (lstLen - 1) // 2
+
+        if (lstLen % 2):
+            return sortedLst[index]
+        else:
+            return (sortedLst[index] + sortedLst[index + 1])/2.0            
+
+    def get(self):
+        variable = self.request.get("variable")
+        level = self.request.get("level")
+        how = self.request.get("how")
+        
+        records = self.queryData(variable)
+
+        # Aggregate data
+        temp_dict = {};
+        for r in records:
+            upperIndex = r["date"].strftime(self.formaterByLevel(level));
+
+            if upperIndex in temp_dict:
+                temp_dict[upperIndex].append(r[variable]);
+            else:
+                temp_dict[upperIndex] = [r[variable]];
+
+        # Calculate aggregation
+        result = []
+        for key in temp_dict.keys():
+            sumv = 0
+            for val in temp_dict[key]:
+                sumv = sumv + val
+            date = datetime.strptime(key, self.formaterByLevel(level))
+
+            aggregation = sumv
+            if how == "mean":
+                aggregation = sumv/len(temp_dict[key])
+            elif how == "median":
+                aggregation = self.median(temp_dict[key])
+            elif how == "min":
+                aggregation = min(temp_dict[key])
+            elif how == "max":
+                aggregation = max(temp_dict[key])
+
+            result.append({'date':date.strftime('%Y-%m-%d %H:%M:%S'), variable:aggregation})
+
+        result = sorted(result, key=lambda k: k['date']) 
+        #print result;
+
+        self.response.write(json.dumps(result)) 
+# [END aggregator]
+
+# [START statistics]
+class Statistics(webapp2.RequestHandler):
+    def queryData(self, variable):
+        q = testdata.Hmrecord.query().order(+testdata.Hmrecord.date) 
+        records = q.fetch()
+
+        # Aggregate data
+        result = [];
+        for r in records:
+            value = 0
+            if (variable == "temperature"):
+                value = r.temperature
+            elif (variable == "air_humidity"):
+                value = r.air_humidity
+            elif (variable == "pressure"):
+                value = r.pressure
+            elif (variable == "soil_temperature"):
+                value = r.soil_temperature
+            elif (variable == "solar_radiation"):
+                value = r.solar_radiation
+            elif (variable == "wind_direction"):
+                value = r.wind_direction
+            elif (variable == "wind_speed"):
+                value = r.wind_speed
+
+            result.append({"date":r.date, variable:value})
+
+        return result
+
+    def median(self, lst):
+        sortedLst = sorted(lst)
+        lstLen = len(lst)
+        index = (lstLen - 1) // 2
+
+        if (lstLen % 2):
+            return sortedLst[index]
+        else:
+            return (sortedLst[index] + sortedLst[index + 1])/2.0            
+
+    def get(self):
+        variable = self.request.get("variable")
+        
+        records = self.queryData(variable)
+        values = []
+        for r in records:
+            values.append(r[variable])
+
+        # Calculate statistics
+        sumv = 0;
+        for val in values:
+            sumv = sumv + val
+
+        meanv = sumv / len(values)
+        medianv = self.median(values)
+        minv = min(values)
+        maxv = max(values)
+
+        result = {
+            "sum" : sumv,
+            "mean" : meanv,
+            "median" : medianv,
+            "min" : minv,
+            "max" : maxv,
+        }
+        self.response.write(json.dumps(result)) 
+# [END statistics]
+
+# [START RunningMean]
+class RunningMean(webapp2.RequestHandler):
+    def queryData(self, variable):
+        q = testdata.Hmrecord.query().order(+testdata.Hmrecord.date) 
+        records = q.fetch()
+
+        # Aggregate data
+        result = [];
+        for r in records:
+            value = 0
+            if (variable == "temperature"):
+                value = r.temperature
+            elif (variable == "air_humidity"):
+                value = r.air_humidity
+            elif (variable == "pressure"):
+                value = r.pressure
+            elif (variable == "soil_temperature"):
+                value = r.soil_temperature
+            elif (variable == "solar_radiation"):
+                value = r.solar_radiation
+            elif (variable == "wind_direction"):
+                value = r.wind_direction
+            elif (variable == "wind_speed"):
+                value = r.wind_speed
+
+            result.append({"date":r.date, variable:value})
+
+        return result
+
+    def runningMean(self,inputList,variable,N):
+        sum = 0
+        result = list( {"date":x["date"], variable:0} for x in inputList)
+
+        for i in range( 0, N ):
+            sum = sum + inputList[i][variable]
+            result[i][variable] = sum / (i+1)
+
+        for i in range( N, len(inputList) ):
+            sum = sum - inputList[i-N][variable] + inputList[i][variable]
+            result[i][variable] = sum / N
+
+        return result
+
+
+    def get(self):
+        variable = self.request.get("variable")
+        steps = int(self.request.get("steps"))
+
+        records = self.queryData(variable)
+        result = self.runningMean(records,variable,steps)
+        #print result
+
+        self.response.write( 
+            json.dumps( 
+                [{ 
+                    "date": r["date"].strftime('%Y-%m-%d %H:%M:%S'), 
+                    variable: r[variable] 
+                } for r in result]) 
+            ) 
+# [END RunningMean]
 
 # [START chart]
 class Chart(webapp2.RequestHandler):
@@ -445,6 +665,9 @@ class Words(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/data', Hmtools),
+    ('/aggregate', Aggregator),
+    ('/statistics', Statistics),
+    ('/runningmean', RunningMean),
     ('/weatherapi', WeatherApi),
     ('/insert_weight_data', Insert_Weight_Data),
     ('/insert_sentiment_data', Insert_Sentiment_Data),
