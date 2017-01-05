@@ -347,12 +347,12 @@ class Insert_Weight_Data(webapp2.RequestHandler):
                 records.append(record)
             ndb.put_multi(records)
         else:
-            q = sentiment.Weight.query().fetch(10)
+            q = sentiment.Weight.query().fetch()
             #q.order(+sentiment.Weight.word)
             records = q
 
             #---DELETE THIS WHEN LIVE--
-            #ndb.delete_multi(sentiment.Weight.query().fetch(keys_only=True))
+            ndb.delete_multi(sentiment.Weight.query().fetch(keys_only=True))
 
             print "Available weight data (sample):"
             print len(records)
@@ -364,6 +364,35 @@ class Insert_Weight_Data(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
         self.response.write(template.render(template_values))
 # [END Insert Weight]
+
+# [START Summary]
+class Summary(webapp2.RequestHandler):
+
+    def get(self):
+        user = users.get_current_user()
+
+        sentiment.summarize_sentiment()
+
+        template_values = check_login(user, self)
+
+        template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
+        self.response.write(template.render(template_values))
+# [END Summary]
+
+# [START Summary]
+class Delete_Summary(webapp2.RequestHandler):
+
+    def get(self):
+        user = users.get_current_user()
+
+        sentiment.delete_summarize()
+
+        template_values = check_login(user, self)
+
+        template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
+        self.response.write(template.render(template_values))
+# [END Summary]
+
 
 # [START Sentiment]
 class Sentiment(webapp2.RequestHandler):
@@ -398,15 +427,15 @@ class Tweets(webapp2.RequestHandler):
 class Words(webapp2.RequestHandler):
 
     def get(self):
-        q = sentiment.Word.query()
+        q = sentiment.Sum_Word.query()
         records = q.fetch()
 
         self.response.write(
             json.dumps(
                 [{
-                    "word_date": str(r.word_date),
-                    "word_text": r.word_text,
-                    "word_sum_weight": r.word_sum_weight,
+                    "word_date": str(r.date),
+                    "word_text": r.word,
+                    "word_sum_weight": r.sum,
                     } for r in records])
             )
 # [END Words]
@@ -419,6 +448,8 @@ app = webapp2.WSGIApplication([
     ('/weatherapi', WeatherApi),
     ('/insert_weight_data', Insert_Weight_Data),
     ('/insert_sentiment_data', Insert_Sentiment_Data),
+    ('/summary', Summary),
+    ('/delete_summary', Delete_Summary),
     ('/sentiment', Sentiment),
     ('/tweets', Tweets),
     ('/words', Words),
