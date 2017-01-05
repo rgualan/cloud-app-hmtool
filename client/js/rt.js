@@ -294,7 +294,7 @@ $(document).ready(function() {
 
 					poll();
 				});
-		  }, 10);
+		  }, 1000);
 		})();
 	});
 
