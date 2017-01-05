@@ -35,7 +35,7 @@ def calculate_sentiment():
         for r in data:
             #print r
             total_weight = 0.0
-            if len(r) >= 7 and test_counter < 100:
+            if len(r) >= 7 and test_counter < 1000:
                 rdate = datetime.strptime(r[12], '%d.%m.%y %H:%M')
                 sentence = r[7].split()
                 for word in sentence:
@@ -49,20 +49,23 @@ def calculate_sentiment():
                         specials = ''.join(chars_to_remove)
                         trans = string.maketrans(specials, ' '*len(specials))
                         word = word.translate(trans)
+                        word = word.strip()
 
-                        dict = Weight.query().filter(ndb.GenericProperty('word') == word)
+                        dict = Weight.query().filter(Weight.word == word)
                         one = dict.fetch(1)
                         if one:
+                            print 'same word...' + str(one[0].word)
                             total_weight = total_weight + one[0].weight
                             #count_word = Word.query().filter(ndb.DateProperty('word_date') == rdate.date(), ndb.GenericProperty('word_text') == word)
-                            count_word = Word.query().filter(ndb.GenericProperty('word_text') == word.lower())
+                            #count_word = Word.query().filter(Word.word_text == word.lower())
                             #count_word = Word.query()
-                            cw_one = count_word.fetch(1)
-                            if cw_one:
-                                print str(count_word.fetch(1)[0].word) + ' - ' + word
-                                cw_record = Word(word_date=rdate.date(), word_text=word, word_sum_weight=cw_one[0].word_sum_weight + 1.0)
-                            else:
-                                cw_record = Word(word_date=rdate.date(), word_text=word, word_sum_weight=1.0)
+                            #cw_one = count_word.fetch(1)
+                            #if cw_one:
+                                #cw_record = Word(word_date=rdate.date(), word_text=word, word_sum_weight=cw_one[0].word_sum_weight + 1.0)
+                                #cw_record = Word(word_text=word, word_sum_weight=cw_one[0].word_sum_weight + 1.0)
+                            #else:
+                                #cw_record = Word(word_date=rdate.date(), word_text=word, word_sum_weight=1.0)
+                            cw_record = Word(word_date=rdate.date(), word_text=word)
                             cw_record.put()
                     else:
                         pass
@@ -89,18 +92,85 @@ def calculate_sentiment():
 
     return True
 
+def delete_summarize():
+    #ndb.delete_multi(Sum_Sentiment.query().fetch(keys_only=True))
+    ndb.delete_multi(Sum_Word.query().fetch(keys_only=True))
+
+def summarize_sentiment():
+
+    #q_sentiment = Sentiment.query()
+    q_word = Word.query()
+
+    counter = 0
+
+    #records = []
+    #for s in q_sentiment:
+        #if counter < 10:
+        #if len(records) > 0:
+        #    for each in records:
+                #print str(s.date) + ' - ' + str(each.date) + ' : ' + str(s.sum_weight)
+                #if s.date == each.date:
+                #    each.sum = each.sum + s.sum_weight
+                #else:
+                #    record = Sum_Sentiment(date=s.date, sum=s.sum_weight)
+                #    records.append(record)
+        #else:
+        #    #print str(s.date) + ' : ' + str(s.sum_weight)
+        #    record = Sum_Sentiment(date=s.date, sum=s.sum_weight)
+        #    records.append(record)
+        #ndb.put_multi(records)
+        #print str(records)
+        #else:
+            #print records
+            #break
+        #counter = counter + 1
+
+    word_records = []
+    for w in q_word:
+        #if counter < 100:
+        if len(word_records) > 0:
+            check = True
+            for each in word_records:
+                print str(counter) + '. word: ' + str(w.word_text) + ' - ' + str(each.word) + ';; date: ' + str(w.word_date) + ' - ' + str(each.date)
+                if w.word_text == each.word and w.word_date == each.date:
+                    each.sum = each.sum + 1.0
+                    check = False
+
+            if check:
+                record = Sum_Word(date=w.word_date, word=w.word_text, sum=1.0)
+                word_records.append(record)
+        else:
+            record = Sum_Word(date=w.word_date, word=w.word_text, sum=1.0)
+            word_records.append(record)
+        #else:
+            #break
+        counter = counter + 1
+
+    ndb.put_multi(word_records)
+    return True
 
 class Weight(ndb.Model):
-    word = ndb.StringProperty(indexed=False)
+    word = ndb.StringProperty(indexed=True)
     weight = ndb.FloatProperty(indexed=False)
 
 class Sentiment(ndb.Model):
-    date = ndb.DateProperty(indexed=False)
+    date = ndb.DateProperty(indexed=True)
     tweetid = ndb.StringProperty(indexed=False)
-    text = ndb.StringProperty(indexed=False)
+    text = ndb.StringProperty(indexed=True)
     sum_weight = ndb.FloatProperty(indexed=False)
 
 class Word(ndb.Model):
-    word_date = ndb.DateProperty(indexed=False)
-    word_text = ndb.StringProperty(indexed=False)
+    word_date = ndb.DateProperty(indexed=True)
+    word_text = ndb.StringProperty(indexed=True)
     word_sum_weight = ndb.FloatProperty(indexed=False)
+
+class Sum_Sentiment(ndb.Model):
+    date = ndb.DateProperty(indexed=True)
+    type = ndb.StringProperty(indexed=True)
+    sum = ndb.FloatProperty(indexed=False)
+
+class Sum_Word(ndb.Model):
+    date = ndb.DateProperty(indexed=True)
+    word = ndb.StringProperty(indexed=True)
+    sum = ndb.FloatProperty(indexed=False)
+
