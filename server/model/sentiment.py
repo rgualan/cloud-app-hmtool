@@ -34,8 +34,8 @@ def calculate_sentiment():
         records = []
         for r in data:
             #print r
-            total_weight = 0.0
-            if len(r) >= 7 and test_counter < 1000:
+            total_weight = 0
+            if len(r) >= 7 and test_counter < 2000:
                 rdate = datetime.strptime(r[12], '%d.%m.%y %H:%M')
                 sentence = r[7].split()
                 for word in sentence:
@@ -133,14 +133,14 @@ def summarize_sentiment():
             for each in word_records:
                 print str(counter) + '. word: ' + str(w.word_text) + ' - ' + str(each.word) + ';; date: ' + str(w.word_date) + ' - ' + str(each.date)
                 if w.word_text == each.word and w.word_date == each.date:
-                    each.sum = each.sum + 1.0
+                    each.sum = each.sum + 1
                     check = False
 
             if check:
-                record = Sum_Word(date=w.word_date, word=w.word_text, sum=1.0)
+                record = Sum_Word(date=w.word_date, word=w.word_text, sum=1)
                 word_records.append(record)
         else:
-            record = Sum_Word(date=w.word_date, word=w.word_text, sum=1.0)
+            record = Sum_Word(date=w.word_date, word=w.word_text, sum=1)
             word_records.append(record)
         #else:
             #break
@@ -151,26 +151,26 @@ def summarize_sentiment():
 
 class Weight(ndb.Model):
     word = ndb.StringProperty(indexed=True)
-    weight = ndb.FloatProperty(indexed=False)
+    weight = ndb.IntegerProperty(indexed=False)
 
 class Sentiment(ndb.Model):
     date = ndb.DateProperty(indexed=True)
     tweetid = ndb.StringProperty(indexed=False)
     text = ndb.StringProperty(indexed=True)
-    sum_weight = ndb.FloatProperty(indexed=False)
+    sum_weight = ndb.IntegerProperty(indexed=False)
 
 class Word(ndb.Model):
     word_date = ndb.DateProperty(indexed=True)
     word_text = ndb.StringProperty(indexed=True)
-    word_sum_weight = ndb.FloatProperty(indexed=False)
+    word_sum_weight = ndb.IntegerProperty(indexed=False)
 
 class Sum_Sentiment(ndb.Model):
     date = ndb.DateProperty(indexed=True)
     type = ndb.StringProperty(indexed=True)
-    sum = ndb.FloatProperty(indexed=False)
+    sum = ndb.IntegerProperty(indexed=False)
 
 class Sum_Word(ndb.Model):
     date = ndb.DateProperty(indexed=True)
     word = ndb.StringProperty(indexed=True)
-    sum = ndb.FloatProperty(indexed=False)
+    sum = ndb.IntegerProperty(indexed=False)
 

@@ -343,7 +343,7 @@ class Insert_Weight_Data(webapp2.RequestHandler):
             records = []
             for r in data:
                 #print r[1]
-                record = sentiment.Weight(word=r[0], weight=float(r[1]))
+                record = sentiment.Weight(word=r[0], weight=int(r[1]))
                 records.append(record)
             ndb.put_multi(records)
         else:
