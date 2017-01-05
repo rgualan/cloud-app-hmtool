@@ -1,19 +1,5 @@
 #!/usr/bin/env python
 
-# Copyright 2016 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 # [START imports]
 import os
 import urllib
@@ -22,15 +8,15 @@ from google.appengine.ext import ndb
 from google.appengine.ext import db
 import jinja2
 import webapp2
-from server.model import user, testdata, weatherapi, sentiment, model2
+from server.model import user, testdata, weatherapi, sentiment, model
 from datetime import datetime
 import json
+# [END imports]
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
-# [END imports]
 
 # [START main_page]
 class MainPage(webapp2.RequestHandler):
@@ -39,7 +25,7 @@ class MainPage(webapp2.RequestHandler):
         user = users.get_current_user()
 
         # if the entity is empty, then populate the table with test data
-        q = testdata.Hmrecord.query()
+        q = model.Hmrecord.query()
         if q.count() == 0:
             print 'Inserting test data...'
             data = testdata.get_test_data()
@@ -47,7 +33,7 @@ class MainPage(webapp2.RequestHandler):
             for r in data:
                 # print r
                 rdate = datetime.strptime(r[3], '%Y-%m-%d %H:%M:%S')
-                record = testdata.Hmrecord(station_name=r[0], latitude=float(r[1]), longitude=float(r[2]),
+                record = model.Hmrecord(station_name=r[0], latitude=float(r[1]), longitude=float(r[2]),
                                   date=rdate,
                                   rec_number=int(r[4]),
                                   temperature=float(r[5]), air_humidity=float(r[6]),
@@ -58,8 +44,8 @@ class MainPage(webapp2.RequestHandler):
             # print records[0]
             ndb.put_multi(records)
         else:
-            q = testdata.Hmrecord.query()
-            q.order(+testdata.Hmrecord.date)
+            q = model.Hmrecord.query()
+            q.order(+model.Hmrecord.date)
             records = q.fetch(10)
             #print "Available data (sample):"
             #for r in records:
@@ -103,7 +89,7 @@ class RealTimeLoader(webapp2.RequestHandler):
             # last_date parameter
             last_date = datetime.strptime(last_date_str, '%Y-%m-%d %H:%M:%S')
             #print 'Parameter: ',last_date
-            q = testdata.Hmrecord.query(testdata.Hmrecord.date > last_date).order(+testdata.Hmrecord.date)
+            q = model.Hmrecord.query(model.Hmrecord.date > last_date).order(+model.Hmrecord.date)
             records = q.fetch(1)
             #print("Queried data ((new)):")
             #for r in records: print r
@@ -129,8 +115,8 @@ class RealTimeLoader(webapp2.RequestHandler):
             # For the first query (not last_date parameter)
             # return a small amomunt of the data
             # the erliest data
-            #q = testdata.Hmrecord.query().order(-testdata.Hmrecord.date)
-            q = testdata.Hmrecord.query().order(+testdata.Hmrecord.date)
+            #q = model.Hmrecord.query().order(-model.Hmrecord.date)
+            q = model.Hmrecord.query().order(+model.Hmrecord.date)
             records = q.fetch(50)
             #records = q.fetch()
             #records = list(reversed(records));
@@ -166,7 +152,7 @@ class SyntheticRealTimeProducer(webapp2.RequestHandler):
         value = float(self.request.get('value'))
 
         # save the data
-        record = model2.Hmrecord2(station_name=station, date=date, value=value)
+        record = model.Hmrecord2(station_name=station, date=date, value=value)
         record.put()
 
         #self.response.write(template.render(template_values))
@@ -185,7 +171,7 @@ class SyntheticRealTimeConsumer(webapp2.RequestHandler):
             # This code returns the following data window, starting from the 
             # last_date parameter
             last_date = datetime.strptime(last_date_str, '%Y-%m-%d %H:%M:%S')
-            q = model2.Hmrecord2.query(model2.Hmrecord2.date > last_date).order(-model2.Hmrecord2.date)
+            q = model.Hmrecord2.query(model.Hmrecord2.date > last_date).order(-model.Hmrecord2.date)
             records = q.fetch(50)
             records = list(reversed(records));
             #print("Queried data ((new)): ")
@@ -202,7 +188,7 @@ class SyntheticRealTimeConsumer(webapp2.RequestHandler):
         else:
             # For the first query (not last_date parameter)
             # return the most recent data (last window)
-            q = model2.Hmrecord2.query().order(-model2.Hmrecord2.date)
+            q = model.Hmrecord2.query().order(-model.Hmrecord2.date)
             records = q.fetch(50)
             #records = q.fetch()
             records = list(reversed(records));
@@ -233,7 +219,7 @@ class Login(webapp2.RequestHandler):
 class Hmtools(webapp2.RequestHandler):
 
     def get(self):
-        q = testdata.Hmrecord.query().order(+testdata.Hmrecord.date) 
+        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
         records = q.fetch() 
 
         self.response.write( 
@@ -259,7 +245,7 @@ class Hmtools(webapp2.RequestHandler):
 class Aggregator(webapp2.RequestHandler):
 
     def queryData(self, variable):
-        q = testdata.Hmrecord.query().order(+testdata.Hmrecord.date) 
+        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
         records = q.fetch()
 
         # Aggregate data
@@ -351,7 +337,7 @@ class Aggregator(webapp2.RequestHandler):
 # [START statistics]
 class Statistics(webapp2.RequestHandler):
     def queryData(self, variable):
-        q = testdata.Hmrecord.query().order(+testdata.Hmrecord.date) 
+        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
         records = q.fetch()
 
         # Aggregate data
@@ -418,7 +404,7 @@ class Statistics(webapp2.RequestHandler):
 # [START RunningMean]
 class RunningMean(webapp2.RequestHandler):
     def queryData(self, variable):
-        q = testdata.Hmrecord.query().order(+testdata.Hmrecord.date) 
+        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
         records = q.fetch()
 
         # Aggregate data
