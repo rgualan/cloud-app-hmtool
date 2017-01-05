@@ -1,6 +1,25 @@
 {% extends "/client/layout/base.html" %}
 
+{% block head %}
+  {{ super() }}
+	<meta charset="utf-8">
+  	<link rel="stylesheet" href="/css/scatter.css" charset="utf-8">
+{% endblock %}
+
 {% block content %}
+
+<div>
+    <h1>Sentiment Analysis of Twitter Data</h1>
+</div>
+
+  <div id="scatter"></div>
+
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+  <script type="text/javascript" src="/js/scatter.js"></script>
+
+  <!--<input type="button" name="xAxis" value="xAxis">-->
+
 <script>
 	$(document).ready(function() {
 
