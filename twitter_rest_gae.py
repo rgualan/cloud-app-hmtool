@@ -28,7 +28,6 @@ class TwitterRestGAE(TwitterRest):
 
     def __init__(self):
         TwitterRest.__init__(self)
-        print "test"
 
     # Save each tweet in Datastore
     def process_status(self,status):
