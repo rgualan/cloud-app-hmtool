@@ -5,6 +5,9 @@
 #pycharm
 .idea/*
 
+# Libraries folder
+lib/
+
 <<<<<<< HEAD
 #GAE
 #app.yaml
