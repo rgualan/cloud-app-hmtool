@@ -44,15 +44,15 @@ Users can access the application using their Google account. Data are stored in 
 [10]: https://docs.python.org/2/library/ssl.html
 
 ## Install third-party libraries
-pip install -r requirements.txt -t lib/
+```pip install -r requirements.txt -t lib/```
 
 ## Credentials
 ### Twitter credentials
 Add your twitter credentials in twitter_credentials.py
 
 ## Upload Twitter collection cron job
-- appcfg.py update <app-directory> or
-- appcfg.py update_cron <app-directory>
+- ```appcfg.py update <app-directory>``` or
+- ```appcfg.py update_cron <app-directory>```
 
 ## Locally run
 
