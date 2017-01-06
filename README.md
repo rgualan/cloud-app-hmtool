@@ -31,6 +31,7 @@ Users can access the application using their Google account. Data are stored in 
 - [jinja2][7]
 - [tweepy][9]
 - [ssl][10]
+- [requests-toolbelt][11]
 
 [1]: http://www.sciencedirect.com/science/article/pii/S009830041000275X
 [2]: https://developers.google.com/appengine
@@ -42,6 +43,7 @@ Users can access the application using their Google account. Data are stored in 
 [8]: http://www.opengeospatial.org/
 [9]: https://github.com/tweepy/tweepy/
 [10]: https://docs.python.org/2/library/ssl.html
+[11]: https://pypi.python.org/pypi/requests-toolbelt
 
 ## Install third-party libraries
 ```pip install -r requirements.txt -t lib/```
