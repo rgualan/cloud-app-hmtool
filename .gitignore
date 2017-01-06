@@ -8,6 +8,9 @@
 # Libraries folder
 lib/
 
+# Twitter credentials
+twitter_credentials.py
+
 <<<<<<< HEAD
 #GAE
 #app.yaml

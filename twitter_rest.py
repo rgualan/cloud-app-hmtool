@@ -35,11 +35,13 @@ class TwitterRest():
                 if not tweets:
                     break
                 for tweet in tweets:
-                    self.process_status(tweet)
+                    tweet_process_status = self.process_status(tweet)
+                    if tweet_process_status == False:
+                        return
                 last_id = tweets[-1].id
             except twp.TweepError as e:
                 break
 
     # Process each tweet
     def process_status(self,status):
-        pass
+        return True
