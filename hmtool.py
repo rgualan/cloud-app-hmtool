@@ -3,6 +3,7 @@
 # [START imports]
 import os
 import urllib
+import logging
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from google.appengine.ext import db
@@ -18,47 +19,89 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+# If the entity is empty, then populate the table with test data
+q = model.Hmrecord.query()
+if q.count() == 0:
+    logging.info( "Inserting test data..." )
+    data = testdata.get_test_data()
+    records = []
+    for r in data:
+        rdate = datetime.strptime(r[3], '%Y-%m-%d %H:%M:%S')
+        record = model.Hmrecord(station_name=r[0], latitude=float(r[1]), longitude=float(r[2]),
+                          date=rdate,
+                          rec_number=int(r[4]),
+                          temperature=float(r[5]), air_humidity=float(r[6]),
+                          pressure=float(r[7]), solar_radiation=float(r[8]),
+                          soil_temperature=float(r[9]), wind_speed=float(r[10]),
+                          wind_direction=float(r[11]))
+        records.append(record)
+    ndb.put_multi(records)
+
+q = model.Hmrecord.query().order(+model.Hmrecord.date) 
+records = q.fetch()
+HDCACHE = records
+
+def queryHistoricalData():
+    if len(HDCACHE)>0:
+        logging.info("Using cache...")
+        return HDCACHE
+    else:
+        logging.info("Querying database...")
+        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
+        records = q.fetch()
+        return records 
+
 # [START main_page]
 class MainPage(webapp2.RequestHandler):
-
+    """ Loads the index page using templates and checking login"""
     def get(self):
         user = users.get_current_user()
-
-        # if the entity is empty, then populate the table with test data
-        q = model.Hmrecord.query()
-        if q.count() == 0:
-            print 'Inserting test data...'
-            data = testdata.get_test_data()
-            records = []
-            for r in data:
-                # print r
-                rdate = datetime.strptime(r[3], '%Y-%m-%d %H:%M:%S')
-                record = model.Hmrecord(station_name=r[0], latitude=float(r[1]), longitude=float(r[2]),
-                                  date=rdate,
-                                  rec_number=int(r[4]),
-                                  temperature=float(r[5]), air_humidity=float(r[6]),
-                                  pressure=float(r[7]), solar_radiation=float(r[8]),
-                                  soil_temperature=float(r[9]), wind_speed=float(r[10]),
-                                  wind_direction=float(r[11]))
-                records.append(record)
-            # print records[0]
-            ndb.put_multi(records)
-        else:
-            q = model.Hmrecord.query()
-            q.order(+model.Hmrecord.date)
-            records = q.fetch(10)
-            #print "Available data (sample):"
-            #for r in records:
-            #    print r
-
         template_values = check_login(user, self)
-
         template = JINJA_ENVIRONMENT.get_template('/client/index.html')
         self.response.write(template.render(template_values))
 # [END main_page]
 
+# [START Login]
+class Login(webapp2.RequestHandler):
+
+    def post(self):
+        username = self.request.get('username', user.DEFAULT_USERNAME)
+
+        query_params = {'username': username}
+        self.redirect('/login?' + urllib.urlencode(query_params))
+# [END Login]
+
+# [START hmtools]
+class Hmtools(webapp2.RequestHandler):
+    """ Returns all the historical data for the test station.
+    If the Google Datastore is empty, it loads the Hmrecord entity
+    with test data from a CSV file
+    """
+
+    def get(self):
+        records = queryHistoricalData()
+        self.response.write( 
+            json.dumps( 
+                [{ 
+                    "station_name" : r.station_name, 
+                    "latitude" : r.latitude, 
+                    "longitude" : r.longitude, 
+                    "date": r.date.strftime('%Y-%m-%d %H:%M:%S'), 
+                    "rec_number": r.rec_number, 
+                    "temperature": r.temperature, 
+                    "air_humidity": r.air_humidity, 
+                    "pressure": r.pressure, 
+                    "solar_radiation": r.solar_radiation, 
+                    "soil_temperature": r.soil_temperature, 
+                    "wind_speed": r.wind_speed, 
+                    "wind_direction": r.wind_direction 
+                    } for r in records]) 
+            ) 
+# [END hmtools]
+
 # [START]
 class RealTimeHandler(webapp2.RequestHandler):
+    """ Loads the real time interface"""
     def get(self):
         user = users.get_current_user()
         template_values = check_login(user, self)
@@ -68,50 +111,17 @@ class RealTimeHandler(webapp2.RequestHandler):
 
 # [START]
 class RealTimeLoader(webapp2.RequestHandler):
+    """ Returns a piece of historical data as if it was real-time data
+    If the lastDate parameter is empty, then it returns the first chunk of data
+    If the lastDate is not empty, it returns one (or more) record whose 
+    date is bigger that the lastDate parameter 
 
-    def options(self):
-        self.response.headers['Access-Control-Allow-Origin'] = '*'
-        self.response.headers['Access-Control-Allow-Headers'] = '*'
-        self.response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+    """
 
     def get(self):
-        self.response.headers['Access-Control-Allow-Origin'] = '*'
-        self.response.headers['Access-Control-Allow-Headers'] = '*'
-        self.response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
-
         last_date_str = self.request.get('lastDate', None);
 
-        #print 'Parameter: ',last_date_str
-        if not(last_date_str is None or last_date_str == "" ):
-            # The client has some data already
-            # So, it is asking for new data 
-            # This code returns the following data window, starting from the 
-            # last_date parameter
-            last_date = datetime.strptime(last_date_str, '%Y-%m-%d %H:%M:%S')
-            #print 'Parameter: ',last_date
-            q = model.Hmrecord.query(model.Hmrecord.date > last_date).order(+model.Hmrecord.date)
-            records = q.fetch(1)
-            #print("Queried data ((new)):")
-            #for r in records: print r
-
-            self.response.write(
-                json.dumps(
-                    [{
-                        "station_name" : r.station_name,
-                        "latitude" : r.latitude,
-                        "longitude" : r.longitude,
-                        "date": r.date.strftime('%Y-%m-%d %H:%M:%S'),
-                        "rec_number": r.rec_number,
-                        "temperature": r.temperature,
-                        "air_humidity": r.air_humidity,
-                        "pressure": r.pressure,
-                        "solar_radiation": r.solar_radiation,
-                        "soil_temperature": r.soil_temperature,
-                        "wind_speed": r.wind_speed,
-                        "wind_direction": r.wind_direction
-                        } for r in records])
-                )
-        else:
+        if last_date_str is None or last_date_str.strip() == "":
             # For the first query (not last_date parameter)
             # return a small amomunt of the data
             # the erliest data
@@ -140,10 +150,41 @@ class RealTimeLoader(webapp2.RequestHandler):
                         "wind_direction": r.wind_direction
                         } for r in records])
                 )
+        else:
+            # The client has some data already
+            # So, it is asking for new data 
+            # This code returns the following data window, starting from the 
+            # last_date parameter
+            last_date = datetime.strptime(last_date_str, '%Y-%m-%d %H:%M:%S')
+            #print 'Parameter: ',last_date
+            q = model.Hmrecord.query(model.Hmrecord.date > last_date).order(+model.Hmrecord.date)
+            records = q.fetch(1)
+
+            self.response.write(
+                json.dumps(
+                    [{
+                        "station_name" : r.station_name,
+                        "latitude" : r.latitude,
+                        "longitude" : r.longitude,
+                        "date": r.date.strftime('%Y-%m-%d %H:%M:%S'),
+                        "rec_number": r.rec_number,
+                        "temperature": r.temperature,
+                        "air_humidity": r.air_humidity,
+                        "pressure": r.pressure,
+                        "solar_radiation": r.solar_radiation,
+                        "soil_temperature": r.soil_temperature,
+                        "wind_speed": r.wind_speed,
+                        "wind_direction": r.wind_direction
+                        } for r in records])
+                )
+            
 # [END]
 
 # [START]
 class SyntheticRealTimeProducer(webapp2.RequestHandler):
+    """ Receives new synthetic data and stores it in the Hmrecord2 entity.
+    This is part of the real-time producer/consumer simulation
+    """
 
     def post(self):
         # get the data
@@ -160,11 +201,13 @@ class SyntheticRealTimeProducer(webapp2.RequestHandler):
 
 # [START]
 class SyntheticRealTimeConsumer(webapp2.RequestHandler):
+    """ Returns the synthetic data stored in the Hmrecord2 entity.
+    This is part of the real-time producer/consumer simulation
+    """
 
     def get(self):
         last_date_str = self.request.get('lastDate', None);
 
-        #print 'Parameter: ',last_date_str
         if not(last_date_str is None or last_date_str == "" ):
             # The client has some data already
             # So, it is asking for new data 
@@ -205,48 +248,16 @@ class SyntheticRealTimeConsumer(webapp2.RequestHandler):
                 )
 # [END]
 
-# [START Login]
-class Login(webapp2.RequestHandler):
-
-    def post(self):
-        username = self.request.get('username', user.DEFAULT_USERNAME)
-
-        query_params = {'username': username}
-        self.redirect('/login?' + urllib.urlencode(query_params))
-# [END Login]
-
-# [START hmtools]
-class Hmtools(webapp2.RequestHandler):
-
-    def get(self):
-        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
-        records = q.fetch() 
-
-        self.response.write( 
-            json.dumps( 
-                [{ 
-                    "station_name" : r.station_name, 
-                    "latitude" : r.latitude, 
-                    "longitude" : r.longitude, 
-                    "date": r.date.strftime('%Y-%m-%d %H:%M:%S'), 
-                    "rec_number": r.rec_number, 
-                    "temperature": r.temperature, 
-                    "air_humidity": r.air_humidity, 
-                    "pressure": r.pressure, 
-                    "solar_radiation": r.solar_radiation, 
-                    "soil_temperature": r.soil_temperature, 
-                    "wind_speed": r.wind_speed, 
-                    "wind_direction": r.wind_direction 
-                    } for r in records]) 
-            ) 
-# [END hmtools]
 
 # [START aggregator]
 class Aggregator(webapp2.RequestHandler):
+    """ Calculates aggregation time series for the historical data.
+    The aggregated data can have different periodicity (hour, day, month, year)
+    and use different statistics methods for the aggregation (mean, median, min, max)
+    """
 
     def queryData(self, variable):
-        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
-        records = q.fetch()
+        records = queryHistoricalData()
 
         # Aggregate data
         result = [];
@@ -336,9 +347,11 @@ class Aggregator(webapp2.RequestHandler):
 
 # [START statistics]
 class Statistics(webapp2.RequestHandler):
+    """ Calculates basic statistics for the historical data
+    """
+
     def queryData(self, variable):
-        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
-        records = q.fetch()
+        records = queryHistoricalData()
 
         # Aggregate data
         result = [];
@@ -403,9 +416,12 @@ class Statistics(webapp2.RequestHandler):
 
 # [START RunningMean]
 class RunningMean(webapp2.RequestHandler):
+    """ Calculates the running mean or moving average for the historical data
+    It receives the size of the window as a parameter.
+    """
+
     def queryData(self, variable):
-        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
-        records = q.fetch()
+        records = queryHistoricalData()
 
         # Aggregate data
         result = [];
@@ -464,6 +480,8 @@ class RunningMean(webapp2.RequestHandler):
 
 # [START chart]
 class Chart(webapp2.RequestHandler):
+    """ Loads the line chart interface
+    """    
 
     def get(self):
         user = users.get_current_user()
@@ -474,6 +492,8 @@ class Chart(webapp2.RequestHandler):
 
 # [START map]
 class Map(webapp2.RequestHandler):
+    """ Loads the map interface
+    """   
 
     def get(self):
         user = users.get_current_user()
@@ -484,6 +504,8 @@ class Map(webapp2.RequestHandler):
 
 # [START boxplot]
 class Boxplot(webapp2.RequestHandler):
+    """ Loads the boxplot interface
+    """   
 
     def get(self):
         user = users.get_current_user()
@@ -494,6 +516,8 @@ class Boxplot(webapp2.RequestHandler):
 
 # [START wordcloud]
 class WordCloud(webapp2.RequestHandler):
+    """ Loads the cloud interface
+    """   
 
     def get(self):
         user = users.get_current_user()
