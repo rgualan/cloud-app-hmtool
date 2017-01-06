@@ -1,9 +1,14 @@
+# twitter_rest_gae.py
+# Twitter Rest APIs - Search API
+# Save tweets in Google Datastore
+
 import logging
 from twitter_rest import TwitterRest
 from google.appengine.ext import ndb
 # import requests_toolbelt.adapters.appengine
 # requests_toolbelt.adapters.appengine.monkeypatch()
 
+# Database Model for new Twitter Statuses
 class TwitterStatus(ndb.Model):
     text = ndb.TextProperty()
     date = ndb.DateTimeProperty()
@@ -11,6 +16,8 @@ class TwitterStatus(ndb.Model):
     tweetid = ndb.StringProperty()
     location = ndb.GeoPtProperty()
 
+# Extend TwitterRest class
+# Save new tweets in Google Datastore
 class TwitterRestGAE(TwitterRest):
 
     tweets_count = 0

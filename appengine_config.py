@@ -1,4 +1,6 @@
 # appengine_config.py
+# Include lib folder that contains required libraries in appengine path
+
 from google.appengine.ext import vendor
 import os
 
