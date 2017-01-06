@@ -5,8 +5,12 @@
 import logging
 from twitter_rest import TwitterRest
 from google.appengine.ext import ndb
-# import requests_toolbelt.adapters.appengine
-# requests_toolbelt.adapters.appengine.monkeypatch()
+
+# Configure requests library to use URLFetch
+# Tweepy library is using requests
+# https://cloud.google.com/appengine/docs/python/issue-requests
+import requests_toolbelt.adapters.appengine
+requests_toolbelt.adapters.appengine.monkeypatch()
 
 # Database Model for new Twitter Statuses
 class TwitterStatus(ndb.Model):
@@ -24,6 +28,7 @@ class TwitterRestGAE(TwitterRest):
 
     def __init__(self):
         TwitterRest.__init__(self)
+        print "test"
 
     # Save each tweet in Datastore
     def process_status(self,status):
