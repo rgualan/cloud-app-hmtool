@@ -10,7 +10,7 @@ from google.appengine.ext import db
 import jinja2
 import webapp2
 from server.model import user, testdata, weatherapi, sentiment, model
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 # [END imports]
 
@@ -229,8 +229,9 @@ class SyntheticRealTimeConsumer(webapp2.RequestHandler):
                 )
         else:
             # For the first query (not last_date parameter)
-            # return the most recent data (last window)
-            q = model.Hmrecord2.query().order(-model.Hmrecord2.date)
+            # return the most recent data (last 5 minutes)
+            last_date = datetime.now() - timedelta(minutes=5)
+            q = model.Hmrecord2.query(model.Hmrecord2.date > last_date).order(-model.Hmrecord2.date)
             records = q.fetch(50)
             #records = q.fetch()
             records = list(reversed(records));
