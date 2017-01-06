@@ -1,0 +1,2 @@
+query = "weather"
+language = 'en'

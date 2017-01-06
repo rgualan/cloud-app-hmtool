@@ -8,9 +8,9 @@ handlers:
   static_files: client/favicon.ico
   upload: favicon\.ico
 
-- url: /bootstrap 
-  static_dir: client/bootstrap 
-  
+- url: /bootstrap
+  static_dir: client/bootstrap
+
 - url: /lib
   static_dir: client/lib
 
@@ -23,6 +23,10 @@ handlers:
 - url: /json
   static_dir: client/json
 
+- url: /tasks/twitter
+  script: server.app
+  login: admin
+
 - url: /.*
   script: hmtool.app
 
@@ -34,4 +38,7 @@ libraries:
   version: latest
 - name: jinja2
   version: latest
+- name: ssl
+  version: latest
+
 # [END libraries]

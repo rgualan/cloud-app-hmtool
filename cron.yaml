@@ -1,0 +1,4 @@
+cron:
+- description: tweet collection
+  url: /tasks/twitter
+  schedule: every 24 hours
