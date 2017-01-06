@@ -11,6 +11,9 @@ import webapp2
 from server.model import user, testdata, weatherapi, sentiment, model
 from datetime import datetime
 import json
+from google.appengine.runtime import DeadlineExceededError
+from twitter_rest_gae import TwitterRestGAE
+import logging
 # [END imports]
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -652,10 +655,8 @@ class TwitterRestHandler(webapp2.RequestHandler):
         try:
             twitter_rest = TwitterRestGAE()
             twitter_rest.search_twitter()
-        except DeadlineExceededError as dee:
-            logging.exception('Handling Twitter REST API exception:', dee)
-        except Exception as e:
-            logging.exception('Handling Twitter REST API exception:', err)
+        except DeadlineExceededError as e:
+            logging.exception('DeadlineExceededError')
 # [END TwitterRestHandler]
 
 # [START app]
