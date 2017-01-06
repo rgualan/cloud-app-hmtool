@@ -1,7 +1,7 @@
 from google.appengine.ext import ndb
 
 class Station(ndb.Model):
-    """Sub model for representing a HM station."""
+    """Representation of a Remote Sensor Station."""
     identity = ndb.StringProperty(indexed=True)
     description = ndb.StringProperty(indexed=False)
     lat = ndb.FloatProperty(indexed=False)
@@ -24,8 +24,8 @@ class Hmrecord(ndb.Model):
     wind_direction = ndb.FloatProperty(indexed=False)
 
 class Hmrecord2(ndb.Model):
-    """ The model for representing an individual Meteorological record.
-		Used for the real time simulations """
+    """ A model for representing an individual Meteorological record
+        for the real time simulations """
     station_name = ndb.StringProperty(indexed=True)
     date = ndb.DateTimeProperty(indexed=True)
     value = ndb.FloatProperty(indexed=False)
