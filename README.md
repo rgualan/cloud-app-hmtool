@@ -12,10 +12,10 @@ Users can access the application using their Google account. Data are stored in 
 
 ## Motivation
 - Real time data processing
-- Open standardization such as [OGC][8] 
+- Open standardization such as [OGC][8]
 - Visualization intensive
 - Variety of analisys that can be applied
-- IoT trend 
+- IoT trend
 - Popular field for applying Machine Learning techniques
 
 ## Cloud Environment
@@ -29,6 +29,8 @@ Users can access the application using their Google account. Data are stored in 
 ## Dependencies
 - [webapp2][6]
 - [jinja2][7]
+- [tweepy][9]
+- [ssl][10]
 
 [1]: http://www.sciencedirect.com/science/article/pii/S009830041000275X
 [2]: https://developers.google.com/appengine
@@ -38,6 +40,19 @@ Users can access the application using their Google account. Data are stored in 
 [6]: http://webapp-improved.appspot.com/
 [7]: http://jinja.pocoo.org/docs/
 [8]: http://www.opengeospatial.org/
+[9]: https://github.com/tweepy/tweepy/
+[10]: https://docs.python.org/2/library/ssl.html
+
+## Install third-party libraries
+pip install -r requirements.txt -t lib/
+
+## Credentials
+### Twitter credentials
+Add your twitter credentials in twitter_credentials.py
+
+## Upload Twitter collection cron job
+- appcfg.py update <app-directory> or
+- appcfg.py update_cron <app-directory>
 
 ## Locally run
 
@@ -47,4 +62,3 @@ To locally run the project for development purposes
 
 To locally run the project and clean the datastore
     ```dev_appserver.py . dev_appserver.py . --clear_datastore```
-
