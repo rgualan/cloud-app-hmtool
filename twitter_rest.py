@@ -40,5 +40,6 @@ class TwitterRest():
             except twp.TweepError as e:
                 break
 
+    # Process each tweet
     def process_status(self,status):
         pass

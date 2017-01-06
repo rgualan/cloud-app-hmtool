@@ -25,6 +25,7 @@ class TwitterRestGAE(TwitterRest):
     def __init__(self):
         TwitterRest.__init__(self)
 
+    # Save each tweet in Datastore
     def process_status(self,status):
         self.tweets_count += 1
         logging.debug( "Processing Tweet #" + str(self.tweets_count) )
