@@ -84,8 +84,8 @@ class RealTimeLoader(webapp2.RequestHandler):
         #print 'Parameter: ',last_date_str
         if not(last_date_str is None or last_date_str == "" ):
             # The client has some data already
-            # So, it is asking for new data 
-            # This code returns the following data window, starting from the 
+            # So, it is asking for new data
+            # This code returns the following data window, starting from the
             # last_date parameter
             last_date = datetime.strptime(last_date_str, '%Y-%m-%d %H:%M:%S')
             #print 'Parameter: ',last_date
@@ -122,7 +122,7 @@ class RealTimeLoader(webapp2.RequestHandler):
             #records = list(reversed(records));
             #print("Queried data ((first time)):")
             #for r in records: print r;
-  
+
             self.response.write(
                 json.dumps(
                     [{
@@ -167,8 +167,8 @@ class SyntheticRealTimeConsumer(webapp2.RequestHandler):
         #print 'Parameter: ',last_date_str
         if not(last_date_str is None or last_date_str == "" ):
             # The client has some data already
-            # So, it is asking for new data 
-            # This code returns the following data window, starting from the 
+            # So, it is asking for new data
+            # This code returns the following data window, starting from the
             # last_date parameter
             last_date = datetime.strptime(last_date_str, '%Y-%m-%d %H:%M:%S')
             q = model.Hmrecord2.query(model.Hmrecord2.date > last_date).order(-model.Hmrecord2.date)
@@ -194,7 +194,7 @@ class SyntheticRealTimeConsumer(webapp2.RequestHandler):
             records = list(reversed(records));
             #print("Queried data ((first time)):")
             #for r in records: print r;
-  
+
             self.response.write(
                 json.dumps(
                     [{
@@ -219,33 +219,33 @@ class Login(webapp2.RequestHandler):
 class Hmtools(webapp2.RequestHandler):
 
     def get(self):
-        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
-        records = q.fetch() 
+        q = model.Hmrecord.query().order(+model.Hmrecord.date)
+        records = q.fetch()
 
-        self.response.write( 
-            json.dumps( 
-                [{ 
-                    "station_name" : r.station_name, 
-                    "latitude" : r.latitude, 
-                    "longitude" : r.longitude, 
-                    "date": r.date.strftime('%Y-%m-%d %H:%M:%S'), 
-                    "rec_number": r.rec_number, 
-                    "temperature": r.temperature, 
-                    "air_humidity": r.air_humidity, 
-                    "pressure": r.pressure, 
-                    "solar_radiation": r.solar_radiation, 
-                    "soil_temperature": r.soil_temperature, 
-                    "wind_speed": r.wind_speed, 
-                    "wind_direction": r.wind_direction 
-                    } for r in records]) 
-            ) 
+        self.response.write(
+            json.dumps(
+                [{
+                    "station_name" : r.station_name,
+                    "latitude" : r.latitude,
+                    "longitude" : r.longitude,
+                    "date": r.date.strftime('%Y-%m-%d %H:%M:%S'),
+                    "rec_number": r.rec_number,
+                    "temperature": r.temperature,
+                    "air_humidity": r.air_humidity,
+                    "pressure": r.pressure,
+                    "solar_radiation": r.solar_radiation,
+                    "soil_temperature": r.soil_temperature,
+                    "wind_speed": r.wind_speed,
+                    "wind_direction": r.wind_direction
+                    } for r in records])
+            )
 # [END hmtools]
 
 # [START aggregator]
 class Aggregator(webapp2.RequestHandler):
 
     def queryData(self, variable):
-        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
+        q = model.Hmrecord.query().order(+model.Hmrecord.date)
         records = q.fetch()
 
         # Aggregate data
@@ -280,7 +280,7 @@ class Aggregator(webapp2.RequestHandler):
         }
 
         return levels[level]
-    
+
     def median(self, lst):
         sortedLst = sorted(lst)
         lstLen = len(lst)
@@ -289,13 +289,13 @@ class Aggregator(webapp2.RequestHandler):
         if (lstLen % 2):
             return sortedLst[index]
         else:
-            return (sortedLst[index] + sortedLst[index + 1])/2.0            
+            return (sortedLst[index] + sortedLst[index + 1])/2.0
 
     def get(self):
         variable = self.request.get("variable")
         level = self.request.get("level")
         how = self.request.get("how")
-        
+
         records = self.queryData(variable)
 
         # Aggregate data
@@ -328,16 +328,16 @@ class Aggregator(webapp2.RequestHandler):
 
             result.append({'date':date.strftime('%Y-%m-%d %H:%M:%S'), variable:aggregation})
 
-        result = sorted(result, key=lambda k: k['date']) 
+        result = sorted(result, key=lambda k: k['date'])
         #print result;
 
-        self.response.write(json.dumps(result)) 
+        self.response.write(json.dumps(result))
 # [END aggregator]
 
 # [START statistics]
 class Statistics(webapp2.RequestHandler):
     def queryData(self, variable):
-        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
+        q = model.Hmrecord.query().order(+model.Hmrecord.date)
         records = q.fetch()
 
         # Aggregate data
@@ -371,11 +371,11 @@ class Statistics(webapp2.RequestHandler):
         if (lstLen % 2):
             return sortedLst[index]
         else:
-            return (sortedLst[index] + sortedLst[index + 1])/2.0            
+            return (sortedLst[index] + sortedLst[index + 1])/2.0
 
     def get(self):
         variable = self.request.get("variable")
-        
+
         records = self.queryData(variable)
         values = []
         for r in records:
@@ -398,13 +398,13 @@ class Statistics(webapp2.RequestHandler):
             "min" : minv,
             "max" : maxv,
         }
-        self.response.write(json.dumps(result)) 
+        self.response.write(json.dumps(result))
 # [END statistics]
 
 # [START RunningMean]
 class RunningMean(webapp2.RequestHandler):
     def queryData(self, variable):
-        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
+        q = model.Hmrecord.query().order(+model.Hmrecord.date)
         records = q.fetch()
 
         # Aggregate data
@@ -453,13 +453,13 @@ class RunningMean(webapp2.RequestHandler):
         result = self.runningMean(records,variable,steps)
         #print result
 
-        self.response.write( 
-            json.dumps( 
-                [{ 
-                    "date": r["date"].strftime('%Y-%m-%d %H:%M:%S'), 
-                    variable: r[variable] 
-                } for r in result]) 
-            ) 
+        self.response.write(
+            json.dumps(
+                [{
+                    "date": r["date"].strftime('%Y-%m-%d %H:%M:%S'),
+                    variable: r[variable]
+                } for r in result])
+            )
 # [END RunningMean]
 
 # [START chart]
@@ -646,6 +646,17 @@ class Words(webapp2.RequestHandler):
             )
 # [END Words]
 
+# [START TwitterRestHandler]
+class TwitterRestHandler(webapp2.RequestHandler):
+    def get(self):
+        try:
+            twitter_rest = TwitterRestGAE()
+            twitter_rest.search_twitter()
+        except DeadlineExceededError as dee:
+            logging.exception('Handling Twitter REST API exception:', dee)
+        except Exception as e:
+            logging.exception('Handling Twitter REST API exception:', err)
+# [END TwitterRestHandler]
 
 # [START app]
 app = webapp2.WSGIApplication([
@@ -671,6 +682,7 @@ app = webapp2.WSGIApplication([
     ('/rtdata', RealTimeLoader),
     ('/srtproducer', SyntheticRealTimeProducer),
     ('/srtconsumer', SyntheticRealTimeConsumer),
+    ('/tasks/twitter', TwitterRestHandler),
 ], debug=True)
 # [END app]
 

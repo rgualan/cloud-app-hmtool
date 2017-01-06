@@ -24,7 +24,7 @@ handlers:
   static_dir: client/json
 
 - url: /tasks/twitter
-  script: server.app
+  script: hmtool.app
   login: admin
 
 - url: /.*
