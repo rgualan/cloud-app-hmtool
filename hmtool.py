@@ -642,16 +642,16 @@ class Sentiment(webapp2.RequestHandler):
 class Tweets(webapp2.RequestHandler):
 
     def get(self):
-        q = sentiment.Sentiment.query()
+        q = sentiment.Sum_Sentiment.query()
         records = q.fetch()
 
         self.response.write(
             json.dumps(
                 [{
                     "date": str(r.date),
-                    "tweet": r.tweetid,
-                    "words": r.text,
-                    "weight": r.sum_weight
+                    #"tweet": r.tweetid,
+                    "words": r.type,
+                    "weight": r.sum
                     } for r in records])
             )
 # [END Tweets]
