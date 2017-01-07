@@ -1,4 +1,10 @@
 // world map
+function main() {
+  return 'Hello, World!';
+}
+
+main();
+// world map
 var width = 800,
     height = 700,
     active = d3.select(null);
@@ -40,7 +46,7 @@ d3.json("/json/world-topo-min.json", function (error, world) {
         for (var i = 0; i < data.length; i++) {
             if (data[i].sentiment < 0)
                 lat_lng[0].push([data[i].location[0], data[i].location[1]]);
-            else if (data[i].sentiment == 0)
+            else if (data[i].sentiment === 0)
                 lat_lng[1].push([data[i].location[0], data[i].location[1]]);
             else
                 lat_lng[2].push([data[i].location[0], data[i].location[1]]);
@@ -186,7 +192,7 @@ function draw(lat_lng, country) {
                             count_zero++;
                         }
                     }
-                    for (var i = 0; i < code2.length; i++) {
+                    for (i = 0; i < code2.length; i++) {
                         if (code2[i] === code_select) {
                             count_happy++;
                         }
@@ -197,6 +203,5 @@ function draw(lat_lng, country) {
         });
     });
 }
-
 
 
