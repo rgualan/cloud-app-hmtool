@@ -1,10 +1,4 @@
 // world map
-function main() {
-  return 'Hello, World!';
-}
-
-main();
-// world map
 var width = 800,
     height = 700,
     active = d3.select(null);

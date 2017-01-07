@@ -49,3 +49,12 @@ rect {
   top: 100%;
   left: 0;
 }
+
+.grid .tick {
+  stroke: lightgrey;
+  stroke-opacity: 0.7;
+  shape-rendering: crispEdges;
+}
+.grid path {
+  stroke-width: 0;
+}
