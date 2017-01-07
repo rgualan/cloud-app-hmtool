@@ -1,4 +1,11 @@
-var width = 700,
+// world map
+function main() {
+  return 'Hello, World!';
+}
+
+main();
+// world map
+var width = 800,
     height = 700,
     active = d3.select(null);
 var projection = d3.geo.mercator()
@@ -16,7 +23,7 @@ svg.append("path")
     .attr("class", "graticule")
     .attr("d", path);
 
-
+// import world json
 d3.json("/json/world-topo-min.json", function (error, world) {
     var countries = topojson.feature(world, world.objects.countries).features;
     svg.append("path")
@@ -30,7 +37,7 @@ d3.json("/json/world-topo-min.json", function (error, world) {
         .attr("class", "equator")
         .attr("d", path);
 
-
+    // read tweets data
     d3.json("/tweets-api", function (error, data) {
         var lat_lng = [];
         lat_lng[0] = [];
@@ -39,12 +46,13 @@ d3.json("/json/world-topo-min.json", function (error, world) {
         for (var i = 0; i < data.length; i++) {
             if (data[i].sentiment < 0)
                 lat_lng[0].push([data[i].location[0], data[i].location[1]]);
-            else if (data[i].sentiment == 0)
+            else if (data[i].sentiment === 0)
                 lat_lng[1].push([data[i].location[0], data[i].location[1]]);
             else
                 lat_lng[2].push([data[i].location[0], data[i].location[1]]);
 
         }
+        // draw the country land
         var country = g.selectAll(".country").data(countries);
         country.enter().insert("path")
             .attr("class", "land")
@@ -65,7 +73,7 @@ d3.json("/json/world-topo-min.json", function (error, world) {
             .on("mouseout", function (d) {
                 d3.select("#country").html("<h4>World</h4>");
             });
-
+        //draw the boundary part
         g.append("path")
             .datum(topojson.mesh(world, world.objects.countries, function (a, b) {
                 //console.log(a);
@@ -82,6 +90,7 @@ d3.json("/json/world-topo-min.json", function (error, world) {
 
         var word = ["bad", "zero","happy"];
         var col = ["#D3352E","#A2A116","#167EA2"];
+        //draw the circles of different sentiment
         for (i = 0; i < word.length; i++) {
             g.selectAll(".circle_" + word[i])
                 .data(sen[word[i]])
@@ -183,7 +192,7 @@ function draw(lat_lng, country) {
                             count_zero++;
                         }
                     }
-                    for (var i = 0; i < code2.length; i++) {
+                    for (i = 0; i < code2.length; i++) {
                         if (code2[i] === code_select) {
                             count_happy++;
                         }
@@ -194,6 +203,5 @@ function draw(lat_lng, country) {
         });
     });
 }
-
 
 
