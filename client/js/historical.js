@@ -311,7 +311,7 @@ $(document).ready(function () {
                 return boxplotChart;
             });
         });
-
+        // add UK map and points of station
         $("#MapLink").on('click', function () {
             var width = 550, height = 600;
             var projection = d3.geo.albers()
@@ -321,14 +321,33 @@ $(document).ready(function () {
                 .scale(1200 * 2.5)
                 .translate([width / 2, height / 2]);
 
-            var path = d3.geo.path()
+            var coor = [{
+                "coordinates": [
+                   53.480759, -2.242631
+
+                ],
+                "properties": {
+                    "name": "Station1"
+                }
+            }, {
+                "coordinates": [
+                    50.9278, -1.375
+
+                ],
+                "properties": {
+                    "name": "Station2"
+                }
+            }];
+            var colour = ['#2F4F4F', '#DAA520'];
+
+            var path_all = d3.geo.path()
                 .projection(projection)
                 .pointRadius(2);
 
             var svg = d3.select("#maplocal")
                 .attr("width", width)
                 .attr("height", height);
-
+            //import the uk map json
             d3.json("json/uk.json", function (error, uk) {
                 var subunits = topojson.feature(uk, uk.objects.subunits),
                     places = topojson.feature(uk, uk.objects.places);
@@ -339,20 +358,20 @@ $(document).ready(function () {
                     .attr("class", function (d) {
                         return "subunit " + d.id;
                     })
-                    .attr("d", path);
+                    .attr("d", path_all);
 
                 svg.append("path")
                     .datum(topojson.mesh(uk, uk.objects.subunits, function (a, b) {
                         return a !== b && a.id !== "IRL";
                     }))
-                    .attr("d", path)
+                    .attr("d", path_all)
                     .attr("class", "subunit-boundary");
 
                 svg.append("path")
                     .datum(topojson.mesh(uk, uk.objects.subunits, function (a, b) {
                         return a === b && a.id === "IRL";
                     }))
-                    .attr("d", path)
+                    .attr("d", path_all)
                     .attr("class", "subunit-boundary IRL");
 
                 svg.selectAll(".subunit-label")
@@ -362,66 +381,49 @@ $(document).ready(function () {
                         return "subunit-label " + d.id;
                     })
                     .attr("transform", function (d) {
-                        return "translate(" + path.centroid(d) + ")";
+                        return "translate(" + path_all.centroid(d) + ")";
                     })
                     .attr("dy", ".30em")
                     .text(function (d) {
                         return d.properties.name;
                     });
-                var coor = {
-                    "coordinates": [
-                        51.5, -0.116667
 
-                    ],
-                    "properties": {
-                        "name": "London"
-                    }
-                };
                 svg.selectAll(".circle_location")
-                    .data([coor])
+                    .data(coor)
                     .enter()
                     .append("circle")
-                    .attr("id", "circle_location")
+                    .attr("id", function (d) {
+
+                        return "circle_location" + d.properties.name;
+                    })
                     .attr("cx", function (d) {
                         return projection([d.coordinates[1], d.coordinates[0]])[0];
                     })
                     .attr("cy", function (d) {
                         return projection([d.coordinates[1], d.coordinates[0]])[1];
                     })
-                    .style("fill", "#6E2C00")
-                    .attr("r", 3)
-                    .on("mouseover", function (d) {
-                        console.log(d);
-                        d3.select(this).attr({
-                            fill: "orange",
-                            r: 4
-                        });
-
-                        // Specify where to put label of text
-                        svg.append("text")
-                            .attr({
-                                id: d.properties.name,  // Create an id for text so we can select it later for removing on mouseout
-                                x: function () {
-                                    return projection([d.coordinates[1], d.coordinates[0]])[0] - 4;
-                                },
-                                y: function () {
-                                    return projection([d.coordinates[1], d.coordinates[0]])[1] - 4;
-                                },
-                                size: "10px"
-                            })
-                            .text(function () {
-                                return d.properties.name;  // Value of the text
-                            });
-
+                    .style("fill", function (d, i) {
+                        return colour[i];
                     })
-                    .on("mouseout", function (d) {
-                        d3.select(this).attr({
-                            fill: "#6E2C00",
-                            r: 3
-                        });
-                        // Select text by id and then remove
-                        d3.select("#" + d.properties.name).remove();
-
+                    .attr("r", 3);
+                svg.selectAll(".text")
+                    .data(coor)
+                    .enter()
+                    .append("text")
+                    .attr({
+                        id: function (d) {
+                            return d.properties.name;
+                        },  // Create an id for text so we can select it later for removing on mouseout
+                        x: function (d) {
+                            return projection([d.coordinates[1], d.coordinates[0]])[0] - 7;
+                        },
+                        y: function (d) {
+                            return projection([d.coordinates[1], d.coordinates[0]])[1] - 5;
+                        },
+                        size: "12px"
+                    })
+                    .text(function (d) {
+                        return d.properties.name;  // Value of the text
                     });
 
             });

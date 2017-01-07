@@ -57,6 +57,27 @@
 			});
 
 		});
+
+		$.getJSON('/sum_sentiment', function(data_json) {
+			//console.log(data_json);
+			var items = [];
+			$.each(data_json, function(key, row) {
+				//items.push([ row["date"], row["tweet"],  row["words"], row["weight"] ]);
+				items.push([ row["date"], row["words"], row["weight"] ]);
+			});
+			//console.log(items);
+
+			$('#data_table_3').DataTable({
+				data : items,
+				columns : [
+					{title : "Date"},
+					{title : "Type"},
+					{title : "Sum"}
+					]
+			});
+
+		});
+
 		return false;
 	});
 </script>
@@ -92,7 +113,14 @@
 	</div>
 </div>
 
+<<<<<<< HEAD
 <div class="row">
     <div id="barChart"></div>
 </div>
+=======
+<div>
+	<table id="data_table_3" class="display"></table>
+</div>
+
+>>>>>>> 697508316796d69b4696fdbe2bc3ad6a02733de7
 {% endblock %}
