@@ -1,13 +1,19 @@
+$(document).ready(function() {
+
 var margin = {top: 30, right: 70, bottom: 80, left: 50},
-width = 1000 - margin.left - margin.right,
-height = 400 - margin.top - margin.bottom,
-padding = 20;
+	width = 1000 - margin.left - margin.right,
+	height = 400 - margin.top - margin.bottom,
+	padding = 20;
 
 function colores_google(n) {
-	var colores_g = ["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"];
+	var colores_g = ["#3366cc", "#dc3912", "#ff9900", "#109618", 
+		"#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395",
+		"#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707",
+		"#651067", "#329262", "#5574a6", "#3b3eac"];
 	return colores_g[n % colores_g.length];
 }
 
+// var parseDate = d3.time.format("%Y-%m-%d (%H:%M:%S.%C) %Z").parse;
 var parseDate = d3.time.format("%d/%m/%Y %H:%M").parse;
 var formatDate = d3.time.format("%Y/%m/%d");
 
@@ -19,7 +25,7 @@ var	yScale2 = d3.scale.linear()
 	.nice();
 
 var x = d3.scale.ordinal()
-.rangeRou	ndBands([0, width- margin.left - margin.right], .1);
+	.rangeRoundBands([0, width- margin.left - margin.right], .1);
 
 var xAxis = d3.svg.axis()
 	.scale(x)
@@ -33,13 +39,15 @@ var yAxis = d3.svg.axis()
 	.orient("left")
 	.tickSize(2)
 	.tickPadding(10)
-	.ticks(5);
+	.ticks(5)
+    .tickFormat(d3.format("d"));
 var yAxis2 = d3.svg.axis()
 	.scale(yScale2)
 	.orient("left")
 	.tickSize(2)
 	.tickPadding(10)
-	.ticks(5);
+	.ticks(5)
+    .tickFormat(d3.format("d"));
 
 function make_y_axis1() {        
 	return d3.svg.axis()
@@ -54,36 +62,38 @@ function make_y_axis2() {
 	.ticks(5)
 }
 
-var happyTip = d3.tip()
+var positiveTip = d3.tip()
 	.attr('class', 'd3-tip')
 	.offset([-10, 0])
 	.html(function(d) {
-		return "<strong> Date:</strong> " + d.key + "<br />" +"<strong> Happy: </strong>"+ getHappyValue(d.values)+
-		"<br />"+"<strong> Total: </strong>"+ (getHappyValue(d.values)+getUnhappyValue(d.values));
+		return "<strong> Date:</strong> " + d.key + "<br />" +"<strong> Positive: </strong>"+ getPositiveValue(d.values)+
+		"<br />"+"<strong> Total: </strong>"+ (getPositiveValue(d.values)+getNegativeValue(d.values));
 	});
 
-var unhappyTip = d3.tip()
+var negativeTip = d3.tip()
 	.attr('class', 'd3-tip')
 	.offset([-10, 0])
 	.html(function(d) {
-		return "<strong> Date:</strong> " + d.key + "<br />" +"<strong> Unhappy: </strong>"+ getUnhappyValue(d.values)+
-		"<br />"+"<strong> Total: </strong>"+ (getHappyValue(d.values)+getUnhappyValue(d.values));
+		return "<strong> Date:</strong> " + d.key + "<br />" +"<strong> Negative: </strong>"+ getNegativeValue(d.values)+
+		"<br />"+"<strong> Total: </strong>"+ (getPositiveValue(d.values)+getNegativeValue(d.values));
 	});
 
-var svg = d3.select("body")
+var svg = d3.select("#barChart")
 	.append("svg")
 	.attr("width", width + margin.left + margin.right)
 	.attr("height", height + margin.top + margin.bottom)
 	.attr("transform", "translate(" + 0 + "," + 410 + ")");
 
-				// d3.json('/tweets', function(csv_data) { 
-d3.csv("../data/weather_tweets2.csv",function(csv_data){
-	csv_data.forEach(function(d){
+// d3.json('/tweets-api', function(error,data) { 
+// d3.csv("../data/weather_tweets2.csv",function(data){
+d3.csv("./json/tweets_happy.csv",function(data){
+	console.log(data)
+	data.forEach(function(d){
 		d.date = formatDate(parseDate(d.created_at));
 		d.date2 = parseDate(d.created_at);
-		d.sentimental = (d.weight > 0 ? (d.weight > 5 ? "Happy" : "Happy") : (d.weight < -5 ? "Unhappy" : "Unhappy"));
+		d.sentimental = (d.happy > 0 ? "Positive" : (d.happy < 0 ? "Negative" : "Nautual")); //sentiment
 	});
-	console.log(csv_data);
+	console.log(data);
 	//create nested data by using date as first key and sentimental as second key
 	var nested_data = d3.nest()
 		.key(function(d){
@@ -93,16 +103,16 @@ d3.csv("../data/weather_tweets2.csv",function(csv_data){
 			return d.sentimental
 		})
 		.rollup(function(leaves) { return leaves.length; })
-		.entries(csv_data);
+		.entries(data);
 
 	console.log(nested_data);
 
-	  //find max value on each sentimental
+	//find max value on each sentimental
 	var maxY = 0;
 	var maxY2 = 0;
 	nested_data.forEach(function(d,i) {
 		d.values.forEach(function(d,i){
-			if (d.key === "Happy") {
+			if (d.key === "Positive") {
 				if (d.values > maxY) {
 					maxY = d.values;
 				};
@@ -123,7 +133,7 @@ d3.csv("../data/weather_tweets2.csv",function(csv_data){
 	yScale.domain([0,maxY+1]);
 	yScale2.domain([0,maxY2+1]);
 
-  	//find tick value for x axis
+  	//find tick value for x axis and create it
   	var domain = nested_data.map(function(d) { return d.key; });
   	x.domain(domain);
   	var ticks = domain.filter(function(v, i) { return i % 20 === 0; });
@@ -134,20 +144,14 @@ d3.csv("../data/weather_tweets2.csv",function(csv_data){
 	  	.attr("transform", "translate("+ (padding + 30) +"," + (height - padding) + ")")
 	  	.call(xAxis)
 	  	.selectAll('text')
-	  	.style("font-size","14px")
-		// .style("text-anchor", "end")
-	 	// .style("color", "#333")
-	 	// .attr("dx", "-.8em")
-	 	// .attr("dy", "-.55em")
-		// .attr("transform", "rotate(-90)" );
-	//upper y axis
+	//create upper y axis
 	svg.append('g')
 		.attr('class', 'y axis')
 		.call(yAxis)
 		.attr("transform", "translate(" + (padding + 30) + ",0)");
-		//lower y axis
+	//create lower y axis
 	svg.append('g')
-		.attr('class', 'y axis2')
+		.attr('class', 'y axis')
 		.call(yAxis2)
 		.attr("transform", "translate(" + (padding + 30) + ",0)")
 		.append("text")
@@ -157,7 +161,7 @@ d3.csv("../data/weather_tweets2.csv",function(csv_data){
 		.style("text-anchor", "end")
 		.text("Tweet Count");
 
-	//grid for upper y axis
+	//create grid for upper y axis
 	svg.append("g")         
 		.attr("class", "grid y1")
 		.call(make_y_axis1()
@@ -166,7 +170,7 @@ d3.csv("../data/weather_tweets2.csv",function(csv_data){
 			)
 		.attr("transform", "translate("  + (padding + 30) + ",0)");
 
-	//grid for lower y axis
+	//create grid for lower y axis
 	svg.append("g")         
 		.attr("class", "grid y2")
 		.call(make_y_axis2()
@@ -175,7 +179,7 @@ d3.csv("../data/weather_tweets2.csv",function(csv_data){
 			)
 		.attr("transform", "translate("  + (padding + 30) + ",0)");
 
-		//create upper bar(happy)
+	//create upper bar(positive)
 	svg.selectAll("bar")
 		.data(nested_data)
 		.enter().append("rect")
@@ -183,16 +187,16 @@ d3.csv("../data/weather_tweets2.csv",function(csv_data){
 		.attr("x", function(d) { return x(d.key); })
 		.attr("width", x.rangeBand())
 		.attr("y", function(d) {
-			return yScale(getHappyValue(d.values))
+			return yScale(getPositiveValue(d.values))
 		})
-		.attr("height", function(d) { return height/2 - yScale(getHappyValue(d.values)); })
+		.attr("height", function(d) { return height/2 - yScale(getPositiveValue(d.values)); })
 		.attr("transform", "translate(" + (padding+30) + ","+(-0)+")")
-		.on('mouseover',happyTip.show)
-		.on('mouseout', happyTip.hide);
+		.on('mouseover',positiveTip.show)
+		.on('mouseout', positiveTip.hide);
 
-	svg.call(happyTip);
+	svg.call(positiveTip);
 
-		//create lower bar(unhappy)
+	//create lower bar(negative)
 	svg.selectAll("bar")
 		.data(nested_data)
 		.enter().append("rect")
@@ -200,18 +204,18 @@ d3.csv("../data/weather_tweets2.csv",function(csv_data){
 		.attr("x", function(d) { return x(d.key); })
 		.attr("width", x.rangeBand())
 		.attr("y", function(d) {
-			return height/2+getUnhappyValue(d.values) -1;
+			return height/2+getNegativeValue(d.values) - getNegativeValue(d.values);
 		})
 		.attr("height", function(d) { 
-			return yScale2(getUnhappyValue(d.values)) - height/2; })
+			return yScale2(getNegativeValue(d.values)) - height/2; })
 		.attr("transform", "translate(" + (padding + 30) + ","+(-0)+")")
-		.on('mouseover',unhappyTip.show)
-		.on('mouseout', unhappyTip.hide);
+		.on('mouseover',negativeTip.show)
+		.on('mouseout', negativeTip.hide);
 
-	svg.call(unhappyTip);
+		svg.call(negativeTip);
 
     //create legend
-    var legend_array = ["Happy","Unhappy"]
+    var legend_array = ["Positive","Negative"]
     var legend = svg.selectAll(".legend")
 	    .data(legend_array.slice())
 	    .enter().append("g")
@@ -229,26 +233,29 @@ d3.csv("../data/weather_tweets2.csv",function(csv_data){
 	    .attr("y", 9)
 	    .attr("dy", ".35em")
 	    .style("text-anchor", "end")
-	    .style("font-size","14px")
 	    .text(function(d) { return d; });
 });
 
-function getHappyValue(valueArray){
+//get value from Positive key
+function getPositiveValue(valueArray){
 	var returnValue = 0;
 	for (var i = valueArray.length - 1; i >= 0; i--) {
-		if (valueArray[i].key === "Happy") {
+		if (valueArray[i].key === "Positive") {
 			returnValue = valueArray[i].values;
 		};
 	};
 	return returnValue;
 }
 
-function getUnhappyValue(valueArray){
+//get value from Negative key
+function getNegativeValue(valueArray){
 	var returnValue = 0;
 	for (var i = valueArray.length - 1; i >= 0; i--) {
-		if (valueArray[i].key === "Unhappy") {
+		if (valueArray[i].key === "Negative") {
 			returnValue = valueArray[i].values;
 		};
 	};
 	return returnValue;
 }
+
+});
