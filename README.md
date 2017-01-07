@@ -52,9 +52,17 @@ Users can access the application using their Google account. Data are stored in 
 ### Twitter credentials
 Add your twitter credentials in twitter_credentials.py
 
+## Deploy the application (code and/or configuration) to Google App Engine
+```gcloud app deploy```
+
 ## Upload Twitter collection cron job
-- ```appcfg.py update <app-directory>``` or
-- ```appcfg.py update_cron <app-directory>```
+```appcfg.py update_cron -A [PROJECT_ID] .```
+
+## Google Cloud Platform Console
+
+- [Datastore](https://console.cloud.google.com/datastore)
+- [Logs](https://console.cloud.google.com/logs/viewer)
+- [Task queues / Cron jobs](https://console.cloud.google.com/appengine/taskqueues)
 
 ## Locally run
 
