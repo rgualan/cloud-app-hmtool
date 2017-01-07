@@ -5,6 +5,36 @@ from datetime import datetime
 from server.settings import *
 from google.appengine.ext import ndb
 
+def calculate_a_tweet(tweet):
+    total_weight = 0
+    list_of_words = []
+
+    sentence = tweet.split()
+    for word in sentence:
+        #check if it is url, ignore if yes.
+        h = re.match('(.*)http.*$', word)
+        u = re.match('(.*)\.com.*$', word)
+
+        if h is None and u is None:
+            #this part is to remove all symbols and turn them into whitespace
+            chars_to_remove = ['"', '!', '#', '.', ',', '?', '@', ':', '~', '*', "'", '\/', '(' ,')', '-', '=']
+            specials = ''.join(chars_to_remove)
+            trans = string.maketrans(specials, ' '*len(specials))
+            word = word.translate(trans)
+            word = word.strip()
+
+            dict = Weight.query().filter(Weight.word == word)
+            one = dict.fetch(1)
+            if one:
+                total_weight = total_weight + one[0].weight
+                cw_record = Word(word_date=rdate.date(), word_text=word)
+                cw_record.put()
+                list_of_words.append(word)
+        else:
+            pass
+
+    return {'sentiment': total_weight, 'words': list_of_words}
+
 def get_csv_data(file_name):
     csv_file = PROJECT_DIR+'/../data/'+ file_name +'.csv'
 
@@ -23,7 +53,6 @@ def get_csv_data(file_name):
             #    break
     return data
 
-
 def calculate_sentiment():
     q = Sentiment.query().fetch(1)
     q_word = Word.query().fetch(1)
@@ -35,7 +64,7 @@ def calculate_sentiment():
         for r in data:
             #print r
             total_weight = 0
-            if len(r) >= 7 and test_counter < 2000:
+            if len(r) >= 7 and test_counter < 99:
                 rdate = datetime.strptime(r[12], '%d.%m.%y %H:%M')
                 sentence = r[7].split()
                 for word in sentence:
@@ -70,7 +99,7 @@ def calculate_sentiment():
                     else:
                         pass
 
-                record = Sentiment(date=rdate.date(), tweetid=r[6], text=r[7], sum_weight=total_weight)
+                record = Sentiment(date=rdate, tweetid=r[6], text=r[7], sum_weight=total_weight)
                 records.append(record)
                 test_counter = test_counter + 1
             else:
@@ -98,32 +127,37 @@ def delete_summarize():
 
 def summarize_sentiment():
 
-    #q_sentiment = Sentiment.query()
+    q_sentiment = Sentiment.query()
     q_word = Word.query()
 
     counter = 0
 
-    #records = []
-    #for s in q_sentiment:
-        #if counter < 10:
-        #if len(records) > 0:
-        #    for each in records:
-                #print str(s.date) + ' - ' + str(each.date) + ' : ' + str(s.sum_weight)
-                #if s.date == each.date:
-                #    each.sum = each.sum + s.sum_weight
-                #else:
-                #    record = Sum_Sentiment(date=s.date, sum=s.sum_weight)
-                #    records.append(record)
-        #else:
-        #    #print str(s.date) + ' : ' + str(s.sum_weight)
-        #    record = Sum_Sentiment(date=s.date, sum=s.sum_weight)
-        #    records.append(record)
-        #ndb.put_multi(records)
-        #print str(records)
-        #else:
-            #print records
-            #break
-        #counter = counter + 1
+    records = []
+    for s in q_sentiment:
+        if counter < 10:
+            if len(records) > 0:
+                for each in records:
+                    if s.date == each.date and s.sum_weight > 0:
+                        each.sum = each.sum + s.sum_weight
+                        each.type = 'positive'
+                    elif s.date == each.date and s.sum_weight < 0:
+                        each.sum = each.sum + s.sum_weight
+                        each.type = 'negative'
+                    else:
+                        each.sum = each.sum + s.sum_weight
+                        each.type = 'neutral'
+            else:
+                if s.date == each.date and s.sum_weight > 0:
+                    record = Sum_Sentiment(date=s.date, type='positive', sum=1)
+                elif s.date == each.date and s.sum_weight < 0:
+                    record = Sum_Sentiment(date=s.date, type='negative', sum=1)
+                else:
+                    record = Sum_Sentiment(date=s.date, type='neutral', sum=1)
+                records.append(record)
+            ndb.put_multi(records)
+        else:
+            break
+        counter = counter + 1
 
     word_records = []
     for w in q_word:
@@ -154,7 +188,7 @@ class Weight(ndb.Model):
     weight = ndb.IntegerProperty(indexed=False)
 
 class Sentiment(ndb.Model):
-    date = ndb.DateProperty(indexed=True)
+    date = ndb.DateTimeProperty(indexed=True)
     tweetid = ndb.StringProperty(indexed=False)
     text = ndb.StringProperty(indexed=True)
     sum_weight = ndb.IntegerProperty(indexed=False)
