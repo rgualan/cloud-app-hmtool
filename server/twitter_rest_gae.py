@@ -7,6 +7,7 @@ from twitter_rest import TwitterRest
 from google.appengine.ext import ndb
 import twitter_settings as t_s
 from model.tweets import TwitterStatus
+from model.sentiment import calculate_a_tweet as calc_sent
 # Configure requests library to use URLFetch
 # Tweepy library is using requests
 # https://cloud.google.com/appengine/docs/python/issue-requests
@@ -35,8 +36,10 @@ class TwitterRestGAE(TwitterRest):
             if t_s.tweets_only_geo == True:
                 return True
             geo = None
+        sent_result = calc_sent(status.text)
         twitter_status = TwitterStatus(text = status.text,date = status.created_at,
             userid = status.user.id_str,tweetid = status.id_str,location = geo,
+            sentiment = sent_result['sentiment'], words=['words']
         )
         twitter_status_key = twitter_status.put()
         return True

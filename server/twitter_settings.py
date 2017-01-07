@@ -8,7 +8,7 @@ query = "weather"
 language = 'en'
 
 # Limit number of tweets
-tweets_limit = 5000
+tweets_limit = 1000
 
 # Keep only tweets with coordinates
-tweets_only_geo = False
+tweets_only_geo = True
