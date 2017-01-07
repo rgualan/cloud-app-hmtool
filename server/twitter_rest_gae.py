@@ -7,7 +7,7 @@ from twitter_rest import TwitterRest
 from google.appengine.ext import ndb
 import twitter_settings as t_s
 from model.tweets import TwitterStatus
-from model.sentiment import calculate_a_tweet as calc_sent
+from sentiment_calculation import calculate_a_tweet as calc_sent
 # Configure requests library to use URLFetch
 # Tweepy library is using requests
 # https://cloud.google.com/appengine/docs/python/issue-requests
