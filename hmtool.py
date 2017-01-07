@@ -10,6 +10,7 @@ from google.appengine.ext import db
 import jinja2
 import webapp2
 from server.model import user, testdata, weatherapi, sentiment, model
+from server.model.tweets import TwitterStatus
 from datetime import datetime, timedelta
 import json
 from google.appengine.runtime import DeadlineExceededError
@@ -40,7 +41,7 @@ if q.count() == 0:
         records.append(record)
     ndb.put_multi(records)
 
-q = model.Hmrecord.query().order(+model.Hmrecord.date) 
+q = model.Hmrecord.query().order(+model.Hmrecord.date)
 records = q.fetch()
 HDCACHE = records
 
@@ -50,9 +51,9 @@ def queryHistoricalData():
         return HDCACHE
     else:
         logging.info("Querying database...")
-        q = model.Hmrecord.query().order(+model.Hmrecord.date) 
+        q = model.Hmrecord.query().order(+model.Hmrecord.date)
         records = q.fetch()
-        return records 
+        return records
 
 # [START main_page]
 class MainPage(webapp2.RequestHandler):
@@ -83,23 +84,23 @@ class Hmtools(webapp2.RequestHandler):
 
     def get(self):
         records = queryHistoricalData()
-        self.response.write( 
-            json.dumps( 
-                [{ 
-                    "station_name" : r.station_name, 
-                    "latitude" : r.latitude, 
-                    "longitude" : r.longitude, 
-                    "date": r.date.strftime('%Y-%m-%d %H:%M:%S'), 
-                    "rec_number": r.rec_number, 
-                    "temperature": r.temperature, 
-                    "air_humidity": r.air_humidity, 
-                    "pressure": r.pressure, 
-                    "solar_radiation": r.solar_radiation, 
-                    "soil_temperature": r.soil_temperature, 
-                    "wind_speed": r.wind_speed, 
-                    "wind_direction": r.wind_direction 
-                    } for r in records]) 
-            ) 
+        self.response.write(
+            json.dumps(
+                [{
+                    "station_name" : r.station_name,
+                    "latitude" : r.latitude,
+                    "longitude" : r.longitude,
+                    "date": r.date.strftime('%Y-%m-%d %H:%M:%S'),
+                    "rec_number": r.rec_number,
+                    "temperature": r.temperature,
+                    "air_humidity": r.air_humidity,
+                    "pressure": r.pressure,
+                    "solar_radiation": r.solar_radiation,
+                    "soil_temperature": r.soil_temperature,
+                    "wind_speed": r.wind_speed,
+                    "wind_direction": r.wind_direction
+                    } for r in records])
+            )
 # [END hmtools]
 
 # [START]
@@ -116,8 +117,8 @@ class RealTimeHandler(webapp2.RequestHandler):
 class RealTimeLoader(webapp2.RequestHandler):
     """ Returns a piece of historical data as if it was real-time data
     If the lastDate parameter is empty, then it returns the first chunk of data
-    If the lastDate is not empty, it returns one (or more) record whose 
-    date is bigger that the lastDate parameter 
+    If the lastDate is not empty, it returns one (or more) record whose
+    date is bigger that the lastDate parameter
     """
 
     def get(self):
@@ -134,7 +135,7 @@ class RealTimeLoader(webapp2.RequestHandler):
             #records = list(reversed(records));
             #print("Queried data ((first time)):")
             #for r in records: print r;
-  
+
             self.response.write(
                 json.dumps(
                     [{
@@ -154,8 +155,8 @@ class RealTimeLoader(webapp2.RequestHandler):
                 )
         else:
             # The client has some data already
-            # So, it is asking for new data 
-            # This code returns the following data window, starting from the 
+            # So, it is asking for new data
+            # This code returns the following data window, starting from the
             # last_date parameter
             last_date = datetime.strptime(last_date_str, '%Y-%m-%d %H:%M:%S')
             #print 'Parameter: ',last_date
@@ -179,7 +180,7 @@ class RealTimeLoader(webapp2.RequestHandler):
                         "wind_direction": r.wind_direction
                         } for r in records])
                 )
-            
+
 # [END]
 
 # [START]
@@ -483,7 +484,7 @@ class RunningMean(webapp2.RequestHandler):
 # [START chart]
 class Chart(webapp2.RequestHandler):
     """ Loads the line chart interface
-    """    
+    """
 
     def get(self):
         user = users.get_current_user()
@@ -495,7 +496,7 @@ class Chart(webapp2.RequestHandler):
 # [START map]
 class Map(webapp2.RequestHandler):
     """ Loads the map interface
-    """   
+    """
 
     def get(self):
         user = users.get_current_user()
@@ -507,7 +508,7 @@ class Map(webapp2.RequestHandler):
 # [START boxplot]
 class Boxplot(webapp2.RequestHandler):
     """ Loads the boxplot interface
-    """   
+    """
 
     def get(self):
         user = users.get_current_user()
@@ -519,7 +520,7 @@ class Boxplot(webapp2.RequestHandler):
 # [START wordcloud]
 class WordCloud(webapp2.RequestHandler):
     """ Loads the cloud interface
-    """   
+    """
 
     def get(self):
         user = users.get_current_user()
@@ -683,6 +684,22 @@ class TwitterRestHandler(webapp2.RequestHandler):
             logging.exception('DeadlineExceededError')
 # [END TwitterRestHandler]
 
+# [START TweetsHandler]
+class TweetsHandler(webapp2.RequestHandler):
+    def get(self):
+        q = TwitterStatus.query()
+        results = q.fetch()
+        self.response.write(
+            json.dumps(
+                [{
+                    "sentiment": t['sentiment'],
+                    "tweetid": t['tweetid'],
+                    "location": [t['location']['latitude'], t['location']['longitude']],
+                    } for t in results])
+            )
+
+# [END TweetsHandler]
+
 # [START app]
 app = webapp2.WSGIApplication([
     ('/', MainPage),
@@ -707,6 +724,7 @@ app = webapp2.WSGIApplication([
     ('/rtdata', RealTimeLoader),
     ('/srtproducer', SyntheticRealTimeProducer),
     ('/srtconsumer', SyntheticRealTimeConsumer),
+    ('/tweets-api', TweetsHandler),
     ('/tasks/twitter', TwitterRestHandler),
 ], debug=True)
 # [END app]
