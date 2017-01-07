@@ -83,15 +83,6 @@ def calculate_sentiment():
                         if one:
                             print 'same word...' + str(one[0].word)
                             total_weight = total_weight + one[0].weight
-                            #count_word = Word.query().filter(ndb.DateProperty('word_date') == rdate.date(), ndb.GenericProperty('word_text') == word)
-                            #count_word = Word.query().filter(Word.word_text == word.lower())
-                            #count_word = Word.query()
-                            #cw_one = count_word.fetch(1)
-                            #if cw_one:
-                                #cw_record = Word(word_date=rdate.date(), word_text=word, word_sum_weight=cw_one[0].word_sum_weight + 1.0)
-                                #cw_record = Word(word_text=word, word_sum_weight=cw_one[0].word_sum_weight + 1.0)
-                            #else:
-                                #cw_record = Word(word_date=rdate.date(), word_text=word, word_sum_weight=1.0)
                             cw_record = Word(word_date=rdate.date(), word_text=word)
                             cw_record.put()
                     else:
@@ -120,7 +111,7 @@ def calculate_sentiment():
     return True
 
 def delete_summarize():
-    #ndb.delete_multi(Sum_Sentiment.query().fetch(keys_only=True))
+    ndb.delete_multi(Sum_Sentiment.query().fetch(keys_only=True))
     ndb.delete_multi(Sum_Word.query().fetch(keys_only=True))
 
 def summarize_sentiment():
@@ -133,29 +124,40 @@ def summarize_sentiment():
     records = []
     for s in q_sentiment:
         #if counter < 10:
+        print str(s.date.date()) + ' - ' + str(s.sum_weight > 0)
+        type = ''
+        if s.sum_weight > 0: type = 'positive'
+        elif s.sum_weight < 0: type = 'negative'
+        else: type = 'neutral'
+
+        check = True
         if len(records) > 0:
             for each in records:
-                if s.date.date() == each.date and s.sum_weight > 0:
+                if s.date.date() == each.date and each.type == type:
                     each.sum = each.sum + 1
-                    each.type = 'positive'
-                elif s.date.date() == each.date and s.sum_weight < 0:
-                    each.sum = each.sum + 1
-                    each.type = 'negative'
-                else:
-                    each.sum = each.sum + 1
-                    each.type = 'neutral'
+                    #print str(each.date.date()) + '::1'
+                    check = False
+
+                if check:
+                    record = Sum_Sentiment(date=s.date.date(), type=type, sum=1)
+                    records.append(record)
         else:
             if s.sum_weight > 0:
-                record = Sum_Sentiment(date=s.date, type='positive', sum=1)
+                record = Sum_Sentiment(date=s.date.date(), type=type, sum=1)
+                print '::4'
+                records.append(record)
             elif s.sum_weight < 0:
-                record = Sum_Sentiment(date=s.date, type='negative', sum=1)
+                record = Sum_Sentiment(date=s.date.date(), type=type, sum=1)
+                print '::5'
+                records.append(record)
             else:
-                record = Sum_Sentiment(date=s.date, type='neutral', sum=1)
-            records.append(record)
-        ndb.put_multi(records)
+                record = Sum_Sentiment(date=s.date.date(), type='neutral', sum=1)
+                print '::6'
+                records.append(record)
+    ndb.put_multi(records)
         #else:
         #    break
-        counter = counter + 1
+    counter = counter + 1
 
     word_records = []
     for w in q_word:
@@ -163,7 +165,6 @@ def summarize_sentiment():
         if len(word_records) > 0:
             check = True
             for each in word_records:
-                print str(counter) + '. word: ' + str(w.word_text) + ' - ' + str(each.word) + ';; date: ' + str(w.word_date) + ' - ' + str(each.date)
                 if w.word_text == each.word and w.word_date == each.date:
                     each.sum = each.sum + 1
                     check = False
@@ -205,4 +206,3 @@ class Sum_Word(ndb.Model):
     date = ndb.DateProperty(indexed=True)
     word = ndb.StringProperty(indexed=True)
     sum = ndb.IntegerProperty(indexed=False)
-
