@@ -4,22 +4,14 @@
   {{ super() }}
 	<meta charset="utf-8">
   	<link rel="stylesheet" href="/css/scatter.css" charset="utf-8">
+
+	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+	<script src="/js/scatter.js"></script>
+	<script src="js/d3.layout.cloud.js"></script>
+	<script src="js/cloud_tag.js"></script>
 {% endblock %}
 
 {% block content %}
-
-<div>
-    <h1>Sentiment Analysis of Twitter Data</h1>
-</div>
-
-  <div id="scatter"></div>
-
-  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-  <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-  <script type="text/javascript" src="/js/scatter.js"></script>
-
-  <!--<input type="button" name="xAxis" value="xAxis">-->
-
 <script>
 	$(document).ready(function() {
 
@@ -33,6 +25,7 @@
 
 			$('#data_table_2').DataTable({
 				data : items,
+	            //"scrollX": true,
 				columns : [
 					{title : "Date"},
 					{title : "Word"},
@@ -53,6 +46,7 @@
 
 			$('#data_table').DataTable({
 				data : items,
+	            //"scrollX": true,
 				columns : [
 					{title : "Date"},
 					//{title : "Tweet"},
@@ -87,43 +81,35 @@
 	});
 </script>
 
-<style>
-	.tab-menu {
-		margin: 5px;
-		padding: 5px;
-		background-color: #101010;
-	}
+<h3>Sentiment Analysis of Twitter Data</h3>
 
-	.tab-container {
-		border-bottom: solid black;
-		margin: 5px;
-	}
-
-	a, a:visited {
-		color: #9d9d9d;
-		text-decoration: none;
-	}
-
-
-	a:hover {
-		color: white;
-		text-decoration: none;
-	}
-</style>
-
-<div class="tab-container">
-	<span class="tab-menu"><a href="/insert_weight_data">Insert Weight</a></span>
-	<span class="tab-menu"><a href="/insert_sentiment_data">Insert Sentiment</a></span>
-	<span class="tab-menu"><a href="/summary">Summary</a></span>
-	<span class="tab-menu"><a href="/delete_summary">Delete</a></span>
+<div class="row" style="padding-bottom: 20px;">
+	<div class="col-md-4 col-md-offset-4">
+		<a class="btn btn-default" href="/insert_weight_data" role="button">Insert Weight</a>
+		<a class="btn btn-default" href="/insert_sentiment_data" role="button">Insert Sentiment</a>
+		<a class="btn btn-default" href="/summary" role="button">Summary</a>
+		<a class="btn btn-default" href="/delete_summary" role="button">Delete</a>
+	</div>
 </div>
 
-<div>
-	<table id="data_table" class="display"></table>
+
+<div class="row">
+  	<div class="col-sm-6">
+		<div id="scatter"></div>
+	</div>
+    <div class="col-sm-6">
+    	<div id="cloudTag"></div>
+	</div>
 </div>
 
-<div>
-	<table id="data_table_2" class="display"></table>
+
+<div class="row">
+  	<div class="col-sm-6">
+    	<table id="data_table" class="display"></table>
+ 	</div>
+    <div class="col-sm-6">
+      	<table id="data_table_2" class="display"></table>
+	</div>
 </div>
 
 <div>

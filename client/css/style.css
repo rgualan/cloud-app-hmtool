@@ -71,11 +71,14 @@ text {
 }
 
 #happy:checked + .demo--radioInput:after {
-    background-color: #91E4D5;
+    background-color: #167EA2;
 }
 
 #bad:checked + .demo--radioInput:after {
-    background-color: #F084B3;
+    background-color: #D3352E;
+}
+#zero:checked + .demo--radioInput:after {
+    background-color: #A2A116;
 }
 
 .sentiment_label {

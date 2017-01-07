@@ -1,143 +1,159 @@
 {% extends "/client/layout/base.html" %}
 
 {% block head %}
-    {{ super() }}
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+{{ super() }}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.css">    
-    <link rel="stylesheet" type="text/css" href="/css/keen-dashboards.css">
-    <link rel="stylesheet" type="text/css" href="/css/historical.css">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.css">
+<link rel="stylesheet" type="text/css" href="/css/keen-dashboards.css">
+<link rel="stylesheet" type="text/css" href="/css/historical.css">
 
-   	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.js"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <!--<script type="text/javascript" src="http://spin.js.org/spin.min.js"></script>-->
-    <script type="text/javascript" src="/js/spin.js"></script>    
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script type="text/javascript" src="/js/spin.js"></script>
 
-    <script type="text/javascript" src="/js/historical.js"></script>
+<script type="text/javascript" src="/js/historical.js"></script>
 
 {% endblock %}
 
 {% block content %}
 <h3>Test Station</h3>
 <div class="row">
-	<div class="col-sm-7">
+    <div class="col-sm-7">
         <div class="chart-wrapper">
-          <div class="chart-title">
-            Station: Test Station. 
-            Variable: <select id="variableSelect"></select>
-          </div>
-
-          <div>
-            <div id="tabs">
-              <ul>
-                <li><a href="#tabs-1">Line Plot</a></li>
-                <li><a href="#tabs-2" id="boxPlotLink">Boxplot</a></li>
-                <li><a href="#tabs-3" id="histogramLink">Histogram</a></li>
-                <li><a href="#tabs-4" id="statsLink">Statistics</a></li>
-              </ul>
-              <div id="tabs-1">
-                <div id="chart" class='with-3d-shadow with-transitions'>
-                  <svg height="450"></svg> 
-                </div>
-                <div class="chart-wrapper">
-                  <div class="chart-title">
-                    Time Series Operations
-                  </div>
-                  <div class="chart-stage">
-                    <div class="row">
-                      <div class="col-sm-3">Aggregation:</div>
-                      <div class="col-sm-9">
-                        Periodicity: 
-                        <select id="levelAggregationSelect">
-                           <option>hour</option>
-                           <option>day</option>
-                           <option>month</option>
-                           <option>year</option>
-                        </select>
-                        Method:
-                        <select id="howSelect">
-                           <option>mean</option>
-                           <option>sum</option>
-                           <option>median</option>
-                           <option>min</option>
-                           <option>max</option>
-                        </select>
-                        <button id="btnAggregate" type="button" class="btn btn-default">Aggregate</button>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-sm-3">Moving average:</div>
-                      <div class="col-sm-9">
-                        Number of steps:
-                        <input id="txt_steps" type="number" min="0" max="100" value="10"/>
-                        <button id="btnRunningMean" type="button" class="btn btn-default">Calculate</button>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-sm-3">Plotting area:</div>
-                      <div class="col-sm-9">
-                        <button id="btnReset" type="button" class="btn btn-default">Reset</button>
-                      </div>
-                    </div>                    
-                  </div>
-                </div>
-              </div>
-              <div id="tabs-2">
-                <div id="boxPlotChart" class='with-3d-shadow with-transitions'>
-                  <svg height="400"></svg> 
-                </div>
-              </div>
-              <div id="tabs-3">
-                <div id="histogramChart">
-                </div>
-              </div>
-              <div id="tabs-4">
-                <div >
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label"> Mean: </label> 
-                    <input id="txt_mean" value="" readonly="" type="input" class="col-sm-3" style="text-align:right;"> <br/>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label"> Standard deviation: </label> 
-                    <input id="txt_stdev" value="" readonly="" type="input" class="col-sm-3" style="text-align:right;"> <br/>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Min: </label>
-                    <input id="txt_min" value="" readonly="" type="input" class="col-sm-3" style="text-align:right;"> <br/>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">Max: </label>
-                    <input id="txt_max" value="" readonly="" type="input" class="col-sm-3" style="text-align:right;"> <br/>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label"> Median: </label> 
-                    <input id="txt_median" value="" readonly="" type="input" class="col-sm-3" style="text-align:right;"> <br/>
-                  </div>
-                  <div class="form-group row">
-                    <label class="col-sm-2 col-form-label"> IQR: </label> 
-                    <input id="txt_iqr" value="" readonly="" type="input" class="col-sm-3" style="text-align:right;"> <br/>
-                  </div>
-                </div>
-              </div>
+            <div class="chart-title">
+                Station: Test Station.
+                Variable: <select id="variableSelect"></select>
             </div>
 
-              <script>
-                $( function() {
-                  $( "#tabs" ).tabs();
-                } );
-              </script>
-          </div>          
-        </div>        
-	 </div </div>
-	<div class="col-sm-5">
-        <div class="chart-wrapper">
-          <div class="chart-title">
-            Station: Test Station
-          </div>
-          <div class="chart-stage">
-            <table id="data_table" class="display"></table>
-          </div>
+            <div>
+                <div id="tabs">
+                    <ul>
+                        <li><a href="#tabs-1">Line Plot</a></li>
+                        <li><a href="#tabs-2" id="boxPlotLink">Boxplot</a></li>
+                        <li><a href="#tabs-3" id="histogramLink">Histogram</a></li>
+                        <li><a href="#tabs-4" id="statsLink">Statistics</a></li>
+                        <li><a href="#tabs-5" id="MapLink">Location</a></li>
+
+                    </ul>
+                    <div id="tabs-1">
+                        <div id="chart" class='with-3d-shadow with-transitions'>
+                            <svg height="450"></svg>
+                        </div>
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                Time Series Operations
+                            </div>
+                            <div class="chart-stage">
+                                <div class="row">
+                                    <div class="col-sm-3">Aggregation:</div>
+                                    <div class="col-sm-9">
+                                        Periodicity:
+                                        <select id="levelAggregationSelect">
+                                            <option>hour</option>
+                                            <option>day</option>
+                                            <option>month</option>
+                                            <option>year</option>
+                                        </select>
+                                        Method:
+                                        <select id="howSelect">
+                                            <option>mean</option>
+                                            <option>sum</option>
+                                            <option>median</option>
+                                            <option>min</option>
+                                            <option>max</option>
+                                        </select>
+                                        <button id="btnAggregate" type="button" class="btn btn-default">Aggregate
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-3">Moving average:</div>
+                                    <div class="col-sm-9">
+                                        Number of steps:
+                                        <input id="txt_steps" type="number" min="0" max="100" value="10"/>
+                                        <button id="btnRunningMean" type="button" class="btn btn-default">Calculate
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-3">Plotting area:</div>
+                                    <div class="col-sm-9">
+                                        <button id="btnReset" type="button" class="btn btn-default">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tabs-2">
+                        <div id="boxPlotChart" class='with-3d-shadow with-transitions'>
+                            <svg height="400"></svg>
+                        </div>
+                    </div>
+                    <div id="tabs-3">
+                        <div id="histogramChart">
+                        </div>
+                    </div>
+                    <div id="tabs-4">
+                        <div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label"> Mean: </label>
+                                <input id="txt_mean" value="" readonly="" type="input" class="col-sm-3"
+                                       style="text-align:right;"> <br/>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label"> Standard deviation: </label>
+                                <input id="txt_stdev" value="" readonly="" type="input" class="col-sm-3"
+                                       style="text-align:right;"> <br/>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Min: </label>
+                                <input id="txt_min" value="" readonly="" type="input" class="col-sm-3"
+                                       style="text-align:right;"> <br/>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Max: </label>
+                                <input id="txt_max" value="" readonly="" type="input" class="col-sm-3"
+                                       style="text-align:right;"> <br/>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label"> Median: </label>
+                                <input id="txt_median" value="" readonly="" type="input" class="col-sm-3"
+                                       style="text-align:right;"> <br/>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label"> IQR: </label>
+                                <input id="txt_iqr" value="" readonly="" type="input" class="col-sm-3"
+                                       style="text-align:right;"> <br/>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tabs-5">
+                        <div id="Location" class='with-3d-shadow with-transitions'>
+                            <svg height="400" id="maplocal"></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    $(function () {
+                        $("#tabs").tabs();
+                    });
+                </script>
+            </div>
         </div>
-	</div>
-{% endblock %}
+    </div>
+    <div class="col-sm-5">
+        <div class="chart-wrapper">
+            <div class="chart-title">
+                Station: Test Station
+            </div>
+            <div class="chart-stage">
+                <table id="data_table" class="display"></table>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

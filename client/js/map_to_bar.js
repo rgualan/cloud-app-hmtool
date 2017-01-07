@@ -1,11 +1,11 @@
 function map_to_bar(data) {
     document.getElementById("svg_bar").innerHTML = "";
-    var margin = {top: 20, right: 20, bottom: 40, left: 40},
+    var margin = {top: 20, right: 20, bottom: 50, left: 40},
         width = 350 - margin.left - margin.right,
         height = 450 - margin.top - margin.bottom;
-    var type = ["bad", "happy"];
-    var color = ["#F084B3", "#91E4D5"];
-    var num = [data[0], data[1]];
+    var type = ["negative", "neutral","positive"];
+    var color = ["#D3352E","#A2A116","#167EA2"];
+    var num = [data[0], data[1],data[2]];
     var x = d3.scale.ordinal().rangeRoundBands([0, width], 0.05);
     var y = d3.scale.linear().range([height, 0]);
     var xAxis = d3.svg.axis()
