@@ -29,7 +29,7 @@ def getWeatherByCityIDs(ids):
     key = 'e167861a60e6d23a436f1216e6b92474'
     base_url = 'http://api.openweathermap.org'
     path = base_url + '/data/2.5/group?'
-    params = 'units=metric&APPID=' + key + 'id=' }
+    params = 'units=metric&APPID=' + key + 'id='
     if len(ids) <= 20:
         params += ','.join(ids)
     else:
