@@ -33,7 +33,6 @@ d3.json("/json/world-topo-min.json", function (error, world) {
 
     // read tweets data
     d3.json("/tweets-api", function (error, data) {
-        data=[{"location": [36.840000000000003, -2.46], "sentiment": -1, "tweetid": "817781285863071745"}, {"location": [31.149999999999999, -81.489999999999995], "sentiment": -1, "tweetid": "817786175687565312"}];
         var lat_lng = [];
         lat_lng[0] = [];
         lat_lng[1] = [];
@@ -47,6 +46,7 @@ d3.json("/json/world-topo-min.json", function (error, world) {
                 lat_lng[2].push([data[i].location[0], data[i].location[1]]);
 
         }
+        // draw the country land
         var country = g.selectAll(".country").data(countries);
         country.enter().insert("path")
             .attr("class", "land")
@@ -67,7 +67,7 @@ d3.json("/json/world-topo-min.json", function (error, world) {
             .on("mouseout", function (d) {
                 d3.select("#country").html("<h4>World</h4>");
             });
-
+        //draw the boundary part
         g.append("path")
             .datum(topojson.mesh(world, world.objects.countries, function (a, b) {
                 //console.log(a);
@@ -84,6 +84,7 @@ d3.json("/json/world-topo-min.json", function (error, world) {
 
         var word = ["bad", "zero","happy"];
         var col = ["#D3352E","#A2A116","#167EA2"];
+        //draw the circles of different sentiment
         for (i = 0; i < word.length; i++) {
             g.selectAll(".circle_" + word[i])
                 .data(sen[word[i]])

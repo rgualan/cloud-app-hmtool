@@ -340,14 +340,14 @@ $(document).ready(function () {
             }];
             var colour = ['#2F4F4F', '#DAA520'];
 
-            var path = d3.geo.path()
+            var path_all = d3.geo.path()
                 .projection(projection)
                 .pointRadius(2);
 
             var svg = d3.select("#maplocal")
                 .attr("width", width)
                 .attr("height", height);
-
+            //import the uk map json
             d3.json("json/uk.json", function (error, uk) {
                 var subunits = topojson.feature(uk, uk.objects.subunits),
                     places = topojson.feature(uk, uk.objects.places);
@@ -358,20 +358,20 @@ $(document).ready(function () {
                     .attr("class", function (d) {
                         return "subunit " + d.id;
                     })
-                    .attr("d", path);
+                    .attr("d", path_all);
 
                 svg.append("path")
                     .datum(topojson.mesh(uk, uk.objects.subunits, function (a, b) {
                         return a !== b && a.id !== "IRL";
                     }))
-                    .attr("d", path)
+                    .attr("d", path_all)
                     .attr("class", "subunit-boundary");
 
                 svg.append("path")
                     .datum(topojson.mesh(uk, uk.objects.subunits, function (a, b) {
                         return a === b && a.id === "IRL";
                     }))
-                    .attr("d", path)
+                    .attr("d", path_all)
                     .attr("class", "subunit-boundary IRL");
 
                 svg.selectAll(".subunit-label")
@@ -381,7 +381,7 @@ $(document).ready(function () {
                         return "subunit-label " + d.id;
                     })
                     .attr("transform", function (d) {
-                        return "translate(" + path.centroid(d) + ")";
+                        return "translate(" + path_all.centroid(d) + ")";
                     })
                     .attr("dy", ".30em")
                     .text(function (d) {
