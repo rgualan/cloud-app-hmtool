@@ -43,8 +43,9 @@
 				width = 1200 - margin.left - margin.right,
 				height = 400 - margin.top - margin.bottom,
 				padding = 20;
-				
+
 			var color = d3.scale.category10();
+			var color1 = d3.scale.category10();
 
     	var parseDate = d3.time.format("%d/%m/%Y %H:%M").parse;
     	var formatDate = d3.time.format("%Y/%m/%d");
@@ -144,7 +145,7 @@
 
 		  	var domain = nested_data.map(function(d) { return d.key; });
 				x.domain(domain);
-				var ticks = domain.filter(function(v, i) { return i % 4 === 0; });
+				var ticks = domain.filter(function(v, i) { return i % 12 === 0; });
 				xAxis.tickValues(ticks);
 
 		  	svg.append("g")
@@ -152,20 +153,25 @@
         	.attr("transform", "translate("+ (padding + 30) +"," + (height - padding) + ")")
 			    .call(xAxis)
 			    .selectAll('text')
-      		.style("text-anchor", "end")
-         	.style("color", "#333")
-         	.attr("dx", "-.8em")
-         	.attr("dy", "-.55em")
-        	.attr("transform", "rotate(-90)" );
+			    .style("font-size","14px")
+      		// .style("text-anchor", "end")
+         	// .style("color", "#333")
+         	// .attr("dx", "-.8em")
+         	// .attr("dy", "-.55em")
+        	// .attr("transform", "rotate(-90)" );
 
 	      svg.append('g')
 				  .attr('class', 'y axis')
 				  .call(yAxis)
-				  .attr("transform", "translate(" + (padding + 30) + ",0)");
+				  .attr("transform", "translate(" + (padding + 30) + ",0)")
+			    // .selectAll('text')
+			    // .style("font-size","12px");
 				svg.append('g')
 				  .attr('class', 'y axis2')
 				  .call(yAxis2)
-				  .attr("transform", "translate(" + (padding + 30) + ",0)")
+				  .attr("transform", "translate(" + (padding + 30) + ",0)")				  
+			    // .selectAll('text')
+			    // .style("font-size","12px")
 				  .append("text")
 		      .attr("transform", "rotate(-90)")
 		      .attr("y", -margin.left)
@@ -179,14 +185,14 @@
 			  svg.selectAll("bar")
 		      .data(nested_data)
 		    .enter().append("rect")
-		      .style("fill", "steelblue")
+		      .style("fill", color)
 		      .attr("x", function(d) { return x(d.key); })
 		      .attr("width", x.rangeBand())
 		      .attr("y", function(d) {
 		      	return yScale(getHappyValue(d.values))
 		      })
 		      .attr("height", function(d) { return height/2 - yScale(getHappyValue(d.values)); })
-		      .attr("transform", "translate(" + (padding + 30) + ","+(-0)+")")
+		      .attr("transform", "translate(" + (padding+30) + ","+(-0)+")")
 		      .on('mouseover',happyTip.show)
 		     	.on('mouseout', happyTip.hide);
 
@@ -195,7 +201,7 @@
 		    svg.selectAll("bar")
 		      .data(nested_data)
 		    .enter().append("rect")
-		      .style("fill", "red")
+		      .style("fill", color(2))
 		      .attr("x", function(d) { return x(d.key); })
 		      .attr("width", x.rangeBand())
 		      .attr("y", function(d) {
@@ -207,8 +213,28 @@
 		      .on('mouseover',unhappyTip.show)
 		     	.on('mouseout', unhappyTip.hide);
 
-		     svg.call(unhappyTip);
+		    svg.call(unhappyTip);
 
+		    var options = ["Happy","Unhappy"]
+		    var legend = svg.selectAll(".legend")
+				    .data(options.slice())
+				    .enter().append("g")
+				    .attr("class", "legend")
+				    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+				legend.append("rect")
+				    .attr("x", width - 18)
+				    .attr("width", 18)
+				    .attr("height", 18)
+				    .style("fill", color1);
+
+				legend.append("text")
+				    .attr("x", width - 24)
+				    .attr("y", 9)
+				    .attr("dy", ".35em")
+				    .style("text-anchor", "end")
+				    .style("font-size","14px")
+				    .text(function(d) { return d; });
 
 		});
 
