@@ -251,10 +251,6 @@ class SyntheticRealTimeConsumer(webapp2.RequestHandler):
                 )
 # [END]
 
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/basic
 # [START aggregator]
 class Aggregator(webapp2.RequestHandler):
     """ Calculates aggregation time series for the historical data.
