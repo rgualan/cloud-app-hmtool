@@ -1,6 +1,6 @@
-var margin = { top: 50, right: 300, bottom: 50, left: 50 },
-    outerWidth = 1050,
-    outerHeight = 500,
+var margin = { top: 20, right: 10, bottom: 40, left: 50 },
+    outerWidth = 600,
+    outerHeight = 400,
     width = outerWidth - margin.left - margin.right,
     height = outerHeight - margin.top - margin.bottom;
 
