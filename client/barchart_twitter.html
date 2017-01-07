@@ -3,15 +3,17 @@
 		<title>barchart</title>
 		<script src="https://d3js.org/d3.v3.min.js"></script>
 		<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+		<!-- // <script type="text/javascript" src="/js/sentimental-barchart.js"></script> -->
 		<style>
 
 			.d3-tip {
 			  line-height: 1;
 			  font-weight: bold;
+			  font-size: 12px;
 			  padding: 12px;
 			  background: rgba(0, 0, 0, 0.8);
 			  color: #fff;
-			  border-radius: 2px;
+			  border-radius: 5px;
 			}
 
 			/* Creates a small triangle extender for the tooltip */
@@ -22,7 +24,7 @@
 			  width: 100%;
 			  line-height: 1;
 			  color: rgba(0, 0, 0, 0.8);
-			  content: "\25BC";
+			  /*content: "\25BC";*/
 			  position: absolute;
 			  text-align: center;
 			}
@@ -33,19 +35,29 @@
 			  top: 100%;
 			  left: 0;
 			}
+			.grid .tick {
+			  stroke: lightgrey;
+			  stroke-opacity: 0.7;
+		    shape-rendering: crispEdges;
+			}
+			.grid path {
+			  stroke-width: 0;
+			}
 		</style>
   </head>
     
   <body>
-    
+    <div id="barchart"></div>
     <script>
-    	var margin = {top: 30, right: 50, bottom: 80, left: 50},
-				width = 1200 - margin.left - margin.right,
+    	var margin = {top: 30, right: 70, bottom: 80, left: 50},
+				width = 1000 - margin.left - margin.right,
 				height = 400 - margin.top - margin.bottom,
 				padding = 20;
 
-			var color = d3.scale.category10();
-			var color1 = d3.scale.category10();
+			function colores_google(n) {
+			  var colores_g = ["#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395", "#994499", "#22aa99", "#aaaa11", "#6633cc", "#e67300", "#8b0707", "#651067", "#329262", "#5574a6", "#3b3eac"];
+			  return colores_g[n % colores_g.length];
+			}
 
     	var parseDate = d3.time.format("%d/%m/%Y %H:%M").parse;
     	var formatDate = d3.time.format("%Y/%m/%d");
@@ -80,34 +92,50 @@
 						   .tickPadding(10)
 						   .ticks(5);
 
+			function make_y_axis1() {        
+			    return d3.svg.axis()
+			        .scale(yScale)
+			        .orient("left")
+			        .ticks(5)
+			}
+			function make_y_axis2() {        
+			    return d3.svg.axis()
+			        .scale(yScale2)
+			        .orient("left")
+			        .ticks(5)
+			}
+
 			var happyTip = d3.tip()
 			  .attr('class', 'd3-tip')
 			  .offset([-10, 0])
 			  .html(function(d) {
-			    return "<strong> Date:</strong> " + d.key + "<br />" +"<strong> Happy: </strong>"+ getHappyValue(d.values);
+			    return "<strong> Date:</strong> " + d.key + "<br />" +"<strong> Happy: </strong>"+ getHappyValue(d.values)+
+			    "<br />"+"<strong> Total: </strong>"+ (getHappyValue(d.values)+getUnhappyValue(d.values));
 			  });
 
 			var unhappyTip = d3.tip()
 			  .attr('class', 'd3-tip')
 			  .offset([-10, 0])
 			  .html(function(d) {
-			    return "<strong> Date:</strong> " + d.key + "<br />" +"<strong> Unhappy: </strong>"+ getUnhappyValue(d.values);
+			    return "<strong> Date:</strong> " + d.key + "<br />" +"<strong> Unhappy: </strong>"+ getUnhappyValue(d.values)+
+			    "<br />"+"<strong> Total: </strong>"+ (getHappyValue(d.values)+getUnhappyValue(d.values));
 			  });
 
-    	var svg = d3.select("body")
+    	var svg = d3.select("#barchart")
     		.append("svg")
     		.attr("width", width + margin.left + margin.right)
     		.attr("height", height + margin.top + margin.bottom)
     		.attr("transform", "translate(" + 0 + "," + 410 + ")");
 
-// $.getJSON('/words', function(data_json) {
-    	d3.csv("../data/weather_tweets2.csv",function(csv_data){
-    		csv_data.forEach(function(d){
+			// d3.json('/tweets-api', function(error,data) { 
+    	d3.csv("../data/weather_tweets2.csv",function(data){
+    		data.forEach(function(d){
     			d.date = formatDate(parseDate(d.created_at));
     			d.date2 = parseDate(d.created_at);
     			d.sentimental = (d.weight > 0 ? (d.weight > 5 ? "Happy" : "Happy") : (d.weight < -5 ? "Unhappy" : "Unhappy"));
     		});
-    		console.log(csv_data);
+    		console.log(data);
+    		//create nested data by using date as first key and sentimental as second key
 				var nested_data = d3.nest()
 					.key(function(d){
 						return d.date
@@ -116,10 +144,11 @@
 						return d.sentimental
 					})
 					.rollup(function(leaves) { return leaves.length; })
-			    .entries(csv_data);
+			    .entries(data);
 
 			  console.log(nested_data);
 
+			  //find max value on each sentimental
 				var maxY = 0;
 				var maxY2 = 0;
 			  nested_data.forEach(function(d,i) {
@@ -138,14 +167,17 @@
 			  
 			  if (maxY2<maxY) {
 			  	maxY2 = maxY
+			  }else{
+			  	maxY = maxY2
 			  };
 
 		  	yScale.domain([0,maxY+1]);
 		  	yScale2.domain([0,maxY2+1]);
 
+		  	//find tick value for x axis
 		  	var domain = nested_data.map(function(d) { return d.key; });
 				x.domain(domain);
-				var ticks = domain.filter(function(v, i) { return i % 12 === 0; });
+				var ticks = domain.filter(function(v, i) { return i % 20 === 0; });
 				xAxis.tickValues(ticks);
 
 		  	svg.append("g")
@@ -159,33 +191,46 @@
          	// .attr("dx", "-.8em")
          	// .attr("dy", "-.55em")
         	// .attr("transform", "rotate(-90)" );
-
+        //upper y axis
 	      svg.append('g')
 				  .attr('class', 'y axis')
 				  .call(yAxis)
-				  .attr("transform", "translate(" + (padding + 30) + ",0)")
-			    // .selectAll('text')
-			    // .style("font-size","12px");
+				  .attr("transform", "translate(" + (padding + 30) + ",0)");
+				//lower y axis
 				svg.append('g')
 				  .attr('class', 'y axis2')
 				  .call(yAxis2)
-				  .attr("transform", "translate(" + (padding + 30) + ",0)")				  
-			    // .selectAll('text')
-			    // .style("font-size","12px")
+				  .attr("transform", "translate(" + (padding + 30) + ",0)")
 				  .append("text")
 		      .attr("transform", "rotate(-90)")
 		      .attr("y", -margin.left)
 		      .attr("dy", ".71em")
 		      .style("text-anchor", "end")
 		      .text("Tweet Count");
-      		
 
-				  
+      	//grid for upper y axis
+		    svg.append("g")         
+	        .attr("class", "grid y1")
+	        .call(make_y_axis1()
+	            .tickSize(-width+margin.left+margin.right , 0, 0)
+	            .tickFormat("")
+	        )
+				  .attr("transform", "translate("  + (padding + 30) + ",0)");
 
+      	//grid for lower y axis
+				svg.append("g")         
+	        .attr("class", "grid y2")
+	        .call(make_y_axis2()
+	            .tickSize(-width+margin.left+margin.right , 0, 0)
+	            .tickFormat("")
+	        )
+				  .attr("transform", "translate("  + (padding + 30) + ",0)");
+
+				//create upper bar(happy)
 			  svg.selectAll("bar")
 		      .data(nested_data)
 		    .enter().append("rect")
-		      .style("fill", color)
+		      .style("fill", colores_google(0))
 		      .attr("x", function(d) { return x(d.key); })
 		      .attr("width", x.rangeBand())
 		      .attr("y", function(d) {
@@ -198,14 +243,15 @@
 
 		     svg.call(happyTip);
 
+				//create lower bar(unhappy)
 		    svg.selectAll("bar")
 		      .data(nested_data)
 		    .enter().append("rect")
-		      .style("fill", color(2))
+		      .style("fill", colores_google(1))
 		      .attr("x", function(d) { return x(d.key); })
 		      .attr("width", x.rangeBand())
 		      .attr("y", function(d) {
-		      	return height/2+getUnhappyValue(d.values)
+		      	return height/2+getUnhappyValue(d.values) -1;
 		      })
 		      .attr("height", function(d) { 
 		      	return yScale2(getUnhappyValue(d.values)) - height/2; })
@@ -215,49 +261,48 @@
 
 		    svg.call(unhappyTip);
 
-		    var options = ["Happy","Unhappy"]
+		    //create legend
+		    var legend_array = ["Happy","Unhappy"]
 		    var legend = svg.selectAll(".legend")
-				    .data(options.slice())
+				    .data(legend_array.slice())
 				    .enter().append("g")
 				    .attr("class", "legend")
 				    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
 				legend.append("rect")
-				    .attr("x", width - 18)
+				    .attr("x", width +5)
 				    .attr("width", 18)
 				    .attr("height", 18)
-				    .style("fill", color1);
+				    .style("fill", function(d,i) { return colores_google(i);});
 
 				legend.append("text")
-				    .attr("x", width - 24)
+				    .attr("x", width)
 				    .attr("y", 9)
 				    .attr("dy", ".35em")
 				    .style("text-anchor", "end")
 				    .style("font-size","14px")
 				    .text(function(d) { return d; });
+			});
 
-		});
-
-		function getHappyValue(valueArray){
-			var returnValue = 0;
-			for (var i = valueArray.length - 1; i >= 0; i--) {
-				if (valueArray[i].key === "Happy") {
-					returnValue = valueArray[i].values;
+			function getHappyValue(valueArray){
+				var returnValue = 0;
+				for (var i = valueArray.length - 1; i >= 0; i--) {
+					if (valueArray[i].key === "Happy") {
+						returnValue = valueArray[i].values;
+					};
 				};
-			};
-			return returnValue;
-		}
+				return returnValue;
+			}
 
-		function getUnhappyValue(valueArray){
-			var returnValue = 0;
-			for (var i = valueArray.length - 1; i >= 0; i--) {
-				if (valueArray[i].key === "Unhappy") {
-					returnValue = valueArray[i].values;
+			function getUnhappyValue(valueArray){
+				var returnValue = 0;
+				for (var i = valueArray.length - 1; i >= 0; i--) {
+					if (valueArray[i].key === "Unhappy") {
+						returnValue = valueArray[i].values;
+					};
 				};
-			};
-			return returnValue;
-		}
-
+				return returnValue;
+			}
     </script>
 	</body>
 </html>
