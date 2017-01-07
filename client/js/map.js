@@ -1,4 +1,5 @@
-var width = 700,
+// world map
+var width = 800,
     height = 700,
     active = d3.select(null);
 var projection = d3.geo.mercator()
@@ -16,7 +17,7 @@ svg.append("path")
     .attr("class", "graticule")
     .attr("d", path);
 
-
+// import world json
 d3.json("/json/world-topo-min.json", function (error, world) {
     var countries = topojson.feature(world, world.objects.countries).features;
     svg.append("path")
@@ -30,8 +31,9 @@ d3.json("/json/world-topo-min.json", function (error, world) {
         .attr("class", "equator")
         .attr("d", path);
 
-
+    // read tweets data
     d3.json("/tweets-api", function (error, data) {
+        data=[{"location": [36.840000000000003, -2.46], "sentiment": -1, "tweetid": "817781285863071745"}, {"location": [31.149999999999999, -81.489999999999995], "sentiment": -1, "tweetid": "817786175687565312"}];
         var lat_lng = [];
         lat_lng[0] = [];
         lat_lng[1] = [];
