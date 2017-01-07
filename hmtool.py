@@ -13,7 +13,7 @@ from server.model import user, testdata, weatherapi, sentiment, model
 from datetime import datetime, timedelta
 import json
 from google.appengine.runtime import DeadlineExceededError
-from twitter_rest_gae import TwitterRestGAE
+from server.twitter_rest_gae import TwitterRestGAE
 import logging
 # [END imports]
 
