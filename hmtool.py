@@ -688,13 +688,13 @@ class TwitterRestHandler(webapp2.RequestHandler):
 class TweetsHandler(webapp2.RequestHandler):
     def get(self):
         q = TwitterStatus.query()
-        results = q.fetch()
+        results = q.fetch(1000)
         self.response.write(
             json.dumps(
                 [{
-                    "sentiment": t['sentiment'],
-                    "tweetid": t['tweetid'],
-                    "location": [t['location']['latitude'], t['location']['longitude']],
+                    "sentiment": t.sentiment,
+                    "tweetid": t.tweetid,
+                    "location": [t.location.lat, t.location.lon],
                     } for t in results])
             )
 
