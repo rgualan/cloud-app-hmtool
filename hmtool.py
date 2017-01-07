@@ -604,7 +604,7 @@ class Summary(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
 
-        sentiment.summarize_sentiment()
+        sentiment_calculation.summarize_sentiment()
 
         template_values = check_login(user, self)
 
@@ -618,7 +618,7 @@ class Delete_Summary(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
 
-        sentiment.delete_summarize()
+        sentiment_calculation.delete_summarize()
 
         template_values = check_login(user, self)
 
@@ -633,7 +633,7 @@ class Sentiment(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         template_values = check_login(user, self)
-        logging.info(str(sentiment.calculate_a_tweet("like no #aslkj )(*&)lksdfg; aaskf http://asldkfj.com")))
+        #logging.info(str(sentiment.calculate_a_tweet("like no #aslkj )(*&)lksdfg; aaskf http://asldkfj.com")))
 
         template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
         self.response.write(template.render(template_values))
@@ -641,6 +641,24 @@ class Sentiment(webapp2.RequestHandler):
 
 # [START Tweets]
 class Tweets(webapp2.RequestHandler):
+
+    def get(self):
+        q = tweets.TwitterStatus.query()
+        records = q.fetch(1000)
+
+        self.response.write(
+            json.dumps(
+                [{
+                    "date": str(r.date),
+                    "tweet": r.words,
+                    "words": r.text,
+                    "weight": r.sentiment
+                    } for r in records])
+            )
+# [END Tweets]
+
+# [START Sum_Sentiment]
+class Sum_Sentiment(webapp2.RequestHandler):
 
     def get(self):
         q = sentiment.Sum_Sentiment.query()
@@ -655,7 +673,7 @@ class Tweets(webapp2.RequestHandler):
                     "weight": r.sum
                     } for r in records])
             )
-# [END Tweets]
+# [END Sum_Sentiment]
 
 # [START Words]
 class Words(webapp2.RequestHandler):
@@ -713,6 +731,7 @@ app = webapp2.WSGIApplication([
     ('/summary', Summary),
     ('/delete_summary', Delete_Summary),
     ('/sentiment', Sentiment),
+    ('/sum_sentiment', Sum_Sentiment),
     ('/tweets', Tweets),
     ('/words', Words),
     ('/login', Login),
