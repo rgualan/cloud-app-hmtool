@@ -110,3 +110,9 @@ ENV/
 # Projects files
 .project
 .pydevproject
+
+# Revision files and utils
+checkLoc.sh
+ignoreList
+
+
