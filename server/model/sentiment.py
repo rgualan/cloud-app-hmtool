@@ -20,8 +20,8 @@ def calculate_a_tweet(tweet):
             chars_to_remove = ['"', '!', '#', '.', ',', '?', '@', ':', '~', '*', "'", '\/', '(' ,')', '-', '=']
             specials = ''.join(chars_to_remove)
             trans = string.maketrans(specials, ' '*len(specials))
-            word = word.translate(trans)
-            word = word.strip()
+            remove_symbols = word.translate(trans)
+            word = remove_symbols.strip()
 
             dict = Weight.query().filter(Weight.word == word)
             one = dict.fetch(1)
@@ -132,29 +132,29 @@ def summarize_sentiment():
 
     records = []
     for s in q_sentiment:
-        if counter < 10:
-            if len(records) > 0:
-                for each in records:
-                    if s.date == each.date and s.sum_weight > 0:
-                        each.sum = each.sum + s.sum_weight
-                        each.type = 'positive'
-                    elif s.date == each.date and s.sum_weight < 0:
-                        each.sum = each.sum + s.sum_weight
-                        each.type = 'negative'
-                    else:
-                        each.sum = each.sum + s.sum_weight
-                        each.type = 'neutral'
-            else:
-                if s.date == each.date and s.sum_weight > 0:
-                    record = Sum_Sentiment(date=s.date, type='positive', sum=1)
-                elif s.date == each.date and s.sum_weight < 0:
-                    record = Sum_Sentiment(date=s.date, type='negative', sum=1)
+        #if counter < 10:
+        if len(records) > 0:
+            for each in records:
+                if s.date.date() == each.date and s.sum_weight > 0:
+                    each.sum = each.sum + 1
+                    each.type = 'positive'
+                elif s.date.date() == each.date and s.sum_weight < 0:
+                    each.sum = each.sum + 1
+                    each.type = 'negative'
                 else:
-                    record = Sum_Sentiment(date=s.date, type='neutral', sum=1)
-                records.append(record)
-            ndb.put_multi(records)
+                    each.sum = each.sum + 1
+                    each.type = 'neutral'
         else:
-            break
+            if s.sum_weight > 0:
+                record = Sum_Sentiment(date=s.date, type='positive', sum=1)
+            elif s.sum_weight < 0:
+                record = Sum_Sentiment(date=s.date, type='negative', sum=1)
+            else:
+                record = Sum_Sentiment(date=s.date, type='neutral', sum=1)
+            records.append(record)
+        ndb.put_multi(records)
+        #else:
+        #    break
         counter = counter + 1
 
     word_records = []
