@@ -30,7 +30,7 @@ def pushSyntheticData(method, station):
 
 		r = requests.post(HMTOOL, data = {'station':station, 'date':now, 'value':y})		
 		
-		sleep(2) # Wait
+		sleep(1) # Wait
 
 def main():
 	parser = argparse.ArgumentParser(description='Generate synthetic real-time data for the HMTOOL web application')
