@@ -9,7 +9,7 @@
 lib/
 
 # Twitter credentials
-twitter_credentials.py
+# twitter_credentials.py
 
 <<<<<<< HEAD
 #GAE
