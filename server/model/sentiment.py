@@ -27,8 +27,6 @@ def calculate_a_tweet(tweet):
             one = dict.fetch(1)
             if one:
                 total_weight = total_weight + one[0].weight
-                cw_record = Word(word_date=rdate.date(), word_text=word)
-                cw_record.put()
                 list_of_words.append(word)
         else:
             pass
