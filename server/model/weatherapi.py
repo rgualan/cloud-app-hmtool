@@ -25,3 +25,14 @@ def get_current_conditions_bycity(location, condition1):
     r = urlfetch.fetch(baseUrl + path + format)
     return r
 
+def getWeatherByCityIDs(ids):
+    key = 'e167861a60e6d23a436f1216e6b92474'
+    base_url = 'http://api.openweathermap.org'
+    path = base_url + '/data/2.5/group?'
+    params = 'units=metric&APPID=' + key + 'id=' }
+    if len(ids) <= 20:
+        params += ','.join(ids)
+    else:
+        params += ','.join(ids[:20])
+    response = urlfetch.fetch(base_url + path + params)
+    return json.loads(response.text)
