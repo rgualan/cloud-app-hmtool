@@ -9,7 +9,7 @@
 lib/
 
 # Twitter credentials
-# twitter_credentials.py
+twitter_credentials.py
 
 <<<<<<< HEAD
 #GAE
@@ -114,5 +114,3 @@ ENV/
 # Revision files and utils
 checkLoc.sh
 ignoreList
-
-
