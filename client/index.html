@@ -4,6 +4,8 @@
     {{ super() }}
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
+
 
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.css">    
     <link rel="stylesheet" type="text/css" href="/css/keen-dashboards.css">
@@ -32,6 +34,7 @@
             <div id="tabs">
               <ul>
                 <li><a href="#tabs-1">Line Plot</a></li>
+                <li><a href="#tabs-5" id="MapLink">Location</a></li>
                 <li><a href="#tabs-2" id="boxPlotLink">Boxplot</a></li>
                 <li><a href="#tabs-3" id="histogramLink">Histogram</a></li>
                 <li><a href="#tabs-4" id="statsLink">Statistics</a></li>
@@ -83,6 +86,11 @@
                   </div>
                 </div>
               </div>
+               <div id="tabs-5">
+                <div id="Location" class='with-3d-shadow with-transitions'>
+                  <svg height="400" id="maplocal"></svg>
+                </div>
+              </div>
               <div id="tabs-2">
                 <div id="boxPlotChart" class='with-3d-shadow with-transitions'>
                   <svg height="400"></svg> 
@@ -129,7 +137,7 @@
               </script>
           </div>          
         </div>        
-	 </div </div>
+	 </div>
 	<div class="col-sm-5">
         <div class="chart-wrapper">
           <div class="chart-title">
