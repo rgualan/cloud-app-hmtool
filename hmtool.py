@@ -647,7 +647,6 @@ app = webapp2.WSGIApplication([
     ('/aggregate', Aggregator),
     ('/statistics', Statistics),
     ('/runningmean', RunningMean),
-    ('/insert_weight_data', Insert_Weight_Data),
     ('/summary', Summary),
     ('/sentiment', Sentiment),
     ('/sum_sentiment', Sum_Sentiment),
