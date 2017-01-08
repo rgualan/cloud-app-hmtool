@@ -551,47 +551,22 @@ class WeatherApi(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END weatherApi]
 
-# [START Insert Sentiment]
-class Insert_Sentiment_Data(webapp2.RequestHandler):
-
-    def get(self):
-        user = users.get_current_user()
-
-        sentiment.calculate_sentiment()
-
-        template_values = check_login(user, self)
-
-        template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
-        self.response.write(template.render(template_values))
-# [END Insert Sentiment]
-
 # [START Insert Weight]
 class Insert_Weight_Data(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
 
-        q = sentiment.Weight.query().fetch(1)
-        if q == None or len(q) == 0:
-            print 'Inserting weight data...'
-            data = sentiment.get_csv_data('dictionary')
-            records = []
-            for r in data:
-                #print r[1]
-                record = sentiment.Weight(word=r[0], weight=int(r[1]))
-                records.append(record)
-            ndb.put_multi(records)
-        else:
-            q = sentiment.Weight.query().fetch()
-            #q.order(+sentiment.Weight.word)
-            records = q
+        ndb.delete_multi(sentiment.Weight.query().fetch(keys_only=True))
+        logging.info('Inserting weight data...')
+        data = sentiment_calculation.get_csv_data('dictionary')
+        records = []
+        for r in data:
+            record = sentiment.Weight(word=r[0], weight=int(r[1]))
+            records.append(record)
+        ndb.put_multi(records)
 
-            #---DELETE THIS WHEN LIVE--
-            ndb.delete_multi(sentiment.Weight.query().fetch(keys_only=True))
-
-            print "Available weight data (sample):"
-            print len(records)
-            #for r in records:
-            #    print r
+        logging.info("Available weight data (sample):")
+        logging.info(len(sentiment.Weight.query().fetch()))
 
         template_values = check_login(user, self)
 
@@ -612,21 +587,6 @@ class Summary(webapp2.RequestHandler):
         template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
         self.response.write(template.render(template_values))
 # [END Summary]
-
-# [START Summary]
-class Delete_Summary(webapp2.RequestHandler):
-
-    def get(self):
-        user = users.get_current_user()
-
-        sentiment_calculation.delete_summarize()
-
-        template_values = check_login(user, self)
-
-        template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
-        self.response.write(template.render(template_values))
-# [END Summary]
-
 
 # [START Sentiment]
 class Sentiment(webapp2.RequestHandler):
@@ -728,9 +688,7 @@ app = webapp2.WSGIApplication([
     ('/runningmean', RunningMean),
     ('/weatherapi', WeatherApi),
     ('/insert_weight_data', Insert_Weight_Data),
-    ('/insert_sentiment_data', Insert_Sentiment_Data),
     ('/summary', Summary),
-    ('/delete_summary', Delete_Summary),
     ('/sentiment', Sentiment),
     ('/sum_sentiment', Sum_Sentiment),
     ('/tweets', Tweets),
