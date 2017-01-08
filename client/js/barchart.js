@@ -120,7 +120,7 @@ $(document).ready(function() {
 			d.date2 = parseDate(d.date);
 			d.sentimental = (d.weight > 0 ? "Positive" : (d.weight < 0 ? "Negative" : "Nautual")); //sentiment
 		});
-		console.log(data);
+		//console.log(data);
 		//create nested data by using date as first key and sentimental as second key
 		var nested_data = d3.nest()
 			.key(function(d){
@@ -132,7 +132,7 @@ $(document).ready(function() {
 			.rollup(function(leaves) { return leaves.length; })
 			.entries(data);
 
-		console.log(nested_data);
+		//console.log(nested_data);
 
 		//find max value on each polarity
 		var maxYUpper = 0;
