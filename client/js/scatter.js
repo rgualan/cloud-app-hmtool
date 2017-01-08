@@ -9,7 +9,7 @@ var y = d3.scale.linear().range([height, 0]).nice();
 
 function queryTweetData(cb){
     $.getJSON("/tweets", function(dataJson) {
-        console.log(dataJson);
+        // console.log(dataJson);
         if (dataJson.length === 0){
             console.log("No data returned!");
         }
@@ -17,7 +17,7 @@ function queryTweetData(cb){
     });
 }
 
-var parseDate = d3.time.format("%Y-%m-%d").parse;
+var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 
 //d3.csv("/json/tweets_happy.csv", function(data) {
 $(document).ready(function() {
@@ -31,8 +31,8 @@ $(document).ready(function() {
             xMin = d3.min(data, function (d) {return d.date;}),
             // xMin = xMin > 0 ? 0 : xMin,
             yMax = d3.max(data, function (d) {return d.weight;}) * 1.05,
-            yMin = d3.min(data, function (d) {return d.weight;}),
-            yMin = yMin > 0 ? 0 : yMin;
+            yMin = d3.min(data, function (d) {return d.weight;});
+            //yMin = yMin > 0 ? 0 : yMin;
 
         x.domain([xMin, xMax]);
         y.domain([yMin, yMax]);
@@ -54,7 +54,7 @@ $(document).ready(function() {
             .offset([-10, 0])
             .html(function (d) {
                 console.log(d);
-                return "Date: " + d.date + "<br>" + "User: " + d.tweet + "<br>" + "Tweet: " + d.words + "<br>" + "Weight: " + d.weight;
+                return "Date: " + d.date + "<br>" + "Tweet: " + d.words + "<br>" + "Weight: " + d.weight;
             });
 
         var zoomBeh = d3.behavior.zoom()
@@ -85,7 +85,7 @@ $(document).ready(function() {
             .append("text")
             .classed("label", true)
             .attr("x", width)
-            .attr("y", margin.bottom - 10)
+            .attr("y", margin.bottom - 20)
             .style("text-anchor", "end")
             .text("Date");
 
@@ -96,10 +96,10 @@ $(document).ready(function() {
             .append("text")
             //.classed("label", true)
             .attr("transform", "rotate(-90)")
-            .attr("y", -margin.left)
+            .attr("y", -margin.left+20)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Positive");
+            .text("Polarity");
 
         var objects = svg.append("svg")
             .classed("objects", true)
@@ -127,9 +127,7 @@ $(document).ready(function() {
             .classed("dot", true)
             .attr("r", 5)//function (d) { return 6 * Math.sqrt(Math.abs(d.weight) / Math.PI); })
             .attr("transform", transform)
-            .style("fill", function (d) {
-                return color(Math.abs(d.weight));
-            })
+            .style("fill", function(d){return color(Math.abs(d.weight));})
             .on("mouseover", tip.show)
             .on("mouseout", tip.hide);
       /*
@@ -152,8 +150,8 @@ $(document).ready(function() {
         d3.select("input").on("click", change);
 
         function change() {
-            xMax = d3.max(data, function (d) {return d.date;});
-            xMin = d3.min(data, function (d) {return d.date;});
+            xMax = d3.max(data, function (d){return d.date;});
+            xMin = d3.min(data, function (d){return d.date;});
 
             zoomBeh.x(x.domain([xMin, xMax])).y(y.domain([yMin, yMax]));
             var svg = d3.select("#scatter").transition();
@@ -171,5 +169,5 @@ $(document).ready(function() {
             return "translate(" + x(d.date) + "," + y(d.weight) + ")";
         }
     }
-    createTweetData(queryTweetData);
+    queryTweetData(createTweetData);
 });
