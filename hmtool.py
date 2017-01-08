@@ -9,7 +9,7 @@ from google.appengine.ext import ndb
 from google.appengine.ext import db
 import jinja2
 import webapp2
-from server.model import user, testdata, weatherapi, sentiment, model
+from server.model import user, testdata, sentiment, model
 from server.model.tweets import TwitterStatus
 from server import sentiment_calculation
 from datetime import datetime, timedelta
@@ -530,42 +530,9 @@ class WordCloud(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END wordcloud]
 
-# [START weatherApi]
-class WeatherApi(webapp2.RequestHandler):
-
-    def get(self):
-        user = users.get_current_user()
-        city_name = 'Southampton'
-        coordinate = '42.3601,-71.0589'
-        location = 'Allentown'
-        feature1 = 'geolookup'
-        q = [
-            weatherapi.get_currentweather_bycity(city_name).content,
-            weatherapi.get_historicalweather_bycoordinate(coordinate).content,
-            weatherapi.get_current_conditions_bycity(location, feature1).content]
-
-        template_values = check_login(user, self)
-        template_values['query'] = q
-
-        template = JINJA_ENVIRONMENT.get_template('/client/weatherapi.html')
-        self.response.write(template.render(template_values))
-# [END weatherApi]
-
-# [START Insert Sentiment]
-class Insert_Sentiment_Data(webapp2.RequestHandler):
-    def get(self):
-        user = users.get_current_user()
-
-        sentiment_calculation.insert_sentiment()
-
-        template_values = check_login(user, self)
-
-        template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
-        self.response.write(template.render(template_values))
-# [END Insert Sentiment]
-
 # [START Insert Weight]
 class Insert_Weight_Data(webapp2.RequestHandler):
+
     def get(self):
         user = users.get_current_user()
 
@@ -591,14 +558,7 @@ class Insert_Weight_Data(webapp2.RequestHandler):
 class Summary(webapp2.RequestHandler):
 
     def get(self):
-        #user = users.get_current_user()
-
         sentiment_calculation.summarize_sentiment()
-
-        #template_values = check_login(user, self)
-
-        #template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
-        #self.response.write(template.render(template_values))
 # [END Summary]
 
 # [START Sentiment]
@@ -618,7 +578,7 @@ class Tweets(webapp2.RequestHandler):
 
     def get(self):
         q = TwitterStatus.query()
-        records = q.fetch(9)
+        records = q.fetch(999)
 
         self.response.write(
             json.dumps(
@@ -636,7 +596,7 @@ class Sum_Sentiment(webapp2.RequestHandler):
 
     def get(self):
         q = sentiment.Sum_Sentiment.query()
-        records = q.fetch(9)
+        records = q.fetch()
 
         self.response.write(
             json.dumps(
@@ -654,7 +614,7 @@ class Words(webapp2.RequestHandler):
 
     def get(self):
         q = sentiment.Sum_Word.query()
-        records = q.fetch(9)
+        records = q.fetch(999)
 
         self.response.write(
             json.dumps(
@@ -699,8 +659,6 @@ app = webapp2.WSGIApplication([
     ('/aggregate', Aggregator),
     ('/statistics', Statistics),
     ('/runningmean', RunningMean),
-    ('/weatherapi', WeatherApi),
-    ('/insert_sentiment', Insert_Sentiment_Data),
     ('/insert_weight_data', Insert_Weight_Data),
     ('/summary', Summary),
     ('/sentiment', Sentiment),
