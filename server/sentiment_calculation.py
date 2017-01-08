@@ -119,9 +119,10 @@ def insert_sentiment():
         logging.info(str(r))
         #print r
         total_weight = 0
-        if len(r) >= 7 and test_counter < 99:
+        if len(r) >= 7 and test_counter < 9:
             rdate = datetime.strptime(r[12], '%d.%m.%y %H:%M')
             sentence = r[7].split()
+            #print r[7]
             list_of_words = []
             for word in sentence:
                 #check if it is url, ignore if yes.
@@ -140,7 +141,6 @@ def insert_sentiment():
                     one = dict.fetch(1)
                     if one:
                         weight_rand = random.randint(-9, 9)
-                        logging.info(str(weight_rand))
                         total_weight = total_weight + weight_rand
                         list_of_words.append(word)
                 else:
