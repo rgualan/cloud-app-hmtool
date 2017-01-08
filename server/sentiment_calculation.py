@@ -1,6 +1,10 @@
 import re
+import re
 import string
 import csv
+import random
+import logging
+from datetime import datetime
 from server.settings import *
 from server.model import tweets, sentiment
 from google.appengine.ext import ndb
@@ -103,3 +107,58 @@ def get_csv_data(file_name):
             #if limit and i == limit:
             #    break
     return data
+
+def insert_sentiment(): 
+    test_counter = 0
+
+    ndb.delete_multi(tweets.TwitterStatus.query().fetch(keys_only=True))
+    print 'Inserting sentiment data...'
+    data = get_csv_data('brexit')
+    records = []
+    for r in data:
+        logging.info(str(r))
+        #print r
+        total_weight = 0
+        if len(r) >= 7 and test_counter < 99:
+            rdate = datetime.strptime(r[12], '%d.%m.%y %H:%M')
+            sentence = r[7].split()
+            list_of_words = []
+            for word in sentence:
+                #check if it is url, ignore if yes.
+                h = re.match('(.*)http.*$', word)
+                u = re.match('(.*)\.com.*$', word)
+
+                if h is None and u is None:
+                    #this part is to remove all symbols and turn them into whitespace
+                    chars_to_remove = ['"', '!', '#', '.', ',', '?', '@', ':', '~', '*', "'", '\/', '(' ,')', '-', '=']
+                    specials = ''.join(chars_to_remove)
+                    trans = string.maketrans(specials, ' '*len(specials))
+                    remove_symbols = word.translate(trans)
+                    word = remove_symbols.strip()
+
+                    dict = sentiment.Weight.query().filter(sentiment.Weight.word == word)
+                    one = dict.fetch(1)
+                    if one:
+                        weight_rand = random.randint(-9, 9)
+                        logging.info(str(weight_rand))
+                        total_weight = total_weight + weight_rand
+                        list_of_words.append(word)
+                else:
+                    pass
+
+            record = tweets.TwitterStatus(date=rdate, text=r[7], sentiment=random.randint(-19, 19), words=list_of_words)
+            records.append(record)
+            test_counter = test_counter + 1
+        else:
+            pass
+    ndb.put_multi(records)
+
+    q = tweets.TwitterStatus.query().fetch(10)
+    records = q
+
+    print "Available sentiment data (sample):"
+    print len(records)
+    #for r in records:
+    #    print r
+ 
+    return True 

@@ -551,6 +551,19 @@ class WeatherApi(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END weatherApi]
 
+# [START Insert Sentiment]
+class Insert_Sentiment_Data(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+
+        sentiment_calculation.insert_sentiment()
+
+        template_values = check_login(user, self)
+
+        template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
+        self.response.write(template.render(template_values))
+# [END Insert Sentiment]
+
 # [START Insert Weight]
 class Insert_Weight_Data(webapp2.RequestHandler):
     def get(self):
@@ -687,6 +700,7 @@ app = webapp2.WSGIApplication([
     ('/statistics', Statistics),
     ('/runningmean', RunningMean),
     ('/weatherapi', WeatherApi),
+    ('/insert_sentiment', Insert_Sentiment_Data),
     ('/insert_weight_data', Insert_Weight_Data),
     ('/summary', Summary),
     ('/sentiment', Sentiment),
