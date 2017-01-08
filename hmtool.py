@@ -562,7 +562,7 @@ class Tweets(webapp2.RequestHandler):
 
     def get(self):
         q = TwitterStatus.query().order(-TwitterStatus.date)
-        records = q.fetch(999)
+        records = q.fetch(299)
 
         self.response.write(
             json.dumps(
@@ -602,7 +602,7 @@ class Words(webapp2.RequestHandler):
 
     def get(self):
         q = sentiment.Sum_Word.query().order(-sentiment.Word.word_date)
-        records = q.fetch(999)
+        records = q.fetch(299)
 
         self.response.write(
             json.dumps(
