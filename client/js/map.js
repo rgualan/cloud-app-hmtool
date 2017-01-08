@@ -105,7 +105,7 @@ d3.json("/json/world-topo-min.json", function (error, world) {
                         r: 1.5 * 2
                     });
                     d3.select("#tooltip").transition().duration(200).style("opacity", 0.9);
-                    d3.select("#tooltip").html("tweetid:" + d.tweetid + "<br>weight:" + d.sentiment)
+                    d3.select("#tooltip").html("text:" + d.text + "<br>weight:" + d.sentiment)
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
                 })

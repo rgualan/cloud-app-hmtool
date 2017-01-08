@@ -1,6 +1,6 @@
 function map_to_bar(data) {
     document.getElementById("svg_bar").innerHTML = "";
-    var margin = {top: 20, right: 20, bottom: 50, left: 40},
+    var margin = {top: 20, right: 20, bottom: 55, left: 40},
         width = 350 - margin.left - margin.right,
         height = 450 - margin.top - margin.bottom;
     var type = ["negative", "neutral","positive"];
