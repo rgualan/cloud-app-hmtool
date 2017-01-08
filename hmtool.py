@@ -645,7 +645,7 @@ class Tweets(webapp2.RequestHandler):
 
     def get(self):
         q = TwitterStatus.query()
-        records = q.fetch(1000)
+        records = q.fetch(9)
 
         self.response.write(
             json.dumps(
@@ -663,7 +663,7 @@ class Sum_Sentiment(webapp2.RequestHandler):
 
     def get(self):
         q = sentiment.Sum_Sentiment.query()
-        records = q.fetch()
+        records = q.fetch(9)
 
         self.response.write(
             json.dumps(
@@ -681,7 +681,7 @@ class Words(webapp2.RequestHandler):
 
     def get(self):
         q = sentiment.Sum_Word.query()
-        records = q.fetch()
+        records = q.fetch(9)
 
         self.response.write(
             json.dumps(

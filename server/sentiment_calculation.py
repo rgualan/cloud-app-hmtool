@@ -97,7 +97,10 @@ def delete_summarize():
 
 def summarize_sentiment():
 
-    q_sentiment = tweets.TwitterStatus.query().fetch()
+    ndb.delete_multi(sentiment.Sum_Sentiment.query().fetch(keys_only=True))
+    ndb.delete_multi(sentiment.Sum_Word.query().fetch(keys_only=True))
+
+    q_sentiment = tweets.TwitterStatus.query().fetch(99)
     counter = 0
     records = []
     word_records = []
