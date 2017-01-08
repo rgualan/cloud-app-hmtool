@@ -1,4 +1,4 @@
-function queryWordsData(cb){
+function queryWordsData(cb){    //reads the tweets from the database
     $.getJSON("/words", function(dataJson) { 
         //console.log(dataJson);
         if (dataJson.length === 0){
@@ -9,15 +9,12 @@ function queryWordsData(cb){
     });
 }
 
-
 $(document).ready(function() {
 
     function createCloudTag(data){
-        data.forEach(function(d){
-            //console.log(d);
-            d.word_sum_weight = +d.word_sum_weight*20;            
-        });
-
+        //data.forEach(function(d){
+            //d.word_sum_weight = +d.word_sum_weight * 20;
+        //});
 
         var fill = d3.scale.category20c();
         var color = d3.scale.linear()
@@ -31,7 +28,7 @@ $(document).ready(function() {
         d3.layout.cloud().size([width, height])
                 .words(data)
                 .rotate(0)
-                .fontSize(function(d) { return d.word_sum_weight; })
+                .fontSize(function(d) { return d.word_sum_weight; })    //the size of the word depends on its weight
                 .on("end", draw)
                 .start();
 
@@ -41,8 +38,7 @@ $(document).ready(function() {
                     .attr("height", height)
                     .attr("class", "wordcloud")
                     .append("g")
-                    // without the transform, words words would get cutoff to the left and top, they would
-                    // appear outside of the SVG area
+                    // without the transform, words words would get cutoff to the left and top
                     .attr("transform", "translate("+(width/2)+","+(height/2)+")") //320,200
                     .selectAll("text")
                     .data(words)
