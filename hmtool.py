@@ -530,34 +530,6 @@ class WordCloud(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 # [END wordcloud]
 
-# [START Insert Weight]
-class Insert_Weight_Data(webapp2.RequestHandler):
-    """ Insert Weight Data to calculate sentiment
-    This function will truncate weight table, collect weight data form csv
-    and then put all the data to the weight table
-    """
-
-    def get(self):
-        user = users.get_current_user()
-
-        ndb.delete_multi(sentiment.Weight.query().fetch(keys_only=True))
-        logging.info('Inserting weight data...')
-        data = sentiment_calculation.get_csv_data('dictionary')
-        records = []
-        for r in data:
-            record = sentiment.Weight(word=r[0], weight=int(r[1]))
-            records.append(record)
-        ndb.put_multi(records)
-
-        logging.info("Available weight data (sample):")
-        logging.info(len(sentiment.Weight.query().fetch()))
-
-        template_values = check_login(user, self)
-
-        template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
-        self.response.write(template.render(template_values))
-# [END Insert Weight]
-
 # [START Summary]
 class Summary(webapp2.RequestHandler):
     """ Call summarize_sentiment() function from sentiment_calculation
