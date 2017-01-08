@@ -633,7 +633,7 @@ class TweetsHandler(webapp2.RequestHandler):
             json.dumps(
                 [{
                     "sentiment": t.sentiment,
-                    "tweetid": t.tweetid,
+                    "text": t.text,
                     "location": [t.location.lat, t.location.lon],
                     } for t in results])
             )
