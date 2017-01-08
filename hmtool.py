@@ -591,14 +591,14 @@ class Insert_Weight_Data(webapp2.RequestHandler):
 class Summary(webapp2.RequestHandler):
 
     def get(self):
-        user = users.get_current_user()
+        #user = users.get_current_user()
 
         sentiment_calculation.summarize_sentiment()
 
-        template_values = check_login(user, self)
+        #template_values = check_login(user, self)
 
-        template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
-        self.response.write(template.render(template_values))
+        #template = JINJA_ENVIRONMENT.get_template('/client/sentiment.html')
+        #self.response.write(template.render(template_values))
 # [END Summary]
 
 # [START Sentiment]
@@ -718,6 +718,7 @@ app = webapp2.WSGIApplication([
     ('/srtconsumer', SyntheticRealTimeConsumer),
     ('/tweets-api', TweetsHandler),
     ('/tasks/twitter', TwitterRestHandler),
+    ('/tasks/summary', Summary),
 ], debug=True)
 # [END app]
 

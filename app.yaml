@@ -23,7 +23,7 @@ handlers:
 - url: /json
   static_dir: client/json
 
-- url: /tasks/twitter
+- url: /tasks/.*
   script: hmtool.app
   login: admin
 

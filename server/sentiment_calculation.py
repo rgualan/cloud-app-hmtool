@@ -39,17 +39,18 @@ def calculate_a_tweet(tweet):
 
 def summarize_sentiment():
 
-    ndb.delete_multi(sentiment.Sum_Sentiment.query().fetch(keys_only=True))
-    ndb.delete_multi(sentiment.Sum_Word.query().fetch(keys_only=True))
+    #ndb.delete_multi(sentiment.Sum_Sentiment.query().fetch(keys_only=True))
+    #ndb.delete_multi(sentiment.Sum_Word.query().fetch(keys_only=True))
 
-    q_sentiment = tweets.TwitterStatus.query().fetch(99)
-    #q_sentiment = tweets.TwitterStatus.query(tweets.TwitterStatus.date == datetime.today()).fetch(1)
+    q_sentiment = tweets.TwitterStatus.query().fetch()
+    t = tweets.TwitterStatus
+    q_sentiment = tweets.TwitterStatus.query().order(-t.date).fetch(1000)
     counter = 0
     records = []
     word_records = []
 
     for s in q_sentiment:
-        logging.info(str(s.date).date() + ' - ' + str(datetime.today().date()))
+        #logging.info(str(s.date.date()) + ' - ' + str(datetime.today().date()))
         type = ''
         if s.sentiment > 0: type = 'positive'
         elif s.sentiment < 0: type = 'negative'
