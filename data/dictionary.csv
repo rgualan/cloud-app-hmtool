@@ -2,7 +2,7 @@ word;weight
 abandon;-2
 abandoned;-2
 abandons;-2
-abducted;-9
+abducted;-2
 abduction;-2
 abductions;-2
 abhor;-3
@@ -19,7 +19,7 @@ absolved;2
 absolves;2
 absolving;2
 absorbed;1
-abuse;-6
+abuse;-3
 abused;-3
 abuses;-3
 abusive;-3
@@ -94,12 +94,11 @@ agonize;-3
 agonized;-3
 agonizes;-3
 agonizing;-3
-agree;3
+agree;1
 agreeable;2
-agreed;4
+agreed;1
 agreement;1
 agrees;1
-air;2
 alarm;-2
 alarmed;-2
 alarmist;-2
@@ -108,7 +107,7 @@ alas;-1
 alert;-1
 alienation;-2
 alive;1
-allergic;-6
+allergic;-2
 allow;1
 alone;-2
 amaze;2
@@ -190,7 +189,6 @@ astounded;3
 astounding;3
 astoundingly;3
 astounds;3
-atmosphere;1
 attack;-1
 attacked;-1
 attacking;-1
@@ -203,7 +201,6 @@ attractions;2
 attracts;1
 audacious;3
 authority;1
-autumn;2
 avert;-1
 averted;-1
 averts;-1
@@ -215,18 +212,18 @@ await;-1
 awaited;-1
 awaits;-1
 award;3
-awarded;7
+awarded;3
 awards;3
-awesome;12
-awful;-6
-awkward;-4
+awesome;4
+awful;-3
+awkward;-2
 axe;-1
 axed;-1
 backed;1
 backing;2
 backs;1
 bad;-3
-badass;-4
+badass;-3
 badly;-3
 bailout;-2
 bamboozle;-2
@@ -237,19 +234,19 @@ banish;-1
 bankrupt;-3
 bankster;-3
 banned;-2
-bargain;7
+bargain;2
 barrier;-2
-bastard;-9
-bastards;-9
+bastard;-5
+bastards;-5
 battle;-1
 battles;-1
 beaten;-2
 beatific;3
 beating;-1
 beauties;3
-beautiful;6
-beautifully;7
-beautify;5
+beautiful;3
+beautifully;3
+beautify;3
 belittle;-2
 belittled;-2
 beloved;3
@@ -271,8 +268,8 @@ better;2
 bias;-1
 biased;-2
 big;1
-bitch;-7
-bitches;-7
+bitch;-5
+bitches;-5
 bitter;-2
 bitterly;-2
 bizarre;-2
@@ -280,15 +277,14 @@ blah;-2
 blame;-2
 blamed;-2
 blames;-2
-blaming;-4
-bless;10
-blesses;9
-blessing;10
+blaming;-2
+bless;2
+blesses;2
+blessing;3
 blind;-1
 bliss;3
 blissful;3
 blithe;2
-blizzard;-10
 block;-1
 blockbuster;3
 blocked;-1
@@ -304,12 +300,12 @@ boost;1
 boosted;1
 boosting;1
 boosts;1
-bore;-4
+bore;-2
 bored;-2
 boring;-3
 bother;-2
-bothered;-4
-bothers;-4
+bothered;-2
+bothers;-2
 bothersome;-2
 boycott;-2
 boycotted;-2
@@ -319,7 +315,6 @@ brainwashing;-3
 brave;2
 breakthrough;3
 breathtaking;5
-breeze;1
 bribe;-3
 bright;1
 brightest;2
@@ -327,12 +322,12 @@ brightness;1
 brilliant;4
 brisk;2
 broke;-1
-broken;-3
+broken;-1
 brooding;-2
-bullied;-6
-bullshit;-5
-bully;-7
-bullying;-7
+bullied;-2
+bullshit;-4
+bully;-2
+bullying;-2
 bummer;-2
 buoyant;2
 burden;-2
@@ -343,12 +338,12 @@ calm;2
 calmed;2
 calming;2
 calms;2
+can't stand;-3
 cancel;-1
 cancelled;-1
 cancelling;-1
 cancels;-1
-cancer;-13
-can't stand;-3
+cancer;-1
 capable;1
 captivated;3
 care;2
@@ -360,13 +355,12 @@ cares;2
 cashing in;-2
 casualty;-2
 catastrophe;-3
-catastrophic;-10
+catastrophic;-4
 cautious;-1
 celebrate;3
 celebrated;3
 celebrates;3
 celebrating;3
-Celsius;1
 censor;-2
 censored;-2
 censors;-2
@@ -421,19 +415,13 @@ cleared;1
 clearly;1
 clears;1
 clever;2
-climate;1
-clime;2
-cloud;-2
 clouded;-1
-clouds;-2
-cloudy;-2
 clueless;-2
 cock;-5
 cocksucker;-5
 cocksuckers;-5
 cocky;-2
 coerced;-2
-cold;-4
 collapse;-2
 collapsed;-2
 collapses;-2
@@ -510,8 +498,8 @@ convince;1
 convinced;1
 convinces;1
 convivial;2
-cool stuff;3
 cool;1
+cool stuff;3
 cornered;-2
 corpse;-1
 costly;-2
@@ -528,7 +516,7 @@ crap;-3
 crash;-2
 crazier;-2
 craziest;-2
-crazy;-3
+crazy;-2
 creative;2
 crestfallen;-2
 cried;-2
@@ -544,8 +532,8 @@ criticized;-2
 criticizes;-2
 criticizing;-2
 critics;-2
-cruel;-4
-cruelty;-4
+cruel;-3
+cruelty;-3
 crush;-1
 crushed;-2
 crushes;-1
@@ -573,12 +561,12 @@ daring;2
 darkest;-2
 darkness;-1
 dauntless;2
-dead;-12
+dead;-3
 deadlock;-2
 deafening;-1
 dear;2
 dearly;3
-death;-8
+death;-2
 debonair;2
 debt;-2
 deceit;-3
@@ -641,8 +629,8 @@ derided;-2
 derides;-2
 deriding;-2
 derision;-2
-desirable;4
-desire;4
+desirable;2
+desire;1
 desired;2
 desirous;2
 despair;-3
@@ -669,8 +657,8 @@ devoted;3
 diamond;1
 dick;-4
 dickhead;-4
-die;-5
-died;-5
+die;-3
+died;-3
 difficult;-1
 diffident;-2
 dilemma;-1
@@ -795,18 +783,15 @@ dread;-2
 dreaded;-2
 dreadful;-3
 dreading;-2
-dream;2
-dreams;2
+dream;1
+dreams;1
 dreary;-2
-drift;1
 droopy;-2
 drop;-1
-drought;-5
 drown;-2
 drowned;-2
 drowns;-2
 drunk;-2
-dry;-4
 dubious;-2
 dud;-2
 dull;-2
@@ -1011,15 +996,11 @@ fit;1
 fitness;1
 flagship;2
 flees;-1
-flood;-15
 flop;-2
 flops;-2
 flu;-2
-fluid;-16
 flustered;-2
 focused;2
-fog;-3
-foggy;-1
 fond;2
 fondness;2
 fool;-2
@@ -1043,7 +1024,6 @@ fraudulence;-4
 fraudulent;-4
 free;1
 freedom;2
-freezing;-9
 frenzy;-3
 fresh;1
 friendly;2
@@ -1052,7 +1032,6 @@ frightened;-2
 frightening;-3
 frikin;-2
 frisky;2
-frost;-12
 frowning;-1
 frustrate;-2
 frustrated;-2
@@ -1189,8 +1168,6 @@ healthy;2
 heartbreaking;-3
 heartbroken;-3
 heartfelt;3
-heat;3
-heatwave;-5
 heaven;2
 heavenly;4
 heavyhearted;-2
@@ -1236,14 +1213,11 @@ horrible;-3
 horrific;-3
 horrified;-3
 hostile;-2
-hot;6
 huckster;-2
 hug;2
 huge;1
 hugs;2
 humerous;3
-humid;-3
-humidity;-3
 humiliated;-3
 humiliation;-3
 humor;2
@@ -1252,7 +1226,6 @@ humour;2
 humourous;2
 hunger;-2
 hurrah;5
-hurricane;-5
 hurt;-2
 hurting;-2
 hurts;-2
@@ -1260,8 +1233,6 @@ hypocritical;-2
 hysteria;-3
 hysterical;-3
 hysterics;-3
-ice;-5
-icy;-5
 idiot;-3
 idiotic;-3
 ignorance;-2
@@ -1465,7 +1436,6 @@ libelous;-2
 lied;-2
 lifesaver;4
 lighthearted;1
-lightning;-1
 like;2
 liked;2
 likes;2
@@ -1587,8 +1557,6 @@ mock;-2
 mocked;-2
 mocking;-2
 mocks;-2
-moist;-3
-moisture;-3
 mongering;-2
 monopolize;-2
 monopolized;-2
@@ -1617,10 +1585,10 @@ murderous;-3
 murders;-2
 myth;-1
 n00b;-2
-na��ve;-2
 naive;-2
 nasty;-3
 natural;1
+naïve;-2
 needy;-2
 negative;-2
 negativity;-2
@@ -1635,8 +1603,8 @@ nice;3
 nifty;2
 niggas;-5
 nigger;-5
-no fun;-3
 no;-1
+no fun;-3
 noble;2
 noisy;-1
 nonsense;-2
@@ -1787,7 +1755,6 @@ prays;1
 prblm;-2
 prblms;-2
 prepared;1
-pressure;-1
 pressured;-2
 pretend;-1
 pretending;-1
@@ -1852,11 +1819,6 @@ racist;-3
 racists;-3
 rage;-2
 rageful;-2
-rain;-1
-rainbow;15
-raining;-2
-rainstorm;-4
-rainy;-2
 rainy;-1
 rant;-3
 ranter;-3
@@ -1990,7 +1952,6 @@ safe;1
 safely;1
 safety;1
 salient;1
-sandstorm;-5
 sappy;-1
 sarcastic;-2
 satisfied;2
@@ -2015,10 +1976,9 @@ scream;-2
 screamed;-2
 screaming;-2
 screams;-2
-screwed up;-3
 screwed;-2
+screwed up;-3
 scumbag;-4
-seabreeze;4
 secure;2
 secured;2
 secures;2
@@ -2052,10 +2012,10 @@ shocked;-2
 shocking;-2
 shocks;-2
 shoot;-1
-shortage;-2
-shortages;-2
 short-sighted;-2
 short-sightedness;-2
+shortage;-2
+shortages;-2
 shrew;-4
 shy;-1
 sick;-2
@@ -2096,9 +2056,6 @@ smiles;2
 smiling;2
 smog;-2
 sneaky;-1
-snow ;-3
-snowfall;-4
-snowstorm;-5
 snub;-2
 snubbed;-2
 snubbing;-2
@@ -2114,6 +2071,7 @@ solved;1
 solves;1
 solving;1
 somber;-2
+some kind;0
 son-of-a-bitch;-5
 soothe;3
 soothed;3
@@ -2138,7 +2096,6 @@ spiritless;-2
 spiteful;-2
 splendid;3
 sprightly;2
-spring;3
 squelched;-1
 stab;-2
 stabbed;-2
@@ -2170,7 +2127,6 @@ stop;-1
 stopped;-1
 stopping;-1
 stops;-1
-storm;-3
 stout;2
 straight;1
 strange;-1
@@ -2219,10 +2175,6 @@ suing;-2
 sulking;-2
 sulky;-2
 sullen;-2
-summer;3
-sun;8
-sunny;8
-sunshine;8
 sunshine;2
 super;3
 superb;5
@@ -2281,8 +2233,6 @@ threatening;-2
 threatens;-2
 threats;-2
 thrilled;5
-thunder;-4
-thunderstorm;-8
 thwart;-2
 thwarted;-2
 thwarting;-2
@@ -2296,7 +2246,6 @@ toothless;-2
 top;2
 tops;2
 torn;-2
-tornado;-9
 torture;-4
 tortured;-4
 tortures;-4
@@ -2325,14 +2274,12 @@ tricked;-2
 trickery;-2
 triumph;4
 triumphant;4
-tropical;2
 trouble;-2
 troubled;-2
 troubles;-2
 true;2
 trust;1
 trusted;2
-tsunami;-18
 tumor;-2
 twat;-5
 ugly;-3
@@ -2451,8 +2398,7 @@ wanker;-3
 want;1
 war;-2
 warfare;-2
-warm;4
-warm;2
+warm;1
 warmth;2
 warn;-2
 warned;-2
@@ -2481,12 +2427,9 @@ wicked;-2
 widowed;-1
 willingness;2
 win;4
-wind;-1
-windy;-1
 winner;4
 winning;4
 wins;4
-winter;-1
 winwin;3
 wish;1
 wishes;1
@@ -2514,12 +2457,12 @@ worst;-3
 worth;2
 worthless;-2
 worthy;2
-wow;10
-wowow;12
-wowww;12
+wow;4
+wowow;4
+wowww;4
 wrathful;-3
 wreck;-2
-wrong;-3
+wrong;-2
 wronged;-2
 wtf;-4
 yeah;1
