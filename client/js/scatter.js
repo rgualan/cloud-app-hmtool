@@ -7,162 +7,169 @@ var margin = { top: 20, right: 10, bottom: 40, left: 50 },
 var x = d3.time.scale().range([0, width]).nice();
 var y = d3.scale.linear().range([height, 0]).nice();
 
-var parseDate = d3.time.format("%d/%m/%Y %H:%M").parse;
+function queryTweetData(cb){
+    $.getJSON("/tweets", function(dataJson) {
+        console.log(dataJson);
+        if (dataJson.length === 0){
+            console.log("No data returned!");
+        }
+        cb(dataJson);
+    });
+}
 
-d3.csv("/json/tweets_happy.csv", function(data) {
+var parseDate = d3.time.format("%Y-%m-%d").parse;
 
-  data.forEach(function(d) {
-    d.id = +d.id;
-    d.time = parseDate(d.created_at);
-    d.text = d.text;
-    //d.hashtag = +d.hashtag;
-    d.happy = +d.happy;
-  });
+//d3.csv("/json/tweets_happy.csv", function(data) {
+$(document).ready(function() {
 
-  var xMax = d3.max(data, function(d) { return d.time; }),
-      xMin = d3.min(data, function(d) { return d.time; }),
-     // xMin = xMin > 0 ? 0 : xMin,
-      yMax = d3.max(data, function(d) { return d.happy; }) * 1.05,
-      yMin = d3.min(data, function(d) { return d.happy; }),
-      yMin = yMin > 0 ? 0 : yMin;
+    function createTweetData(data) {
+        data.forEach(function(d) {
+            d.date = parseDate(d.date);
+        });
 
-  x.domain([xMin, xMax]);
-  y.domain([yMin, yMax]);
+        var xMax = d3.max(data, function (d) {return d.date;}),
+            xMin = d3.min(data, function (d) {return d.date;}),
+            // xMin = xMin > 0 ? 0 : xMin,
+            yMax = d3.max(data, function (d) {return d.weight;}) * 1.05,
+            yMin = d3.min(data, function (d) {return d.weight;}),
+            yMin = yMin > 0 ? 0 : yMin;
 
-  var xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom")
-      .tickSize(-height);
+        x.domain([xMin, xMax]);
+        y.domain([yMin, yMax]);
 
-  var yAxis = d3.svg.axis()
-      .scale(y)
-      .orient("left")
-      .tickSize(-width);
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            .tickSize(-height);
 
-  var color = d3.scale.category10();
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickSize(-width);
 
-  var tip = d3.tip()
-      .attr("class", "d3-tip")
-      .offset([-10, 0])
-      .html(function(d) {
-        console.log(d);
-        return "Time" + ": " + d.created_at + "<br>" + "Text" + ": " + d.text;
-      });
+        var color = d3.scale.category10();
 
-  var zoomBeh = d3.behavior.zoom()
-      .x(x)
-      .y(y)
-      .scaleExtent([0, 500])
-      .on("zoom", zoom);
+        var tip = d3.tip()
+            .attr("class", "d3-tip")
+            .offset([-10, 0])
+            .html(function (d) {
+                console.log(d);
+                return "Date: " + d.date + "<br>" + "User: " + d.tweet + "<br>" + "Tweet: " + d.words + "<br>" + "Weight: " + d.weight;
+            });
 
-  var svg = d3.select("#scatter")
-    .append("svg")
-      .attr("width", outerWidth)
-      .attr("height", outerHeight)
-    .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .call(zoomBeh);
+        var zoomBeh = d3.behavior.zoom()
+            .x(x)
+            .y(y)
+            .scaleExtent([0, 500])
+            .on("zoom", zoom);
 
-  svg.call(tip);
+        var svg = d3.select("#scatter")
+            .append("svg")
+            .attr("width", outerWidth)
+            .attr("height", outerHeight)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .call(zoomBeh);
 
-  svg.append("rect")
-      .attr("width", width)
-      .attr("height", height);
+        svg.call(tip);
 
-  svg.append("g")
-      .attr("class","axis x")
-      //.classed("x axis", true)
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
-    .append("text")
-      .classed("label", true)
-      .attr("x", width)
-      .attr("y", margin.bottom - 10)
-      .style("text-anchor", "end")
-      .text("Time");
+        svg.append("rect")
+            .attr("width", width)
+            .attr("height", height);
 
-  svg.append("g")
-      .attr("class","axis y")
-      //.classed("y axis", true)
-      .call(yAxis)
-    .append("text")
-      //.classed("label", true)
-      .attr("transform", "rotate(-90)")
-      .attr("y", -margin.left)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Positive");
+        svg.append("g")
+            .attr("class", "axis x")
+            //.classed("x axis", true)
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+            .append("text")
+            .classed("label", true)
+            .attr("x", width)
+            .attr("y", margin.bottom - 10)
+            .style("text-anchor", "end")
+            .text("Date");
 
-  var objects = svg.append("svg")
-      .classed("objects", true)
-      .attr("width", width)
-      .attr("height", height);
+        svg.append("g")
+            .attr("class", "axis y")
+            //.classed("y axis", true)
+            .call(yAxis)
+            .append("text")
+            //.classed("label", true)
+            .attr("transform", "rotate(-90)")
+            .attr("y", -margin.left)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Positive");
 
-  objects.append("svg:line")
-      .classed("axisLine hAxisLine", true)
-      .attr("x1", 0)
-      .attr("y1", 0)
-      .attr("x2", width)
-      .attr("y2", 0)
-      .attr("transform", "translate(0," + height + ")");
+        var objects = svg.append("svg")
+            .classed("objects", true)
+            .attr("width", width)
+            .attr("height", height);
 
-  objects.append("svg:line")
-      .classed("axisLine vAxisLine", true)
-      .attr("x1", 0)
-      .attr("y1", 0)
-      .attr("x2", 0)
-      .attr("y2", height);
+        objects.append("svg:line")
+            .classed("axisLine hAxisLine", true)
+            .attr("x1", 0)
+            .attr("y1", 0)
+            .attr("x2", width)
+            .attr("y2", 0)
+            .attr("transform", "translate(0," + height + ")");
 
-  objects.selectAll(".dot")
-      .data(data)
-    .enter().append("circle")
-      .classed("dot", true)
-      .attr("r", 5)//function (d) { return 6 * Math.sqrt(Math.abs(d.happy) / Math.PI); })
-      .attr("transform", transform)
-      .style("fill", function(d) { return color(Math.abs(d.happy)); })
-      .on("mouseover", tip.show)
-      .on("mouseout", tip.hide);
-/*
-  var legend = svg.selectAll(".legend")
-      .data(color.domain())
-    .enter().append("g")
-      .classed("legend", true)
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+        objects.append("svg:line")
+            .classed("axisLine vAxisLine", true)
+            .attr("x1", 0)
+            .attr("y1", 0)
+            .attr("x2", 0)
+            .attr("y2", height);
 
-  legend.append("circle")
-      .attr("r", 3.5)
-      .attr("cx", width + 20)
-      .attr("fill", color);
+        objects.selectAll(".dot")
+            .data(data)
+            .enter().append("circle")
+            .classed("dot", true)
+            .attr("r", 5)//function (d) { return 6 * Math.sqrt(Math.abs(d.weight) / Math.PI); })
+            .attr("transform", transform)
+            .style("fill", function (d) {
+                return color(Math.abs(d.weight));
+            })
+            .on("mouseover", tip.show)
+            .on("mouseout", tip.hide);
+      /*
+       var legend = svg.selectAll(".legend")
+       .data(color.domain())
+       .enter().append("g")
+       .classed("legend", true)
+       .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-  legend.append("text")
-      .attr("x", width + 26)
-      .attr("dy", ".35em")
-      .text(function(d) { return d; });*/
+       legend.append("circle")
+       .attr("r", 3.5)
+       .attr("cx", width + 20)
+       .attr("fill", color);
 
-  d3.select("input").on("click", change);
+       legend.append("text")
+       .attr("x", width + 26)
+       .attr("dy", ".35em")
+       .text(function(d) { return d; });*/
 
-  function change() {
-    xMax = d3.max(data, function(d) { return d.time; });
-    xMin = d3.min(data, function(d) { return d.time; });
+        d3.select("input").on("click", change);
 
-    zoomBeh.x(x.domain([xMin, xMax])).y(y.domain([yMin, yMax]));
+        function change() {
+            xMax = d3.max(data, function (d) {return d.date;});
+            xMin = d3.min(data, function (d) {return d.date;});
 
-    var svg = d3.select("#scatter").transition();
+            zoomBeh.x(x.domain([xMin, xMax])).y(y.domain([yMin, yMax]));
+            var svg = d3.select("#scatter").transition();
+            svg.select(".x.axis").duration(750).call(xAxis).select(".label").text("Date");
+            objects.selectAll(".dot").transition().duration(1000).attr("transform", transform);
+        }
 
-    svg.select(".x.axis").duration(750).call(xAxis).select(".label").text("Time");
+        function zoom() {
+            svg.select(".x.axis").call(xAxis);
+            svg.select(".y.axis").call(yAxis);
+            svg.selectAll(".dot").attr("transform", transform);
+        }
 
-    objects.selectAll(".dot").transition().duration(1000).attr("transform", transform);
-  }
-
-  function zoom() {
-    svg.select(".x.axis").call(xAxis);
-    svg.select(".y.axis").call(yAxis);
-
-    svg.selectAll(".dot")
-        .attr("transform", transform);
-  }
-
-  function transform(d) {
-    return "translate(" + x(d.time) + "," + y(d.happy) + ")";
-  }
+        function transform(d) {
+            return "translate(" + x(d.date) + "," + y(d.weight) + ")";
+        }
+    }
+    createTweetData(queryTweetData);
 });
