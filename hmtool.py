@@ -532,6 +532,10 @@ class WordCloud(webapp2.RequestHandler):
 
 # [START Insert Weight]
 class Insert_Weight_Data(webapp2.RequestHandler):
+    """ Insert Weight Data to calculate sentiment
+    This function will truncate weight table, collect weight data form csv
+    and then put all the data to the weight table
+    """
 
     def get(self):
         user = users.get_current_user()
@@ -556,6 +560,9 @@ class Insert_Weight_Data(webapp2.RequestHandler):
 
 # [START Summary]
 class Summary(webapp2.RequestHandler):
+    """ Call summarize_sentiment() function from sentiment_calculation
+    This part is called in cronjob
+    """
 
     def get(self):
         sentiment_calculation.summarize_sentiment()
@@ -563,6 +570,9 @@ class Summary(webapp2.RequestHandler):
 
 # [START Sentiment]
 class Sentiment(webapp2.RequestHandler):
+    """ Call summarize_sentiment() function from sentiment_calculation
+    This part is called in cronjob
+    """
 
     def get(self):
         user = users.get_current_user()
@@ -575,9 +585,11 @@ class Sentiment(webapp2.RequestHandler):
 
 # [START Tweets]
 class Tweets(webapp2.RequestHandler):
+    """ Get tweets data from TwitterStatus table
+    """
 
     def get(self):
-        q = TwitterStatus.query()
+        q = TwitterStatus.query().order(-TwitterStatus.date)
         records = q.fetch(999)
 
         self.response.write(
@@ -593,6 +605,8 @@ class Tweets(webapp2.RequestHandler):
 
 # [START Sum_Sentiment]
 class Sum_Sentiment(webapp2.RequestHandler):
+    """ Get Summary of Sentiment data from Sum_Sentiment table
+    """
 
     def get(self):
         q = sentiment.Sum_Sentiment.query()
@@ -611,9 +625,11 @@ class Sum_Sentiment(webapp2.RequestHandler):
 
 # [START Words]
 class Words(webapp2.RequestHandler):
+    """ Get Summary of Words Count data from Words table
+    """
 
     def get(self):
-        q = sentiment.Sum_Word.query()
+        q = sentiment.Sum_Word.query().order(-sentiment.Word.word_date)
         records = q.fetch(999)
 
         self.response.write(

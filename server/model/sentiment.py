@@ -1,3 +1,6 @@
+# sentiment.py
+# Database Model for Sentiment Calculation
+
 from google.appengine.ext import ndb
 
 class Weight(ndb.Model):
