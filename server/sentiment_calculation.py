@@ -50,7 +50,7 @@ def calculate_a_tweet(tweet):
 
             if weight:
                 total_weight = total_weight + int(weight)
-                list_of_words.append(word)
+                list_of_words.append(word.lower())
 
     return {'sentiment': total_weight, 'words': list_of_words}
 
