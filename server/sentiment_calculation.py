@@ -115,6 +115,7 @@ def insert_sentiment():
 
     ndb.delete_multi(tweets.TwitterStatus.query().fetch(keys_only=True))
     ndb.delete_multi(sentiment.Sum_Word.query().fetch(keys_only=True))
+    ndb.delete_multi(sentiment.Sum_Sentiment.query().fetch(keys_only=True))
     print 'Inserting sentiment data...'
     data = get_csv_data('brexit')
     records = []
@@ -154,6 +155,8 @@ def insert_sentiment():
             pass
 
     word_records = []
+    sum_records = []
+
     record = sentiment.Sum_Word(date=datetime.strptime('2016-01-01', '%Y-%d-%m'), word='aku', sum=55)
     word_records.append(record)
     record = sentiment.Sum_Word(date=datetime.strptime('2016-01-01', '%Y-%d-%m'), word='cinta', sum=45)
@@ -165,8 +168,16 @@ def insert_sentiment():
     record = sentiment.Sum_Word(date=datetime.strptime('2016-01-01', '%Y-%d-%m'), word='duhai', sum=15)
     word_records.append(record)
 
+    record = sentiment.Sum_Sentiment(date=datetime.strptime('2016-01-01', '%Y-%d-%m'), type='positive', sum=55)
+    sum_records.append(record)
+    record = sentiment.Sum_Sentiment(date=datetime.strptime('2016-01-01', '%Y-%d-%m'), type='negative', sum=45)
+    sum_records.append(record)
+    record = sentiment.Sum_Sentiment(date=datetime.strptime('2016-01-01', '%Y-%d-%m'), type='neutral', sum=35)
+    sum_records.append(record)
+
     ndb.put_multi(records)
     ndb.put_multi(word_records)
+    ndb.put_multi(sum_records)
 
     q = tweets.TwitterStatus.query().fetch(10)
     records = q
