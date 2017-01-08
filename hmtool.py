@@ -628,7 +628,7 @@ class TwitterRestHandler(webapp2.RequestHandler):
 class TweetsHandler(webapp2.RequestHandler):
     def get(self):
         q = TwitterStatus.query()
-        results = q.fetch(1000)
+        results = q.fetch(1000).order(-TwitterStatus.date)
         self.response.write(
             json.dumps(
                 [{
@@ -637,7 +637,6 @@ class TweetsHandler(webapp2.RequestHandler):
                     "location": [t.location.lat, t.location.lon],
                     } for t in results])
             )
-
 # [END TweetsHandler]
 
 # [START app]
