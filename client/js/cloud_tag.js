@@ -16,6 +16,10 @@ $(document).ready(function() {
             //d.word_sum_weight = +d.word_sum_weight * 20;
         //});
 
+        var scale = d3.scale.linear()
+            .domain(d3.extent(data, function(d){return d.word_sum_weight;}))
+            .range([10,50]);
+
         var fill = d3.scale.category20c();
         var color = d3.scale.linear()
                 //.domain([0,1,2,3,4,5,6,10,15,20,100])
@@ -28,7 +32,7 @@ $(document).ready(function() {
         d3.layout.cloud().size([width, height])
                 .words(data)
                 .rotate(0)
-                .fontSize(function(d) { return d.word_sum_weight; })    //the size of the word depends on its weight
+                .fontSize(function(d) { return scale(d.word_sum_weight); })    //the size of the word depends on its weight
                 .on("end", draw)
                 .start();
 
@@ -43,7 +47,7 @@ $(document).ready(function() {
                     .selectAll("text")
                     .data(words)
                     .enter().append("text")
-                    .style("font-size", function(d) { return d.word_sum_weight + "px"; })
+                    .style("font-size", function(d) { return scale(d.word_sum_weight) + "px"; })
                     //.style("fill", function(d, i) { return color(i); })
                     .style("fill", function(d, i) { return fill(i%20); })
                     .attr("transform", function(d) {
