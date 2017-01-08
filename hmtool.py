@@ -601,7 +601,7 @@ class Words(webapp2.RequestHandler):
     """
 
     def get(self):
-        q = sentiment.Sum_Word.query().order(-sentiment.Word.word_date)
+        q = sentiment.Sum_Word.query().order(-sentiment.Sum_Word.word_date)
         records = q.fetch(299)
 
         self.response.write(
@@ -627,8 +627,8 @@ class TwitterRestHandler(webapp2.RequestHandler):
 # [START TweetsHandler]
 class TweetsHandler(webapp2.RequestHandler):
     def get(self):
-        q = TwitterStatus.query()
-        results = q.fetch(1000).order(-TwitterStatus.date)
+        q = TwitterStatus.query().order(-TwitterStatus.date)
+        results = q.fetch(1000)
         self.response.write(
             json.dumps(
                 [{
