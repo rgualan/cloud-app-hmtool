@@ -56,7 +56,5 @@ $(document).ready(function() {
                     .text(function(d) { return d.word_text; });
         }
     }
-
     queryWordsData(createCloudTag);
-
 });
