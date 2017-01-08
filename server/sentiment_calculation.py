@@ -43,11 +43,13 @@ def summarize_sentiment():
     ndb.delete_multi(sentiment.Sum_Word.query().fetch(keys_only=True))
 
     q_sentiment = tweets.TwitterStatus.query().fetch(99)
+    #q_sentiment = tweets.TwitterStatus.query(tweets.TwitterStatus.date == datetime.today()).fetch(1)
     counter = 0
     records = []
     word_records = []
 
     for s in q_sentiment:
+        logging.info(str(s.date).date() + ' - ' + str(datetime.today().date()))
         type = ''
         if s.sentiment > 0: type = 'positive'
         elif s.sentiment < 0: type = 'negative'
@@ -112,14 +114,13 @@ def insert_sentiment():
     test_counter = 0
 
     ndb.delete_multi(tweets.TwitterStatus.query().fetch(keys_only=True))
+    ndb.delete_multi(sentiment.Sum_Word.query().fetch(keys_only=True))
     print 'Inserting sentiment data...'
     data = get_csv_data('brexit')
     records = []
     for r in data:
-        logging.info(str(r))
-        #print r
         total_weight = 0
-        if len(r) >= 7 and test_counter < 9:
+        if len(r) >= 7 and test_counter < 99:
             rdate = datetime.strptime(r[12], '%d.%m.%y %H:%M')
             sentence = r[7].split()
             #print r[7]
@@ -151,7 +152,21 @@ def insert_sentiment():
             test_counter = test_counter + 1
         else:
             pass
+
+    word_records = []
+    record = sentiment.Sum_Word(date=datetime.strptime('2016-01-01', '%Y-%d-%m'), word='aku', sum=55)
+    word_records.append(record)
+    record = sentiment.Sum_Word(date=datetime.strptime('2016-01-01', '%Y-%d-%m'), word='cinta', sum=45)
+    word_records.append(record)
+    record = sentiment.Sum_Word(date=datetime.strptime('2016-01-01', '%Y-%d-%m'), word='kamu', sum=35)
+    word_records.append(record)
+    record = sentiment.Sum_Word(date=datetime.strptime('2016-01-01', '%Y-%d-%m'), word='selamanya', sum=25)
+    word_records.append(record)
+    record = sentiment.Sum_Word(date=datetime.strptime('2016-01-01', '%Y-%d-%m'), word='duhai', sum=15)
+    word_records.append(record)
+
     ndb.put_multi(records)
+    ndb.put_multi(word_records)
 
     q = tweets.TwitterStatus.query().fetch(10)
     records = q
