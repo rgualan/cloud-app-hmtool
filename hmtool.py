@@ -11,6 +11,7 @@ import jinja2
 import webapp2
 from server.model import user, testdata, weatherapi, sentiment, model
 from server.model.tweets import TwitterStatus
+from server import sentiment_calculation
 from datetime import datetime, timedelta
 import json
 from google.appengine.runtime import DeadlineExceededError
@@ -643,7 +644,7 @@ class Sentiment(webapp2.RequestHandler):
 class Tweets(webapp2.RequestHandler):
 
     def get(self):
-        q = tweets.TwitterStatus.query()
+        q = TwitterStatus.query()
         records = q.fetch(1000)
 
         self.response.write(
