@@ -157,10 +157,10 @@ $(document).ready(function() {
 		}else{
 			maxY = maxYLower;
 		}
-		maxY =1000
+		maxY = maxY+Math.ceil(maxY*0.1)
 		// set y-axis domain
-		yScale.domain([0,maxY+Math.ceil(maxY*0.1)]);
-		yScale2.domain([0,maxY+Math.ceil(maxY*0.1)]);
+		yScale.domain([0,maxY]);
+		yScale2.domain([0,maxY]);
 
 	  	//find and assign  tick value for x axis
 	  	var domain = nested_data.map(function(d) { return d.key; });
