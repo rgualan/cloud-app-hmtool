@@ -7,9 +7,8 @@ var margin = { top: 20, right: 10, bottom: 40, left: 50 },
 var x = d3.time.scale().range([0, width]).nice();
 var y = d3.scale.linear().range([height, 0]).nice();
 
-function queryTweetData(cb){
-    $.getJSON("/tweets", function(dataJson) {
-        // console.log(dataJson);
+function queryTweetData(cb){    //reads the tweets from the datastore
+    $.getJSON("/tweets", function(dataJson){
         if (dataJson.length === 0){
             console.log("No data returned!");
         }
@@ -19,7 +18,6 @@ function queryTweetData(cb){
 
 var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 
-//d3.csv("/json/tweets_happy.csv", function(data) {
 $(document).ready(function() {
 
     function createTweetData(data) {
@@ -53,7 +51,6 @@ $(document).ready(function() {
             .attr("class", "d3-tip")
             .offset([-10, 0])
             .html(function (d) {
-                console.log(d);
                 return "Date: " + d.date + "<br>" + "Tweet: " + d.words + "<br>" + "Weight: " + d.weight;
             });
 
