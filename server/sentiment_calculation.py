@@ -9,6 +9,24 @@ from server.settings import *
 from server.model import tweets, sentiment
 from google.appengine.ext import ndb
 
+
+def get_weight_dictionary():
+    csv_file = PROJECT_DIR+'/../data/dictionary.csv'
+
+    with open(csv_file, 'rb') as csvfile:
+        cursor = csv.reader(csvfile, delimiter=';')
+        next(cursor, None)
+
+        data = {}
+        for row in cursor:
+            data[row[0]] = row[1]
+
+    return data
+
+
+dictWords = get_weight_dictionary()
+
+
 def calculate_a_tweet(tweet):
     total_weight = 0
     list_of_words = []
@@ -27,13 +45,12 @@ def calculate_a_tweet(tweet):
             remove_symbols = word.translate(trans)
             word = remove_symbols.strip()
 
-            dict = sentiment.Weight.query().filter(sentiment.Weight.word == word)
-            one = dict.fetch(1)
-            if one:
-                total_weight = total_weight + one[0].weight
+            #dict = sentiment.Weight.query().filter(sentiment.Weight.word == word)
+            weight = dictWords.get(word.lower(), None)
+
+            if weight:
+                total_weight = total_weight + int(weight)
                 list_of_words.append(word)
-        else:
-            pass
 
     return {'sentiment': total_weight, 'words': list_of_words}
 
