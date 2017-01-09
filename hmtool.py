@@ -581,7 +581,7 @@ class Sum_Sentiment(webapp2.RequestHandler):
     """
 
     def get(self):
-        q = sentiment.Sum_Sentiment.query()
+        q = sentiment.Sum_Sentiment.query().order(-sentiment.Sum_Sentiment.date)
         records = q.fetch()
 
         self.response.write(

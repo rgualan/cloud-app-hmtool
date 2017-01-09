@@ -57,7 +57,7 @@ def calculate_a_tweet(tweet):
 def summarize_sentiment():
 
     #ndb.delete_multi(sentiment.Sum_Sentiment.query().fetch(keys_only=True))
-    #ndb.delete_multi(sentiment.Sum_Word.query().fetch(keys_only=True))
+    ndb.delete_multi(sentiment.Sum_Word.query().fetch(keys_only=True))
 
     q_sentiment = tweets.TwitterStatus.query().fetch()
     t = tweets.TwitterStatus
