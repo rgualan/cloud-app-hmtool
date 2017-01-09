@@ -112,7 +112,7 @@ $(document).ready(function() {
 			.append("svg")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
-			.attr("transform", "translate(" + 0 + "," + 410 + ")");
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
 		data.forEach(function(d){
