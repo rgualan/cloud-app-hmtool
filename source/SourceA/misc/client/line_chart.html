@@ -1,0 +1,45 @@
+{% extends "/client/layout/base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <script type="text/javascript" src="/js/line_chart.js"></script>
+<script type="text/javascript" src="/js/box.js"></script>
+<script type="text/javascript" src="/js/plotbox.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div>
+    </div>
+    <div id="chart">
+        <table id="data_table" class="display"></table>
+    </div>
+</div>
+<select id="select"><option value="0">select</option>
+    <!-- <option value="5">Temperature</option>
+    <option value="6">Air humidity</option>
+    <option value="7">Pressure</option>
+    <option value="8">Solar radiation</option>
+    <option value="9">Soil temperature</option>
+    <option value="10">Wind speed</option>
+    <option value="11">Wind direction</option></select><br> -->
+    <option value="temperature">Temperature</option>
+    <option value="air_humidity">Air humidity</option>
+    <option value="pressure">Pressure</option>
+    <option value="solar_radiation">Solar radiation</option>
+    <option value="soil_temperature">Soil temperature</option>
+    <option value="wind_speed">Wind speed</option>
+    <option value="wind_direction">Wind direction</option></select><br>
+<div id = "station">
+</div>
+<div class="row">
+  <div class="col-md-4"><svg/></div>
+<div class="tooltip_line" id="tooltip_line" style="opacity: 0"></div>
+</div>
+
+<div class="row">
+  <div class="col-md-5"><svg id="svg"></svg></div>
+<svg id="svg1"></svg>
+<div class="tooltip" id="tooltip" style="opacity: 0"></div>
+    </div>
+{% endblock %}

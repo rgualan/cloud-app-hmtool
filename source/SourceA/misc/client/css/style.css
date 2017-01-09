@@ -1,0 +1,146 @@
+path:hover {
+    fill-opacity: .7;
+}
+
+text {
+    color: white;
+}
+
+body {
+    background-color: white;
+}
+
+.x.axis .domain {
+    opacity: 0;
+}
+
+.land {
+    fill: rgb(229, 228, 226);
+}
+
+.boundary {
+    fill: none;
+    stroke: rgb(204, 204, 204);
+}
+
+circle.outer {
+    fill: none;
+    stroke: #000;
+    stroke-width: 2px;
+}
+
+circle.points {
+}
+
+circle.bigPoints {
+    fill: none;
+}
+
+#tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 20px;
+    margin: 10px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 1px;
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+#tooltip h4 {
+    margin: 0;
+    font-size: 14px;
+}
+
+#tooltip {
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid grey;
+    border-radius: 5px;
+    font-size: 12px;
+    width: auto;
+    padding: 4px;
+    color: white;
+    opacity: 0;
+}
+
+text {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    pointer-events: none;
+}
+
+#happy:checked + .demo--radioInput:after {
+    background-color: #167EA2;
+}
+
+#bad:checked + .demo--radioInput:after {
+    background-color: #D3352E;
+}
+#zero:checked + .demo--radioInput:after {
+    background-color: #A2A116;
+}
+
+.sentiment_label {
+    margin: 20px 20px 0 0;
+    display: inline-block
+}
+
+.sentiment_checkbox {
+    display: none
+}
+
+.demo--radioInput {
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 100%;
+    display: inline-block;
+    height: 16px;
+    margin-right: 10px;
+    margin-top: -1px;
+    vertical-align: middle;
+    width: 16px;
+    line-height: 1
+}
+
+.sentiment_checkbox:checked + .demo--radioInput:after {
+    border-radius: 100%;
+    content: "";
+    display: inline-block;
+    height: 12px;
+    margin: 2px;
+    width: 12px
+}
+
+.demo--checkbox.demo--radioInput, .sentiment_checkbox:checked + .demo--checkbox.demo--radioInput:after {
+    border-radius: 0
+}
+
+.d3-tip {
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+}

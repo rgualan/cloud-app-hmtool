@@ -1,0 +1,44 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+# [START handlers]
+handlers:
+- url: /favicon\.ico
+  static_files: client/favicon.ico
+  upload: favicon\.ico
+
+- url: /bootstrap
+  static_dir: client/bootstrap
+
+- url: /lib
+  static_dir: client/lib
+
+- url: /js
+  static_dir: client/js
+
+- url: /css
+  static_dir: client/css
+
+- url: /json
+  static_dir: client/json
+
+- url: /tasks/.*
+  script: hmtool.app
+  login: admin
+
+- url: /.*
+  script: hmtool.app
+
+# [END handlers]
+
+# [START libraries]
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
+- name: ssl
+  version: latest
+
+# [END libraries]

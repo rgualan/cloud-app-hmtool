@@ -1,0 +1,70 @@
+{% extends "/client/layout/base.html" %}
+
+{% block head %}
+{{ super() }}
+<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
+<script src="js/codegrid/codegrid.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<link rel="stylesheet" href="/css/style.css">
+{% endblock %}
+
+{% block content %}
+
+<div>
+    <h1>World Map</h1>
+</div>
+<div class="col-md-5">
+    <div class="checkbox">
+        <label class="sentiment_label">
+            <input class="sentiment_checkbox" type="checkbox" name="sen" id="happy" value="happy" checked="true">
+            <span class="demo--checkbox demo--radioInput"></span>positive
+        </label>
+        <label class="sentiment_label">
+            <input class="sentiment_checkbox" type="checkbox" name="sen" id="zero" value="zero" checked="true">
+            <span class="demo--checkbox demo--radioInput"></span>neutral
+        </label>
+        <label class="sentiment_label">
+            <input class="sentiment_checkbox" type="checkbox" name="sen" id="bad" value="bad" checked="true">
+            <span class="demo--checkbox demo--radioInput"></span>negative
+        </label>
+    </div>
+</div>
+
+<div class="col-md-4" style="width:320px;background-color: #777777; opacity: .5">
+    <text><h4> Country: </h4></text>
+    <text id="country"><h4> world </h4></text>
+</div>
+
+
+<div class="col-md-8">
+    <div id="canvas-svg"></div>
+</div>
+<div class="col-md-2">
+    <h4 id="bar_country_name" style="width:320px">World</h4>
+    <input type="button" class="btn btn-primary" id="back" value="world" onclick="">
+
+    <svg id="svg_bar"></svg>
+</div>
+
+<div id="tooltip"></div>
+
+<script src="/js/map.js"></script>
+<script src="/js/map_to_bar.js"></script>
+<script>
+    $(document).ready(function () {
+        $("input[name='sen']").click(function () {
+            $("input[name='sen']").each(function () {
+
+                if ($(this).prop("checked")) {
+                    val = "circle_" + $(this).val();
+                    d3.select("body").selectAll('#' + val).transition().duration(200).attr("opacity", 1);
+                }
+                else {
+                    val = "circle_" + $(this).val();
+                    d3.select("body").selectAll('#' + val).transition().duration(200).attr("opacity", 0);
+                }
+            });
+        })
+    })
+</script>
+{% endblock %}

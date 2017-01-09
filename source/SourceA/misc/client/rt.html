@@ -1,0 +1,81 @@
+{% extends "/client/layout/base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <script type="text/javascript" src="/js/rt.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/keen-dashboards.css">
+    <link rel="stylesheet" type="text/css" href="/css/rt.css">
+{% endblock %}
+
+{% block content %}
+
+<h3>Test Station</h3>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="row">
+
+      <div class="col-sm-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Temperature
+          </div>
+          <div class="chart-stage">
+            <div>
+              <svg id="linechart_svg"/> 
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Pressure
+          </div>
+          <div class="chart-stage">
+            <div id="time-chart">
+              <svg id="linechart2_svg"/>  
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-4">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Solar radiation
+          </div>
+          <div class="chart-stage">
+            <div id="time-chart">
+              <svg id="linechart3_svg"/>  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+    <div> Last date: <input type="input" id="txt_last_date" value="" readonly> </div>    
+</div>
+
+<h3>Synthetic Data</h3>
+<div class="row">
+  <div class="col-sm-4">
+    <div class="chart-wrapper">
+      <div class="chart-title">
+        Some function like sin, cos, etc.
+      </div>
+      <div class="chart-stage">
+        <div>
+          <svg id="linechart_synthetic_svg"/> 
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div> Last date: <input type="input" id="txt_last_date_2" value="" readonly> </div>    
+
+
+{% endblock %}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+.axis path, .axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+
+.box {
+  font: 10px sans-serif;
+}
+
+.box line,
+.box rect,
+.box circle {
+  fill: #fff;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.box .center {
+  stroke-dasharray: 3,3;
+}
+
+.box .outlier {
+  fill: none;
+  stroke: #ccc;
+}
+#tooltip {
+    position: absolute;
+    text-align: center;
+    width: 80px;
+    height: auto;
+    padding: 10px;
+    background-color: white;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+#tooltip.hidden {
+    display: none;
+}
+#tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+}
+</style>
+<body>
+<select id="select">
+    <option value="empty">select</option>
+    <option value="5">Temperature</option>
+    <option value="6">Air humidity</option>
+    <option value="7">Pressure</option>
+    <option value="8">Solar radiation</option>
+    <option value="9">Soil temperature</option>
+    <option value="10">Wind speed</option>
+    <option value="11">Wind direction</option>
+</select><br>
+<p id="station"></p>
+<svg id="svg"></svg>
+<svg id="svg1"></svg>
+<div class="tooltip" id="tooltip" style="opacity: 0"></div>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.3.js"></script>
+
+<!--
+<script src="d3.v3.min.js"></script>
+-->
+
+<script src="js/box.js"></script>
+<script src="js/plotbox.js"></script>
+
+<script>
+
+    function jqchk() {
+        var colour = ['red', 'blue', 'green', 'black', 'pink'];
+        var chk_value = [];
+        var color = [];
+        $('input[class="check_box"]:checked').each(function () {
+            chk_value.push($(this).val());
+            color.push(colour[$(this).attr('id')]);
+        });
+        return [chk_value, color]
+    }
+
+
+    var labels = true; // show the text labels beside individual boxplots?
+
+    var margin = {top: 30, right: 50, bottom: 80, left: 50};
+    var width = 800 - margin.left - margin.right;
+    var height = 400 - margin.top - margin.bottom;
+
+
+
+    // parse in the data
+    d3.csv("../data/data2.csv", function (error, csv) {
+        var dataset = [];
+        csv.forEach(function (d) {
+            dataset.push([d["#station_name"], d["latitude"], d["longitude"], d["timestamp"],
+                d["record"], d["temperature"], d["air_humidity"],
+                d["pressure"], d["solar_radiation"], d["soil_temperature"],
+                d["wind_velocity"], d["wind_direction"]]);
+        })
+        items = dataset;
+        console.log(items);
+        var station_name = [];
+        for (var i = 1; i < items.length; i++) {
+            var m = 1;
+            for (var j = 0; j < station_name.length; j++) {
+                if (station_name[j] == items[i][0])
+                    m = 0;
+            }
+            if (m == 1) {
+                station_name.push(items[i][0]);
+            }
+        }
+        var str = "";
+        for (var i = 0; i < station_name.length; i++) {
+            str += "<div class='checkbox'><label><input type='checkbox' id='" + i + "'class='check_box' value='" + station_name[i] + "'>" + station_name[i] + "</label></div>";
+        }
+        document.getElementById("station").innerHTML = str;
+
+        $("#select").change(function () {
+            var a = $("#select").find("option:selected").val();
+            var chk_station = jqchk();
+            boxplot(items, a, chk_station[0]);
+
+        });
+        $("input[type='checkbox']").click(function () {
+            var a = $("#select").find("option:selected").val();
+            var chk_station = jqchk();
+            boxplot(items, a, chk_station[0]);
+
+        })
+    })
+
+
+</script>
+
+</body>
+</html>

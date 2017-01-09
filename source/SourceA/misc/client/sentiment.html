@@ -1,0 +1,112 @@
+{% extends "/client/layout/base.html" %}
+
+{% block head %}
+  {{ super() }}
+	<meta charset="utf-8">
+  	<link rel="stylesheet" href="/css/scatter.css" charset="utf-8">
+
+	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+	<script src="/js/scatter.js"></script>
+	<script src="js/d3.layout.cloud.js"></script>
+	<script src="js/cloud_tag.js"></script>
+	<script src="js/barchart.js"></script>
+{% endblock %}
+
+{% block content %}
+<script>
+	$(document).ready(function() {
+
+		$.getJSON('/words', function(data_json) {
+			//console.log(data_json);
+			var items = [];
+			$.each(data_json, function(key, row) {
+				items.push([ row["word_date"], row["word_text"],  row["word_sum_weight"]]);
+			});
+			//console.log(items);
+
+			$('#data_table_2').DataTable({
+				data : items,
+	            //"scrollX": true,
+				columns : [
+					{title : "Date"},
+					{title : "Word"},
+					{title : "Count"}
+					]
+			});
+
+		});
+
+		$.getJSON('/tweets', function(data_json) {
+			//console.log(data_json);
+			var items = [];
+			$.each(data_json, function(key, row) {
+				//items.push([ row["date"], row["tweet"],  row["words"], row["weight"] ]);
+				items.push([ row["date"], row["words"], row["weight"] ]);
+			});
+			//console.log(items);
+
+			$('#data_table').DataTable({
+				data : items,
+	            //"scrollX": true,
+				columns : [
+					{title : "Date"},
+					//{title : "Tweet"},
+					{title : "Words"},
+					{title : "Weight"}
+					]
+			});
+
+		});
+
+		$.getJSON('/sum_sentiment', function(data_json) {
+			//console.log(data_json);
+			var items = [];
+			$.each(data_json, function(key, row) {
+				//items.push([ row["date"], row["tweet"],  row["words"], row["weight"] ]);
+				items.push([ row["date"], row["words"], row["weight"] ]);
+			});
+			//console.log(items);
+
+			$('#data_table_3').DataTable({
+				data : items,
+				columns : [
+					{title : "Date"},
+					{title : "Type"},
+					{title : "Sum"}
+					]
+			});
+
+		});
+
+		return false;
+	});
+</script>
+
+<h3>Sentiment Analysis of Twitter Data</h3>
+
+<div class="row">
+  	<div class="col-sm-6">
+		<div id="scatter"></div>
+	</div>
+    <div class="col-sm-6">
+    	<div id="cloudTag"></div>
+	</div>
+</div>
+
+
+<div class="row">
+  	<div class="col-sm-6">
+    	<table id="data_table_3" class="display"></table>
+ 	</div>
+    <div class="col-sm-6">
+      	<table id="data_table_2" class="display"></table>
+	</div>
+</div>
+
+<div class="row">
+    <div id="barChart"></div>
+</div>
+<div>
+	<table id="data_table" class="display"></table>
+</div>
+{% endblock %}

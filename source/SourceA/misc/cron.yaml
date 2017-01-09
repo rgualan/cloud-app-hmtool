@@ -1,0 +1,11 @@
+# cron.yaml
+# Create cron jobs
+
+cron:
+- description: tweet collection
+  url: /tasks/twitter
+  schedule: every day 00:00
+
+- description: sum sentiment
+  url: /tasks/summary
+  schedule: every day 01:00 

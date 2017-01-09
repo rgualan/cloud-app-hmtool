@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+	<!-- [START js-libs] -->
+	<script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+	<!--<script src="https://code.jquery.com/jquery-1.12.4.js"></script>-->
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+	<!-- [END js-libs] -->
+	<!-- [START css] -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
+	<link type="text/css" rel="stylesheet" href="/css/dashboard.css">
+	<!-- [END css] -->
+	<title>HMTOOL</title>
+    {% endblock %}	
+</head>
+<body>
+	{# THIS IS THE HEADER #}
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">HMTOOL - TEAM M</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+			<!--<li><a href="{{ url|safe }}">{{ url_linktext }}</a></li>-->
+			<li><a href="/">Home</a></li>
+			<li><a href="/realtime">Real time</a></li>          
+			<!--<li><a href="/chart">Chart</a></li>-->
+			<!--<li><a href="/weatherapi">API</a></li>-->
+			<li><a href="/sentiment">Sentiment Analysis</a></li>
+			<li><a href="/map">Map</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+	{# THIS IS THE CONTENT #}
+	<div id="content" class="container-fluid">{% block content %}{% endblock %}</div>
+</body>
+</html>
