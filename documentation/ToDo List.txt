@@ -1,9 +1,0 @@
-Marios		Database Setup
-Salingga	Documentation & Websocket
-Jun		Find out jquery/angular.js & create 1 chart page w/ dummy data
-Kan		Find out d3.js & create 1 chart page w/ dummy data
-Ronald		create data collection -> send to client (ajax/json)
-Kelvin		find out about API/scrapping
-Christina	find dataset for weather
-	
-	Deadline: Wed, 9th Nov 10:00
