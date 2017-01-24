@@ -57,6 +57,8 @@ Add your twitter credentials in twitter_credentials.py
 
 ## Upload Twitter collection cron job
 ```appcfg.py update_cron -A [PROJECT_ID] .```
+if appcfg.py command not found, go to google-cloud-sdk folder and run this
+```ln -sv ~/google-cloud-sdk/platform/google_appengine/appcfg.py ~/google-cloud-sdk/bin/```
 
 ## Google Cloud Platform Console
 
